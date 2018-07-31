@@ -85,7 +85,7 @@ This function takes a reduced data matrix \code{n} by \code{p},
 \details{
 When there is only a single lineage, the curve-fitting algorithm is 
   nearly identical to that of \code{\link[princurve]{principal_curve}}. When
-  there are multiple lineages and \code{shrink == TRUE}, an additional step
+  there are multiple lineages and \code{shrink > 0}, an additional step
   is added to the iterative procedure, forcing curves to be similar in the
   neighborhood of shared points (ie., before they branch).
 
