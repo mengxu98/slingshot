@@ -50,7 +50,7 @@
 #'   
 #' @details When there is only a single lineage, the curve-fitting algorithm is 
 #'   nearly identical to that of \code{\link[princurve]{principal_curve}}. When
-#'   there are multiple lineages and \code{shrink > 0}, an additional step
+#'   there are multiple lineages and \code{shrink == TRUE}, an additional step
 #'   is added to the iterative procedure, forcing curves to be similar in the
 #'   neighborhood of shared points (ie., before they branch).
 #'   
@@ -484,7 +484,7 @@ setMethod(f = "getCurves",
                         shrunk <- lapply(seq_along(ns),function(jj){
                             crv <- to.shrink[[jj]]
                             return(.shrink_to_avg(crv, avg, 
-                                pct.shrink[[j]][[jj]] * shrink, 
+                                pct.shrink[[j]][[jj]], 
                                 X, stretch = stretch))
                         })
                         for(jj in seq_along(ns)){
