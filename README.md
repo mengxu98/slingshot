@@ -7,8 +7,9 @@ Provides functions for inferring continuous, branching lineage structures in low
 ## Installation
 
 ```r
-source("https://bioconductor.org/biocLite.R")
-biocLite("kstreet13/slingshot")
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install("kstreet13/slingshot")
 ```
 
 ## Issues and bug reports
