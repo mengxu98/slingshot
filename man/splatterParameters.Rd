@@ -21,4 +21,9 @@ A \code{SplatParams} object containing the parameters
   are designed to produce a single, non-branching trajectory. Code for
   producing these parameters can be found in the Slingshot vignette.
 }
+\examples{
+library(splatter)
+data("splatterParameters")
+splatSimulate(params, method = "paths")
+}
 \keyword{datasets}

@@ -560,6 +560,11 @@ setMethod(
 #' @source Most parameters were learned by
 #'   \code{\link[splatter:splatEstimate]{splatEstimate}} and based on the
 #'   \code{\link[HSMMSingleCell:HSMM]{HSMM}} dataset.
+#'   
+#' @examples
+#' library(splatter)
+#' data("splatterParameters")
+#' splatSimulate(params, method = "paths")
 "params"
 
 
@@ -574,6 +579,10 @@ setMethod(
 #' @format A matrix of coordinates in two dimensions, representing $140$ cells,
 #'   and a numeric vector $140$ corresponding cluster labels.
 #' @source Simulated data provided with the \code{slingshot} package.
+#' 
+#' @examples 
+#' data("slingshotExample")
+#' slingshot(rd, cl)
 "rd"
 
 #' @rdname slingshotExample

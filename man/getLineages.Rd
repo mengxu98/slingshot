@@ -14,28 +14,33 @@
 \usage{
 getLineages(data, clusterLabels, ...)
 
-\S4method{getLineages}{matrix,matrix}(data, clusterLabels, reducedDim = NULL,
-  start.clus = NULL, end.clus = NULL, dist.fun = NULL, omega = NULL)
+\S4method{getLineages}{matrix,matrix}(data, clusterLabels,
+  reducedDim = NULL, start.clus = NULL, end.clus = NULL,
+  dist.fun = NULL, omega = NULL)
 
 \S4method{getLineages}{matrix,character}(data, clusterLabels,
   reducedDim = NULL, start.clus = NULL, end.clus = NULL,
   dist.fun = NULL, omega = NULL)
 
-\S4method{getLineages}{matrix,ANY}(data, clusterLabels, reducedDim = NULL,
-  start.clus = NULL, end.clus = NULL, dist.fun = NULL, omega = NULL)
+\S4method{getLineages}{matrix,ANY}(data, clusterLabels,
+  reducedDim = NULL, start.clus = NULL, end.clus = NULL,
+  dist.fun = NULL, omega = NULL)
 
 \S4method{getLineages}{SlingshotDataSet,ANY}(data, clusterLabels,
   reducedDim = NULL, start.clus = NULL, end.clus = NULL,
   dist.fun = NULL, omega = NULL)
 
-\S4method{getLineages}{data.frame,ANY}(data, clusterLabels, reducedDim = NULL,
-  start.clus = NULL, end.clus = NULL, dist.fun = NULL, omega = NULL)
+\S4method{getLineages}{data.frame,ANY}(data, clusterLabels,
+  reducedDim = NULL, start.clus = NULL, end.clus = NULL,
+  dist.fun = NULL, omega = NULL)
 
-\S4method{getLineages}{matrix,numeric}(data, clusterLabels, reducedDim = NULL,
-  start.clus = NULL, end.clus = NULL, dist.fun = NULL, omega = NULL)
+\S4method{getLineages}{matrix,numeric}(data, clusterLabels,
+  reducedDim = NULL, start.clus = NULL, end.clus = NULL,
+  dist.fun = NULL, omega = NULL)
 
-\S4method{getLineages}{matrix,factor}(data, clusterLabels, reducedDim = NULL,
-  start.clus = NULL, end.clus = NULL, dist.fun = NULL, omega = NULL)
+\S4method{getLineages}{matrix,factor}(data, clusterLabels,
+  reducedDim = NULL, start.clus = NULL, end.clus = NULL,
+  dist.fun = NULL, omega = NULL)
 }
 \arguments{
 \item{data}{a data object containing the matrix of coordinates to be used for

@@ -16,19 +16,19 @@
 \usage{
 slingshot(data, clusterLabels, ...)
 
-\S4method{slingshot}{matrix,character}(data, clusterLabels, reducedDim = NULL,
-  start.clus = NULL, end.clus = NULL, dist.fun = NULL, omega = NULL,
-  lineages = list(), shrink = TRUE, extend = "y", reweight = TRUE,
-  reassign = TRUE, thresh = 0.001, maxit = 15, stretch = 2,
-  smoother = "smooth.spline", shrink.method = "cosine",
-  allow.breaks = TRUE, ...)
+\S4method{slingshot}{matrix,character}(data, clusterLabels,
+  reducedDim = NULL, start.clus = NULL, end.clus = NULL,
+  dist.fun = NULL, omega = NULL, lineages = list(), shrink = TRUE,
+  extend = "y", reweight = TRUE, reassign = TRUE, thresh = 0.001,
+  maxit = 15, stretch = 2, smoother = "smooth.spline",
+  shrink.method = "cosine", allow.breaks = TRUE, ...)
 
-\S4method{slingshot}{matrix,matrix}(data, clusterLabels, reducedDim = NULL,
-  start.clus = NULL, end.clus = NULL, dist.fun = NULL, omega = NULL,
-  lineages = list(), shrink = TRUE, extend = "y", reweight = TRUE,
-  reassign = TRUE, thresh = 0.001, maxit = 15, stretch = 2,
-  smoother = "smooth.spline", shrink.method = "cosine",
-  allow.breaks = TRUE, ...)
+\S4method{slingshot}{matrix,matrix}(data, clusterLabels,
+  reducedDim = NULL, start.clus = NULL, end.clus = NULL,
+  dist.fun = NULL, omega = NULL, lineages = list(), shrink = TRUE,
+  extend = "y", reweight = TRUE, reassign = TRUE, thresh = 0.001,
+  maxit = 15, stretch = 2, smoother = "smooth.spline",
+  shrink.method = "cosine", allow.breaks = TRUE, ...)
 
 \S4method{slingshot}{SlingshotDataSet,ANY}(data, clusterLabels,
   reducedDim = NULL, start.clus = NULL, end.clus = NULL,
@@ -37,32 +37,32 @@ slingshot(data, clusterLabels, ...)
   maxit = 15, stretch = 2, smoother = "smooth.spline",
   shrink.method = "cosine", allow.breaks = TRUE, ...)
 
-\S4method{slingshot}{data.frame,ANY}(data, clusterLabels, reducedDim = NULL,
-  start.clus = NULL, end.clus = NULL, dist.fun = NULL, omega = NULL,
-  lineages = list(), shrink = TRUE, extend = "y", reweight = TRUE,
-  reassign = TRUE, thresh = 0.001, maxit = 15, stretch = 2,
-  smoother = "smooth.spline", shrink.method = "cosine",
-  allow.breaks = TRUE, ...)
+\S4method{slingshot}{data.frame,ANY}(data, clusterLabels,
+  reducedDim = NULL, start.clus = NULL, end.clus = NULL,
+  dist.fun = NULL, omega = NULL, lineages = list(), shrink = TRUE,
+  extend = "y", reweight = TRUE, reassign = TRUE, thresh = 0.001,
+  maxit = 15, stretch = 2, smoother = "smooth.spline",
+  shrink.method = "cosine", allow.breaks = TRUE, ...)
 
-\S4method{slingshot}{matrix,numeric}(data, clusterLabels, reducedDim = NULL,
-  start.clus = NULL, end.clus = NULL, dist.fun = NULL, omega = NULL,
-  lineages = list(), shrink = TRUE, extend = "y", reweight = TRUE,
-  reassign = TRUE, thresh = 0.001, maxit = 15, stretch = 2,
-  smoother = "smooth.spline", shrink.method = "cosine",
-  allow.breaks = TRUE, ...)
+\S4method{slingshot}{matrix,numeric}(data, clusterLabels,
+  reducedDim = NULL, start.clus = NULL, end.clus = NULL,
+  dist.fun = NULL, omega = NULL, lineages = list(), shrink = TRUE,
+  extend = "y", reweight = TRUE, reassign = TRUE, thresh = 0.001,
+  maxit = 15, stretch = 2, smoother = "smooth.spline",
+  shrink.method = "cosine", allow.breaks = TRUE, ...)
 
-\S4method{slingshot}{matrix,factor}(data, clusterLabels, reducedDim = NULL,
-  start.clus = NULL, end.clus = NULL, dist.fun = NULL, omega = NULL,
-  lineages = list(), shrink = TRUE, extend = "y", reweight = TRUE,
-  reassign = TRUE, thresh = 0.001, maxit = 15, stretch = 2,
-  smoother = "smooth.spline", shrink.method = "cosine",
-  allow.breaks = TRUE, ...)
+\S4method{slingshot}{matrix,factor}(data, clusterLabels,
+  reducedDim = NULL, start.clus = NULL, end.clus = NULL,
+  dist.fun = NULL, omega = NULL, lineages = list(), shrink = TRUE,
+  extend = "y", reweight = TRUE, reassign = TRUE, thresh = 0.001,
+  maxit = 15, stretch = 2, smoother = "smooth.spline",
+  shrink.method = "cosine", allow.breaks = TRUE, ...)
 
 \S4method{slingshot}{matrix,ANY}(data, clusterLabels, reducedDim = NULL,
-  start.clus = NULL, end.clus = NULL, dist.fun = NULL, omega = NULL,
-  lineages = list(), shrink = TRUE, extend = "y", reweight = TRUE,
-  reassign = TRUE, thresh = 0.001, maxit = 15, stretch = 2,
-  smoother = "smooth.spline", shrink.method = "cosine",
+  start.clus = NULL, end.clus = NULL, dist.fun = NULL,
+  omega = NULL, lineages = list(), shrink = TRUE, extend = "y",
+  reweight = TRUE, reassign = TRUE, thresh = 0.001, maxit = 15,
+  stretch = 2, smoother = "smooth.spline", shrink.method = "cosine",
   allow.breaks = TRUE, ...)
 
 \S4method{slingshot}{ClusterExperiment,ANY}(data, clusterLabels,

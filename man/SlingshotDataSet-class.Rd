@@ -52,8 +52,6 @@ The \code{SlingshotDataSet} class holds data relevant for
 
 Extract cluster labels, either a character vector or matrix of 
   weights.
-
-# replacement methods
 }
 \details{
 Warning: this will remove any existing lineages or curves from the 

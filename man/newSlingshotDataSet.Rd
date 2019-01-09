@@ -13,15 +13,19 @@
 \usage{
 newSlingshotDataSet(reducedDim, clusterLabels, ...)
 
-\S4method{newSlingshotDataSet}{data.frame,ANY}(reducedDim, clusterLabels, ...)
+\S4method{newSlingshotDataSet}{data.frame,ANY}(reducedDim, clusterLabels,
+  ...)
 
-\S4method{newSlingshotDataSet}{matrix,numeric}(reducedDim, clusterLabels, ...)
+\S4method{newSlingshotDataSet}{matrix,numeric}(reducedDim, clusterLabels,
+  ...)
 
-\S4method{newSlingshotDataSet}{matrix,factor}(reducedDim, clusterLabels, ...)
+\S4method{newSlingshotDataSet}{matrix,factor}(reducedDim, clusterLabels,
+  ...)
 
 \S4method{newSlingshotDataSet}{matrix,ANY}(reducedDim, clusterLabels, ...)
 
-\S4method{newSlingshotDataSet}{matrix,character}(reducedDim, clusterLabels, ...)
+\S4method{newSlingshotDataSet}{matrix,character}(reducedDim, clusterLabels,
+  ...)
 
 \S4method{newSlingshotDataSet}{matrix,matrix}(reducedDim, clusterLabels,
   lineages = list(), adjacency = matrix(NA, 0, 0), curves = list(),

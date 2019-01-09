@@ -45,7 +45,7 @@ Suggests:
     covr
 VignetteBuilder: knitr
 LazyData: false
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 biocViews:
     Clustering,
     DifferentialExpression,
