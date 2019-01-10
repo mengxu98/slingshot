@@ -168,6 +168,7 @@ setMethod(
 #' cl <- sample(letters[seq_len(5)], 50, replace = TRUE)
 #' sds <- newSlingshotDataSet(rd, cl)
 #' clusterLabels(sds)
+#' @importFrom clusterExperiment clusterLabels
 #' @export
 setMethod(
     f = "clusterLabels",
@@ -191,6 +192,7 @@ setMethod(
 )
 #' @describeIn slingAdjacency returns the adjacency matrix between
 #'   clusters from a \code{\link{SingleCellExperiment}} object.
+#' @importClassesFrom SingleCellExperiment SingleCellExperiment
 #' @export
 setMethod(
     f = "slingAdjacency",
@@ -386,7 +388,6 @@ setMethod(
 )
 
 #' @rdname SlingshotDataSet
-#' @import SingleCellExperiment
 #' @export
 setMethod(
     f = "SlingshotDataSet",

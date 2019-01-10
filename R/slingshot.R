@@ -386,8 +386,10 @@ setMethod(f = "slingshot",
           })
 
 
+# #' @import clusterExperiment
 #' @rdname slingshot
-#' @import clusterExperiment
+#' @importClassesFrom clusterExperiment ClusterExperiment
+#' @importFrom SingleCellExperiment colData
 #' @importFrom SummarizedExperiment colData<-
 #' @export
 setMethod(f = "slingshot",
@@ -489,7 +491,6 @@ setMethod(f = "slingshot",
 
 
 #' @rdname slingshot
-#' @import SingleCellExperiment
 #' @export
 setMethod(f = "slingshot",
           signature = signature(data = "SingleCellExperiment"),
