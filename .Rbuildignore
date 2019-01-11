@@ -12,12 +12,13 @@ NEWS\.md
 ^appveyor\.yml$
 ^covr-utils.R$
 ^\.coveralls\.R$
+
 # R related
 ^cran-comments\..*$
 ^vignettes/.*\.(pdf|PDF)$
 ^vignettes/.*\.(r|R)$
 ^vignettes/\.install_extras$
-^vignettes/.*\.bib$
+# ^vignettes/.*\.bib$
 ^Makefile$
 ^incl
 ^NAMESPACE,.*\.txt$
