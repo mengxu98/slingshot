@@ -7,6 +7,8 @@ output:
   BiocStyle::html_document:
     toc: true
 vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{slingshot Vignette}
   %\VignetteEncoding{UTF-8}
 ---
 
