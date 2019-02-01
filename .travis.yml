@@ -29,6 +29,7 @@ addons:
 jobs:
   include:
     - stage: prepare cache
+      r: bioc-release
       r_check_args: "--no-tests --no-manual --no-vignettes --no-build-vignettes --no-examples"
       r_build_args: "--no-build-vignettes"
       install:
@@ -36,8 +37,9 @@ jobs:
         - R -e 'devtools::install_cran("covr")'
         - R -e 'setRepositories(ind = 1:2); devtools::install()'
       script:
-        - echo No R CMD check since this is an init.
-      r: bioc-release
+        - echo No R CMD check since this is a cache warmup
+      after_success:
+        - echo No codecov / biocheck since this is a cache warmup
     - stage: test
       r: bioc-release
     - stage: test
