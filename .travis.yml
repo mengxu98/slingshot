@@ -30,8 +30,6 @@ jobs:
   include:
     - stage: prepare cache
       r: bioc-release
-      r_check_args: "--no-tests --no-manual --no-vignettes --no-build-vignettes --no-examples"
-      r_build_args: "--no-build-vignettes"
       install:
         - R -e 'if ("devtools" %in% rownames(installed.packages())) update.packages(oldPkgs = "devtools", ask = FALSE) else install.packages("devtools")'
         - R -e 'devtools::install_cran("covr")'
