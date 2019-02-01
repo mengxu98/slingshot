@@ -17,7 +17,7 @@ cache: packages
 r:
   - bioc-release
   - bioc-devel
-  
+
 # dependency for gsl>copula>zinbwave>splatter
 addons:
   apt:
@@ -38,23 +38,31 @@ notifications:
 ## Code coverage
 r_packages:
   - covr
+  - devtools
 
 ## BiocCheck
 bioc_packages:
   - BiocCheck
+
+jobs:
+  include:
+    - stage: prepare cache
+      r_check_args: "--no-tests --no-manual --no-vignettes --no-build-vignettes --no-examples"
+      r_build_args: "--no-build-vignettes"
+      install:
+      - R -e 'setRepositories(ind = 1:2); devtools::install()'
+    - stage: test
+      script: true
+      install:
+      - R -e 'setRepositories(ind = 1:2); devtools::install(dependencies = TRUE, upgrade = TRUE)'
+      after_success:
+      - Rscript -e 'covr::coveralls()'
+      - R CMD BiocCheck .
+      - Rscript -e 'covr::codecov()'
+
 
 ## To appease rgl
 before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3
-
-## install and upgrade dependencies
-install:
- - R -e 'if ("devtools" %in% rownames(installed.packages())) update.packages(oldPkgs = "devtools", ask = FALSE) else install.packages("devtools")'
- - R -e 'setRepositories(ind = 1:2); devtools::install(dependencies = TRUE, upgrade = TRUE)'
-
-after_success:
-  - Rscript -e 'covr::coveralls()'
-  - R CMD BiocCheck .
-  - Rscript -e 'covr::codecov()'
