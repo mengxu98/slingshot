@@ -13,11 +13,6 @@
 language: r
 cache: packages
 
-# R versions to be tested on
-r:
-  - bioc-release
-  - bioc-devel
-
 # dependency for gsl>copula>zinbwave>splatter
 addons:
   apt:
@@ -27,18 +22,10 @@ addons:
 ## Turn this to true before submission to CRAN/Bioconductor
 warnings_are_errors: true
 
-r_build_args: "--no-build-vignettes"
-r_check_args: "--no-vignettes"
-
 notifications:
   email:
     on_success: change
     on_failure: change
-
-## Code coverage
-r_packages:
-  - covr
-  - devtools
 
 ## BiocCheck
 bioc_packages:
@@ -50,16 +37,24 @@ jobs:
       r_check_args: "--no-tests --no-manual --no-vignettes --no-build-vignettes --no-examples"
       r_build_args: "--no-build-vignettes"
       install:
-      - R -e 'setRepositories(ind = 1:2); devtools::install()'
+        - R -e 'if ("devtools" %in% rownames(installed.packages())) update.packages(oldPkgs = "devtools", ask = FALSE) else install.packages("devtools")'
+        - R -e 'devtools::install_cran("covr")'
+        - R -e 'setRepositories(ind = 1:2); devtools::install()'
+      script:
+        - echo No R CMD check since this is an init.
     - stage: test
       script: true
+      r_build_args: "--no-build-vignettes"
+      r_check_args: "--no-vignettes"
       install:
-      - R -e 'setRepositories(ind = 1:2); devtools::install(dependencies = TRUE, upgrade = TRUE)'
+        - R -e 'setRepositories(ind = 1:2); devtools::install(dependencies = TRUE, upgrade = TRUE)'
       after_success:
-      - Rscript -e 'covr::coveralls()'
-      - R CMD BiocCheck .
-      - Rscript -e 'covr::codecov()'
-
+        - Rscript -e 'covr::coveralls()'
+        - R CMD BiocCheck .
+        - Rscript -e 'covr::codecov()'
+      r:
+        - bioc-release
+        - bioc-devel
 
 ## To appease rgl
 before_script:
