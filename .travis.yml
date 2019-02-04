@@ -46,6 +46,7 @@ jobs:
 ## BiocCheck
 bioc_packages:
   - BiocCheck
+  - BiocStyle
 
 ## To appease rgl
 before_script:
