@@ -33,6 +33,7 @@ jobs:
       install:
         - R -e 'if ("devtools" %in% rownames(installed.packages())) update.packages(oldPkgs = "devtools", ask = FALSE) else install.packages("devtools")'
         - R -e 'devtools::install_cran("covr")'
+        - R -e 'devtools::install_bioc(c("BiocCheck", "BiocStyle"))'
         - R -e 'setRepositories(ind = 1:2); devtools::install()'
       script:
         - echo No R CMD check since this is a cache warmup
@@ -43,6 +44,7 @@ jobs:
       install:
         - R -e 'if ("devtools" %in% rownames(installed.packages())) update.packages(oldPkgs = "devtools", ask = FALSE) else install.packages("devtools")'
         - R -e 'devtools::install_cran("covr")'
+        - R -e 'devtools::install_bioc(c("BiocCheck", "BiocStyle"))'
         - R -e 'setRepositories(ind = 1:2); devtools::install()'
       script:
         - echo No R CMD check since this is a cache warmup
@@ -52,11 +54,6 @@ jobs:
       r: bioc-release
     - stage: test
       r: bioc-devel
-
-## BiocCheck
-bioc_packages:
-  - BiocCheck
-  - BiocStyle
 
 ## To appease rgl
 before_script:
