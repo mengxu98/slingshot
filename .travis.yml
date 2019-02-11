@@ -30,22 +30,12 @@ jobs:
   include:
     - stage: prepare cache
       r: bioc-release
-      install:
-        - R -e 'if ("devtools" %in% rownames(installed.packages())) update.packages(oldPkgs = "devtools", ask = FALSE) else install.packages("devtools")'
-        - R -e 'devtools::install_cran("covr")'
-        - R -e 'devtools::install_bioc(c("BiocCheck", "BiocStyle"))'
-        - R -e 'setRepositories(ind = 1:2); devtools::install()'
       script:
         - echo No R CMD check since this is a cache warmup
       after_success:
         - echo No codecov / biocheck since this is a cache warmup
     - stage: prepare cache
       r: bioc-devel
-      install:
-        - R -e 'if ("devtools" %in% rownames(installed.packages())) update.packages(oldPkgs = "devtools", ask = FALSE) else install.packages("devtools")'
-        - R -e 'devtools::install_cran("covr")'
-        - R -e 'devtools::install_bioc(c("BiocCheck", "BiocStyle"))'
-        - R -e 'setRepositories(ind = 1:2); devtools::install()'
       script:
         - echo No R CMD check since this is a cache warmup
       after_success:
@@ -67,6 +57,10 @@ before_script:
 
 ## install and upgrade dependencies
 install:
+  - R -e 'if ("devtools" %in% rownames(installed.packages())) update.packages(oldPkgs = "devtools", ask = FALSE) else install.packages("devtools")'
+  - R -e 'devtools::install_cran("covr")'
+  - R -e 'devtools::install_bioc("BiocCheck")'
+  - R -e 'devtools::install_bioc("BiocStyle")'
   - R -e 'setRepositories(ind = 1:2); devtools::install(dependencies = TRUE, upgrade = TRUE)'
 
 ## Run code coverage after successful build
