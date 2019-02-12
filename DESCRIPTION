@@ -34,8 +34,10 @@ Imports:
     SummarizedExperiment
 Suggests:
     BiocGenerics,
+    BiocStyle,
     destiny,
     gam,
+    HSMMSingleCell,
     knitr,
     mclust,
     RColorBrewer,

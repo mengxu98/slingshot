@@ -12,36 +12,38 @@
 #----------------------------------------------------------------
 language: r
 cache: packages
-
-# R versions to be tested on
-r:
-  - bioc-release
-  - bioc-devel
-  
-# dependency for gsl>copula>zinbwave>splatter
-addons:
-  apt:
-    packages:
-      - libgsl-dev
-
-## Turn this to true before submission to CRAN/Bioconductor
 warnings_are_errors: true
-
-r_build_args: "--no-build-vignettes"
-r_check_args: "--no-vignettes"
 
 notifications:
   email:
     on_success: change
     on_failure: change
 
-## Code coverage
-r_packages:
-  - covr
+# dependency for gsl>copula>zinbwave>splatter
+addons:
+  apt:
+    packages:
+      - libgsl-dev
 
-## BiocCheck
-bioc_packages:
-  - BiocCheck
+# define cache warmup and test stages
+jobs:
+  include:
+    - stage: prepare cache
+      r: bioc-release
+      script:
+        - echo No R CMD check since this is a cache warmup
+      after_success:
+        - echo No codecov / biocheck since this is a cache warmup
+    - stage: prepare cache
+      r: bioc-devel
+      script:
+        - echo No R CMD check since this is a cache warmup
+      after_success:
+        - echo No codecov / biocheck since this is a cache warmup
+    - stage: test
+      r: bioc-release
+    - stage: test
+      r: bioc-devel
 
 ## To appease rgl
 before_script:
@@ -49,11 +51,18 @@ before_script:
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3
 
+# can we remove this?
+#r_build_args: "--no-build-vignettes"
+#r_check_args: "--no-vignettes"
+
 ## install and upgrade dependencies
 install:
- - R -e 'if ("devtools" %in% rownames(installed.packages())) update.packages(oldPkgs = "devtools", ask = FALSE) else install.packages("devtools")'
- - R -e 'setRepositories(ind = 1:2); devtools::install(dependencies = TRUE, upgrade = TRUE)'
+  - R -e 'if ("devtools" %in% rownames(installed.packages())) update.packages(oldPkgs = "devtools", ask = FALSE) else install.packages("devtools")'
+  - R -e 'devtools::install_cran("covr")'
+  - R -e 'devtools::install_bioc("BiocCheck")'
+  - R -e 'setRepositories(ind = 1:2); devtools::install(dependencies = TRUE, upgrade = TRUE)'
 
+## Run code coverage after successful build
 after_success:
   - Rscript -e 'covr::coveralls()'
   - R CMD BiocCheck .
