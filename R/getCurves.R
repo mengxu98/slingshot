@@ -323,15 +323,16 @@ setMethod(f = "getCurves",
                     drop = FALSE] > 0
                 pc1.2 <- prcomp(X[cl2.idx, ])
                 pc1.2 <- pc1.2$rotation[,1] * pc1.2$sdev[1]^2
-                leg2 <- line.initial[K-1,] - line.initial[K,]
+                leg2 <- line.initial[K-1,] - line.initial[K,] # intentionally
+                # reverse of above. Otherwise, would need to flip > to < below
                 # dot prod < 0 => cos(theta) < 0 => larger angle
                 if(sum(pc1.2*leg2) > 0){ 
                     pc1.2 <- -pc1.2 
                 }
-                line.initial <- rbind(line.initial[1] + pc1.1, 
-                    line.initial)
                 line.initial <- rbind(line.initial, 
-                    line.initial[K] + pc1.2)
+                                      line.initial[K,] + pc1.2)
+                line.initial <- rbind(line.initial[1,] + pc1.1, 
+                                      line.initial)
                 curve <- project_to_curve(X[idx, ,drop = FALSE], 
                     s = line.initial, stretch = 9999)
                 curve$dist_ind <- abs(curve$dist_ind)
