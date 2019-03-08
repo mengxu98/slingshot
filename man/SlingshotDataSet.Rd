@@ -4,11 +4,14 @@
 \name{SlingshotDataSet}
 \alias{SlingshotDataSet}
 \alias{SlingshotDataSet,SingleCellExperiment-method}
+\alias{SlingshotDataSet,SlingshotDataSet-method}
 \title{Extract Slingshot output}
 \usage{
 SlingshotDataSet(data, ...)
 
 \S4method{SlingshotDataSet}{SingleCellExperiment}(data)
+
+\S4method{SlingshotDataSet}{SlingshotDataSet}(data)
 }
 \arguments{
 \item{data}{an object containing \code{slingshot} output.}

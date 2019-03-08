@@ -400,6 +400,16 @@ setMethod(
     }
 )
 
+#' @rdname SlingshotDataSet
+#' @export
+setMethod(
+  f = "SlingshotDataSet",
+  signature = "SlingshotDataSet",
+  definition = function(data){
+    return(data)
+  }
+)
+
 
 
 ##########################
