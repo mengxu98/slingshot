@@ -432,26 +432,46 @@ setMethod(
 .scaleAB <- function(x,a=0,b=1){
     ((x-min(x,na.rm=TRUE))/(max(x,na.rm=TRUE)-min(x,na.rm=TRUE)))*(b-a)+a
 }
-.avg_curves <- function(pcurves, X, stretch = 2){
+.avg_curves <- function(pcurves, X, stretch = 2, approx_points = FALSE){
     n <- nrow(pcurves[[1]]$s)
     p <- ncol(pcurves[[1]]$s)
-    lambdas.all <- lapply(pcurves, function(pcv){pcv$lambda})
-    lambdas.all <- unique(unlist(lambdas.all))
     max.shared.lambda <- min(vapply(pcurves, function(pcv){max(pcv$lambda)},0))
-    lambdas.all <- sort(lambdas.all[lambdas.all <= max.shared.lambda])
+    lambdas.combine <- seq(0, max.shared.lambda, length.out = n)
+    
     pcurves.dense <- lapply(pcurves,function(pcv){
         vapply(seq_len(p),function(jj){
-            interpolated <- approx(pcv$lambda, pcv$s[,jj], xout = lambdas.all)$y
+            if(approx_points > 0){
+                xin_lambda <- seq(min(pcv$lambda), max(pcv$lambda),
+                                  length.out = approx_points)
+            }else{
+                xin_lambda <- pcv$lambda
+            }
+            interpolated <- approx(xin_lambda[pcv$ord], 
+                                   pcv$s[pcv$ord, jj, drop = FALSE],
+                                   xout = lambdas.combine)$y
             return(interpolated)
-        }, rep(0,length(lambdas.all)))
+        }, rep(0,n))
     })
     avg <- vapply(seq_len(p),function(jj){
         dim.all <- vapply(seq_along(pcurves.dense),function(i){
             pcurves.dense[[i]][,jj]
-        }, rep(0,length(lambdas.all)))
+        }, rep(0,n))
         return(rowMeans(dim.all))
-    }, rep(0,length(lambdas.all)))
+    }, rep(0,n))
     avg.curve <- project_to_curve(X, avg, stretch=stretch)
+    
+    if(approx_points > 0){
+        xout_lambda <- seq(min(avg.curve$lambda),
+                         max(avg.curve$lambda),
+                         length.out = approx_points)
+        avg.curve$s <- apply(avg.curve$s, 2, function(sjj){
+            return(approx(x = avg.curve$lambda[avg.curve$ord],
+                          y = sjj[avg.curve$ord], 
+                          xout = xout_lambda)$y)
+        })
+        avg.curve$ord <- seq_len(approx_points)
+    }
+    
     avg.curve$w <- rowMeans(vapply(pcurves, function(p){ p$w }, rep(0,n)))
     return(avg.curve)
 }

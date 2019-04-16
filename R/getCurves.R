@@ -118,9 +118,12 @@ setMethod(f = "getCurves",
         reweight = TRUE,
         reassign = TRUE, 
         thresh = 0.001, maxit = 15, stretch = 2, 
+        approx_points = FALSE,
         smoother = 'smooth.spline', 
         shrink.method = 'cosine',
         allow.breaks = TRUE, ...){
+      
+      print('new getCUrves')
         
         X <- reducedDim(sds)
         clusterLabels <- clusterLabels(sds)
@@ -340,6 +343,16 @@ setMethod(f = "getCurves",
             
             pcurve <- project_to_curve(X, s = curve$s[curve$ord, ,drop=FALSE], 
                 stretch=0)
+            if(approx_points > 0){
+                xout_lambda <- seq(min(pcurve$lambda), max(pcurve$lambda),
+                                 length.out = approx_points)
+                pcurve$s <- apply(pcurve$s, 2, function(sjj){
+                    return(approx(x = pcurve$lambda[pcurve$ord],
+                                y = sjj[pcurve$ord], 
+                                xout = xout_lambda)$y)
+                })
+                pcurve$ord <- seq_len(approx_points)
+            }
             # force non-negative distances
             pcurve$dist_ind <- abs(pcurve$dist_ind)
             # force pseudotime to start at 0
@@ -397,11 +410,31 @@ setMethod(f = "getCurves",
                 pcurve <- pcurves[[l]]
                 s <- pcurve$s
                 ordL <- order(pcurve$lambda)
+                if(approx_points > 0){
+                  xout_lambda <- seq(min(pcurve$lambda), max(pcurve$lambda),
+                                      length.out = approx_points)
+                }
                 for(jj in seq_len(p)){
-                    s[, jj] <- smootherFcn(pcurve$lambda, X[,jj], w = pcurve$w,
+                    yjj <- smootherFcn(pcurve$lambda, X[,jj], w = pcurve$w,
                         ...)[ordL]
+                    if(approx_points > 0){
+                        yjj <- approx(x = pcurve$lambda[ordL], y = yjj, 
+                                      xout = xout_lambda)$y
+                    }
+                    s[, jj] <- yjj
                 }
                 new.pcurve <- project_to_curve(X, s = s, stretch = stretch)
+                if(approx_points > 0){
+                  xout_lambda <- seq(min(new.pcurve$lambda),
+                                     max(new.pcurve$lambda),
+                                     length.out = approx_points)
+                  new.pcurve$s <- apply(new.pcurve$s, 2, function(sjj){
+                    return(approx(x = new.pcurve$lambda[new.pcurve$ord],
+                                  y = sjj[new.pcurve$ord], 
+                                  xout = xout_lambda)$y)
+                  })
+                  new.pcurve$ord <- seq_len(approx_points)
+                }
                 new.pcurve$dist_ind <- abs(new.pcurve$dist_ind)
                 new.pcurve$lambda <- new.pcurve$lambda - 
                     min(new.pcurve$lambda, na.rm = TRUE)
@@ -435,7 +468,8 @@ setMethod(f = "getCurves",
                                 return(avg.lines[[a.ind]])
                             }
                         })
-                        avg <- .avg_curves(to.avg, X, stretch = stretch)
+                        avg <- .avg_curves(to.avg, X, stretch = stretch,
+                                           approx_points = approx_points)
                         avg.lines[[i]] <- avg
                         common.ind <- rowMeans(vapply(to.avg,
                             function(crv){ crv$w > 0 },
