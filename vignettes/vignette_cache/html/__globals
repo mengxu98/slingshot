@@ -1,0 +1,10 @@
+dataSetup_sim	library	dyntoy	data	dataset	generate_dataset	model_bifurcating	sim	SingleCellExperiment	List	t	counts	expression	data.frame	cell_ids
+data_sling	library	slingshot	data	dim	rd	length	cl
+genefilt	geneFilter	apply	assays	sim	counts	sum	x
+norm	FQnorm	rk	apply	counts	rank	counts.sort	sort	refdist	median	norm	r	rownames	return	assays	sim
+pca	pca	prcomp	t	log1p	assays	sim	norm	rd1	x	plot	rgb
+dm	library	destiny	dm	DiffusionMap	t	log1p	assays	sim	norm	rd2	cbind	DC1	DC2	plot	rgb
+add_RDs	reducedDims	sim	SimpleList	rd1	rd2
+clustering_mclust	library	mclust	cl1	Mclust	rd1	classification	colData	sim	GMM	RColorBrewer	plot	brewer.pal
+clustering	cl2	kmeans	rd1	cluster	colData	sim	plot	brewer.pal
+sling_sce	sce	slingshot	sim
