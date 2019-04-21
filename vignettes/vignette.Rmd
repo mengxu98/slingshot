@@ -69,13 +69,13 @@ code showing how the dataset was generated.
 library(dyntoy)
 data("toy_datasets", package="dyntoy")
 dataset <- generate_dataset(
-  model = model_linear(),
-  num_cells = 300,
-  num_features = 5000
+    model = model_linear(),
+    num_cells = 300,
+    num_features = 5000
 )
 sim <- SingleCellExperiment(
-  assays = List(counts = t(dataset$counts), expression = t(dataset$expression)),
-  colData = data.frame(cell_ids = dataset$cell_ids)
+    assays = List(counts = t(dataset$counts)),
+    colData = data.frame(cell_ids = dataset$cell_ids)
 )
 ```
 
@@ -134,12 +134,12 @@ remove this effect.
 
 ```{r norm}
 FQnorm <- function(counts){
-  rk <- apply(counts,2,rank,ties.method='min')
-  counts.sort <- apply(counts,2,sort)
-  refdist <- apply(counts.sort,1,median)
-  norm <- apply(rk,2,function(r){ refdist[r] })
-  rownames(norm) <- rownames(counts)
-  return(norm)
+    rk <- apply(counts,2,rank,ties.method='min')
+    counts.sort <- apply(counts,2,sort)
+    refdist <- apply(counts.sort,1,median)
+    norm <- apply(rk,2,function(r){ refdist[r] })
+    rownames(norm) <- rownames(counts)
+    return(norm)
 }
 assays(sim)$norm <- FQnorm(assays(sim)$counts)
 ```
@@ -313,10 +313,10 @@ Y <- Y[var1K,]
 
 # fit a GAM with a loess term for pseudotime
 gam.pval <- apply(Y,1,function(z){
-  d <- data.frame(z=z, t=t)
-  tmp <- gam(z ~ lo(t), data=d)
-  p <- summary(tmp)[4][[1]][1,5]
-  p
+    d <- data.frame(z=z, t=t)
+    tmp <- gam(z ~ lo(t), data=d)
+    p <- summary(tmp)[4][[1]][1,5]
+    p
 })
 ```
 
@@ -327,7 +327,7 @@ expression over developmental time with a heatmap.
 require(clusterExperiment)
 topgenes <- names(sort(gam.pval, decreasing = FALSE))[1:100]
 heatdata <- assays(sim)$norm[rownames(assays(sim)$norm) %in% topgenes, 
-                        order(t, na.last = NA)]
+    order(t, na.last = NA)]
 heatclus <- sce$GMM[order(t, na.last = NA)]
 ce <- ClusterExperiment(heatdata, heatclus, transformation = log1p)
 plotHeatmap(ce, clusterSamplesData = "orderSamplesValue",visualizeData = 'transformed')
@@ -370,7 +370,7 @@ but it will impact how branching curves are constructed.
 lin1 <- getLineages(rd, cl, start.clus = '1')
 lin1
 plot(rd, col = brewer.pal(9,"Set1")[cl], asp = 1, pch = 16)
-lines(lin1, lwd = 3)
+lines(lin1, lwd = 3, col = 'black')
 ```
 
 At this step, `slingshot` also allows for the specification of known endpoints.
@@ -383,7 +383,7 @@ as shown in the next example where we specify Cluster 3 as an endpoint.
 lin2 <- getLineages(rd, cl, start.clus= '1', end.clus = '3')
 
 plot(rd, col = brewer.pal(9,"Set1")[cl], asp = 1, pch = 16)
-lines(lin2, lwd = 3, show.constraints = TRUE)
+lines(lin2, lwd = 3, col = 'black', show.constraints = TRUE)
 ```
 
 This type of supervision can be useful for ensuring that results are consistent
@@ -433,7 +433,7 @@ algorithm and produces smooth branching lineages.
 crv1 <- getCurves(lin1)
 crv1
 plot(rd, col = brewer.pal(9,"Set1")[cl], asp = 1, pch = 16)
-lines(crv1, lwd = 3)
+lines(crv1, lwd = 3, col = 'black')
 ```
 
 The output of `getCurves` is an updated `slingshotDataSet` which now contains 
