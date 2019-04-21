@@ -36,13 +36,13 @@ Suggests:
     BiocGenerics,
     BiocStyle,
     destiny,
+    dyntoy,
     gam,
     HSMMSingleCell,
     knitr,
     mclust,
     RColorBrewer,
     rmarkdown,
-    splatter,
     testthat,
     covr
 VignetteBuilder: knitr
