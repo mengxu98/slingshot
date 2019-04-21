@@ -36,7 +36,6 @@ Suggests:
     BiocGenerics,
     BiocStyle,
     destiny,
-    dyntoy,
     gam,
     HSMMSingleCell,
     knitr,
