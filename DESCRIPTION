@@ -37,7 +37,6 @@ Suggests:
     BiocStyle,
     destiny,
     gam,
-    HSMMSingleCell,
     knitr,
     mclust,
     RColorBrewer,
