@@ -343,7 +343,8 @@ heatdata <- assays(sim)$norm[rownames(assays(sim)$norm) %in% topgenes,
     order(t, na.last = NA)]
 heatclus <- sce$GMM[order(t, na.last = NA)]
 ce <- ClusterExperiment(heatdata, heatclus, transformation = log1p)
-plotHeatmap(ce, clusterSamplesData = "orderSamplesValue",visualizeData = 'transformed')
+plotHeatmap(ce, clusterSamplesData = "orderSamplesValue",
+    visualizeData = 'transformed')
 ```
 
 # Detailed Slingshot Functionality
