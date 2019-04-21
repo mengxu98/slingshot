@@ -1,4 +1,4 @@
-dataSetup_sim	dataset	sim	toy_datasets
+dataSetup_sim	counts	means	sim
 data_sling	cl	rd
 genefilt	geneFilter	sim
 norm	FQnorm	sim

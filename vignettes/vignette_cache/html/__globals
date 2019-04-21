@@ -1,4 +1,4 @@
-dataSetup_sim	library	dyntoy	data	dataset	generate_dataset	model_linear	sim	SingleCellExperiment	List	t	counts	data.frame	cell_ids
+dataSetup_sim	means	rbind	matrix	rep	c	exp	atan	counts	apply	total	rnbinom	rmultinom	cell_means	rownames	paste0	colnames	sim	SingleCellExperiment	List
 data_sling	library	slingshot	data	dim	rd	length	cl
 genefilt	geneFilter	apply	assays	sim	counts	sum	x
 norm	FQnorm	rk	apply	counts	rank	counts.sort	sort	refdist	median	norm	r	rownames	return	assays	sim
