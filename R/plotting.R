@@ -128,21 +128,21 @@ setMethod(
             for(i in seq_len(nclus-1)){
                 for(j in seq(i+1,nclus)){
                     if(connectivity[i,j]==1){
-                        lines(centers[c(i,j),], lwd = lwd, col = col, ...)
+                        lines(centers[c(i,j), dims], lwd = lwd, col = col, ...)
                     }
                 }
             }
-            points(centers, cex = cex, pch = 16, col = col)
+            points(centers[, dims], cex = cex, pch = 16, col = col)
             if(show.constraints){
                 if(any(linC$start.given)){
                     points(centers[clusters %in% 
-                                       linC$start.clus[linC$start.given],,
+                                       linC$start.clus[linC$start.given], dims,
                                    drop=FALSE], cex = cex / 2, 
                            col = 'green3', pch = 16)
                 }
                 if(any(linC$end.given)){
-                    points(centers[clusters %in% linC$end.clus[linC$end.given],,
-                                   drop=FALSE], cex = cex / 2, 
+                    points(centers[clusters %in% linC$end.clus[linC$end.given],
+                                   dims,drop=FALSE], cex = cex / 2, 
                            col = 'red2', pch = 16)
                 }
             }
@@ -151,7 +151,7 @@ setMethod(
         if(curves){
             for(ii in seq_along(slingCurves(x))){
                 c <- slingCurves(x)[[ii]]
-                lines(c$s[c$ord,dims], lwd = lwd, col = col[ii], ...)
+                lines(c$s[c$ord, dims], lwd = lwd, col = col[ii], ...)
             }
         }
         invisible(NULL)

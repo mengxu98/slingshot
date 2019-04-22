@@ -1,0 +1,18 @@
+dataSetup_sim	counts	means	sim
+data_sling	cl	rd
+genefilt	geneFilter	sim
+norm	FQnorm	sim
+pca	pca	rd1
+dm	dm	rd2
+add_RDs	sim
+clustering_mclust	cl1	sim
+clustering	cl2	sim
+sling_sce	sce
+plot_curve_1	colors	plotcol
+plot_curve_2	
+fitgam	gam.pval	t	var1K	Y
+heatmaps	ce	heatclus	heatdata	topgenes
+sling_lines_unsup	lin1
+lines_sup_end	lin2
+curves	crv1
+session	
