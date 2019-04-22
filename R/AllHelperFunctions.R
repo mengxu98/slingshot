@@ -452,6 +452,7 @@ setMethod(
             return(interpolated)
         }, rep(0,n))
     })
+    
     avg <- vapply(seq_len(p),function(jj){
         dim.all <- vapply(seq_along(pcurves.dense),function(i){
             pcurves.dense[[i]][,jj]
@@ -472,7 +473,7 @@ setMethod(
         avg.curve$ord <- seq_len(approx_points)
     }
     
-    avg.curve$w <- rowMeans(vapply(pcurves, function(p){ p$w }, rep(0,n)))
+    avg.curve$w <- rowSums(vapply(pcurves, function(p){ p$w }, rep(0,nrow(X))))
     return(avg.curve)
 }
 # export?
@@ -513,8 +514,15 @@ setMethod(
 .cumMin <- function(x,time){
     vapply(seq_along(x),function(i){ min(x[time <= time[i]]) }, 0)
 }
-.percent_shrinkage <- function(crv, share.idx, method = 'cosine'){
+.percent_shrinkage <- function(crv, share.idx, approx_points = FALSE,
+                               method = 'cosine'){
     pst <- crv$lambda
+    if(approx_points > 0){
+        pts2wt <- seq(min(crv$lambda), max(crv$lambda),
+                      length.out = approx_points)
+    }else{
+        pts2wt <- pst
+    }
     if(method %in% eval(formals(density.default)$kernel)){
         dens <- density(0, bw=1, kernel = method)
         surv <- list(x = dens$x, y = (sum(dens$y) - cumsum(dens$y))/sum(dens$y))
@@ -523,7 +531,7 @@ setMethod(
         if(box.vals[1]==box.vals[5]){
             pct.l <- rep(0, length(pst))
         }else{
-            pct.l <- approx(surv$x, surv$y, pst, rule = 2)$y
+            pct.l <- approx(surv$x, surv$y, pts2wt, rule = 2)$y
         }
     }
     if(method == 'tricube'){
@@ -536,7 +544,7 @@ setMethod(
         if(box.vals[1]==box.vals[5]){
             pct.l <- rep(0, length(pst))
         }else{
-            pct.l <- approx(surv$x, surv$y, pst, rule = 2)$y
+            pct.l <- approx(surv$x, surv$y, pts2wt, rule = 2)$y
         }
     }
     if(method == 'density'){
@@ -547,21 +555,32 @@ setMethod(
                       weights = crv$w[share.idx]/sum(crv$w[share.idx]))
         d1 <- density(pst, bw = bw, weights = crv$w/sum(crv$w))
         scale <- sum(crv$w[share.idx]) / sum(crv$w)
-        pct.l <- (approx(d2$x,d2$y,xout = pst, yleft = 0, 
+        pct.l <- (approx(d2$x,d2$y,xout = pts2wt, yleft = 0, 
                          yright = 0)$y * scale) / 
-            approx(d1$x,d1$y,xout = pst, yleft = 0, yright = 0)$y
+            approx(d1$x,d1$y,xout = pts2wt, yleft = 0, yright = 0)$y
         pct.l[is.na(pct.l)] <- 0
-        pct.l <- .cumMin(pct.l, pst)
+        pct.l <- .cumMin(pct.l, pts2wt)
     }
     return(pct.l)
 }
-.shrink_to_avg <- function(pcurve, avg.curve, pct, X, stretch = 2){
+.shrink_to_avg <- function(pcurve, avg.curve, pct, X, approx_points = FALSE,
+                           stretch = 2){
     n <- nrow(pcurve$s)
     p <- ncol(pcurve$s)
-    lam <- pcurve$lambda
+    
+    if(approx_points > 0){
+        lam <- seq(min(pcurve$lambda), max(pcurve$lambda),
+                      length.out = approx_points)
+        avlam <- seq(min(avg.curve$lambda), max(avg.curve$lambda),
+                     length.out = approx_points)
+    }else{
+        lam <- pcurve$lambda
+        avlam <- avg.curve$lambda
+    }
+    
     s <- vapply(seq_len(p),function(jj){
         orig.jj <- pcurve$s[,jj]
-        avg.jj <- approx(x = avg.curve$lambda, y = avg.curve$s[,jj], xout = lam,
+        avg.jj <- approx(x = avlam, y = avg.curve$s[,jj], xout = lam,
                          rule = 2)$y
         return(avg.jj * pct + orig.jj * (1-pct))
     }, rep(0,n))
@@ -569,6 +588,17 @@ setMethod(
     pcurve <- project_to_curve(X, as.matrix(s[pcurve$ord, ,drop = FALSE]), 
         stretch = stretch)
     pcurve$w <- w
+    
+    if(approx_points > 0){
+      xout_lambda <- seq(min(pcurve$lambda), max(pcurve$lambda),
+                         length.out = approx_points)
+      pcurve$s <- apply(pcurve$s, 2, function(sjj){
+        return(approx(x = pcurve$lambda[pcurve$ord],
+                      y = sjj[pcurve$ord], 
+                      xout = xout_lambda)$y)
+      })
+      pcurve$ord <- seq_len(approx_points)
+    }
     return(pcurve)
 }
 
