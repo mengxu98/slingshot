@@ -20,64 +20,72 @@ slingshot(data, clusterLabels, ...)
   reducedDim = NULL, start.clus = NULL, end.clus = NULL,
   dist.fun = NULL, omega = NULL, lineages = list(), shrink = TRUE,
   extend = "y", reweight = TRUE, reassign = TRUE, thresh = 0.001,
-  maxit = 15, stretch = 2, smoother = "smooth.spline",
-  shrink.method = "cosine", allow.breaks = TRUE, ...)
+  maxit = 15, stretch = 2, approx_points = FALSE,
+  smoother = "smooth.spline", shrink.method = "cosine",
+  allow.breaks = TRUE, ...)
 
 \S4method{slingshot}{matrix,matrix}(data, clusterLabels,
   reducedDim = NULL, start.clus = NULL, end.clus = NULL,
   dist.fun = NULL, omega = NULL, lineages = list(), shrink = TRUE,
   extend = "y", reweight = TRUE, reassign = TRUE, thresh = 0.001,
-  maxit = 15, stretch = 2, smoother = "smooth.spline",
-  shrink.method = "cosine", allow.breaks = TRUE, ...)
+  maxit = 15, stretch = 2, approx_points = FALSE,
+  smoother = "smooth.spline", shrink.method = "cosine",
+  allow.breaks = TRUE, ...)
 
 \S4method{slingshot}{SlingshotDataSet,ANY}(data, clusterLabels,
   reducedDim = NULL, start.clus = NULL, end.clus = NULL,
   dist.fun = NULL, omega = NULL, lineages = list(), shrink = TRUE,
   extend = "y", reweight = TRUE, reassign = TRUE, thresh = 0.001,
-  maxit = 15, stretch = 2, smoother = "smooth.spline",
-  shrink.method = "cosine", allow.breaks = TRUE, ...)
+  maxit = 15, stretch = 2, approx_points = FALSE,
+  smoother = "smooth.spline", shrink.method = "cosine",
+  allow.breaks = TRUE, ...)
 
 \S4method{slingshot}{data.frame,ANY}(data, clusterLabels,
   reducedDim = NULL, start.clus = NULL, end.clus = NULL,
   dist.fun = NULL, omega = NULL, lineages = list(), shrink = TRUE,
   extend = "y", reweight = TRUE, reassign = TRUE, thresh = 0.001,
-  maxit = 15, stretch = 2, smoother = "smooth.spline",
-  shrink.method = "cosine", allow.breaks = TRUE, ...)
+  maxit = 15, stretch = 2, approx_points = FALSE,
+  smoother = "smooth.spline", shrink.method = "cosine",
+  allow.breaks = TRUE, ...)
 
 \S4method{slingshot}{matrix,numeric}(data, clusterLabels,
   reducedDim = NULL, start.clus = NULL, end.clus = NULL,
   dist.fun = NULL, omega = NULL, lineages = list(), shrink = TRUE,
   extend = "y", reweight = TRUE, reassign = TRUE, thresh = 0.001,
-  maxit = 15, stretch = 2, smoother = "smooth.spline",
-  shrink.method = "cosine", allow.breaks = TRUE, ...)
+  maxit = 15, stretch = 2, approx_points = FALSE,
+  smoother = "smooth.spline", shrink.method = "cosine",
+  allow.breaks = TRUE, ...)
 
 \S4method{slingshot}{matrix,factor}(data, clusterLabels,
   reducedDim = NULL, start.clus = NULL, end.clus = NULL,
   dist.fun = NULL, omega = NULL, lineages = list(), shrink = TRUE,
   extend = "y", reweight = TRUE, reassign = TRUE, thresh = 0.001,
-  maxit = 15, stretch = 2, smoother = "smooth.spline",
-  shrink.method = "cosine", allow.breaks = TRUE, ...)
+  maxit = 15, stretch = 2, approx_points = FALSE,
+  smoother = "smooth.spline", shrink.method = "cosine",
+  allow.breaks = TRUE, ...)
 
 \S4method{slingshot}{matrix,ANY}(data, clusterLabels, reducedDim = NULL,
   start.clus = NULL, end.clus = NULL, dist.fun = NULL,
   omega = NULL, lineages = list(), shrink = TRUE, extend = "y",
   reweight = TRUE, reassign = TRUE, thresh = 0.001, maxit = 15,
-  stretch = 2, smoother = "smooth.spline", shrink.method = "cosine",
-  allow.breaks = TRUE, ...)
+  stretch = 2, approx_points = FALSE, smoother = "smooth.spline",
+  shrink.method = "cosine", allow.breaks = TRUE, ...)
 
 \S4method{slingshot}{ClusterExperiment,ANY}(data, clusterLabels,
   reducedDim = NULL, start.clus = NULL, end.clus = NULL,
   dist.fun = NULL, omega = NULL, lineages = list(), shrink = TRUE,
   extend = "y", reweight = TRUE, reassign = TRUE, thresh = 0.001,
-  maxit = 15, stretch = 2, smoother = "smooth.spline",
-  shrink.method = "cosine", allow.breaks = TRUE, ...)
+  maxit = 15, stretch = 2, approx_points = FALSE,
+  smoother = "smooth.spline", shrink.method = "cosine",
+  allow.breaks = TRUE, ...)
 
 \S4method{slingshot}{SingleCellExperiment,ANY}(data, clusterLabels,
   reducedDim = NULL, start.clus = NULL, end.clus = NULL,
   dist.fun = NULL, omega = NULL, lineages = list(), shrink = TRUE,
   extend = "y", reweight = TRUE, reassign = TRUE, thresh = 0.001,
-  maxit = 15, stretch = 2, smoother = "smooth.spline",
-  shrink.method = "cosine", allow.breaks = TRUE, ...)
+  maxit = 15, stretch = 2, approx_points = FALSE,
+  smoother = "smooth.spline", shrink.method = "cosine",
+  allow.breaks = TRUE, ...)
 }
 \arguments{
 \item{data}{a data object containing the matrix of coordinates to be used for
@@ -150,6 +158,12 @@ less than \code{thresh}. Default is \code{0.001}, similar to
 \item{stretch}{numeric factor by which curves can be extrapolated beyond 
 endpoints. Default is \code{2}, see
 \code{\link[princurve]{principal_curve}}.}
+
+\item{approx_points}{logical or numeric, whether curves should be
+approximated by a fixed number of points. If \code{FALSE}, no approximation
+will be performed and curves will contain as many points as the input data.
+If numeric, curves will be approximated by this number of points;
+preferably about 100 (see \code{\link[princurve]{principal_curve}}).}
 
 \item{smoother, }{choice of scatter plot smoother. Same as 
 \code{\link[princurve]{principal_curve}}, but \code{"lowess"} option is

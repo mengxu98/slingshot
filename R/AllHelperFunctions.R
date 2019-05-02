@@ -448,7 +448,7 @@ setMethod(
             }
             interpolated <- approx(xin_lambda[pcv$ord], 
                                    pcv$s[pcv$ord, jj, drop = FALSE],
-                                   xout = lambdas.combine)$y
+                                   xout = lambdas.combine, ties = 'ordered')$y
             return(interpolated)
         }, rep(0,n))
     })
@@ -468,7 +468,7 @@ setMethod(
         avg.curve$s <- apply(avg.curve$s, 2, function(sjj){
             return(approx(x = avg.curve$lambda[avg.curve$ord],
                           y = sjj[avg.curve$ord], 
-                          xout = xout_lambda)$y)
+                          xout = xout_lambda, ties = 'ordered')$y)
         })
         avg.curve$ord <- seq_len(approx_points)
     }
@@ -531,7 +531,8 @@ setMethod(
         if(box.vals[1]==box.vals[5]){
             pct.l <- rep(0, length(pst))
         }else{
-            pct.l <- approx(surv$x, surv$y, pts2wt, rule = 2)$y
+            pct.l <- approx(surv$x, surv$y, pts2wt, rule = 2,
+                            ties = 'ordered')$y
         }
     }
     if(method == 'tricube'){
@@ -544,7 +545,8 @@ setMethod(
         if(box.vals[1]==box.vals[5]){
             pct.l <- rep(0, length(pst))
         }else{
-            pct.l <- approx(surv$x, surv$y, pts2wt, rule = 2)$y
+            pct.l <- approx(surv$x, surv$y, pts2wt, rule = 2,
+                            ties = 'ordered')$y
         }
     }
     if(method == 'density'){
@@ -556,8 +558,9 @@ setMethod(
         d1 <- density(pst, bw = bw, weights = crv$w/sum(crv$w))
         scale <- sum(crv$w[share.idx]) / sum(crv$w)
         pct.l <- (approx(d2$x,d2$y,xout = pts2wt, yleft = 0, 
-                         yright = 0)$y * scale) / 
-            approx(d1$x,d1$y,xout = pts2wt, yleft = 0, yright = 0)$y
+                         yright = 0, ties = mean)$y * scale) / 
+            approx(d1$x,d1$y,xout = pts2wt, yleft = 0, yright = 0,
+                   ties = mean)$y
         pct.l[is.na(pct.l)] <- 0
         pct.l <- .cumMin(pct.l, pts2wt)
     }
@@ -581,7 +584,7 @@ setMethod(
     s <- vapply(seq_len(p),function(jj){
         orig.jj <- pcurve$s[,jj]
         avg.jj <- approx(x = avlam, y = avg.curve$s[,jj], xout = lam,
-                         rule = 2)$y
+                         rule = 2, ties = mean)$y
         return(avg.jj * pct + orig.jj * (1-pct))
     }, rep(0,n))
     w <- pcurve$w
@@ -595,7 +598,7 @@ setMethod(
       pcurve$s <- apply(pcurve$s, 2, function(sjj){
         return(approx(x = pcurve$lambda[pcurve$ord],
                       y = sjj[pcurve$ord], 
-                      xout = xout_lambda)$y)
+                      xout = xout_lambda, ties = 'ordered')$y)
       })
       pcurve$ord <- seq_len(approx_points)
     }

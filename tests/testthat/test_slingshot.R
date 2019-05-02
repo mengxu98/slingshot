@@ -110,6 +110,14 @@ test_that("getCurves works as expected", {
   mi3 <- getCurves(mi3)
   expect_equal(length(slingCurves(mi3)),3)
   
+  # using approx_points produces similar curves
+  mi_ap <- getCurves(mi, approx_points = 100)
+  expect_true(cor(slingPseudotime(mi)[,2], slingPseudotime(mi_ap)[,2], 
+      use='complete.obs') > .99)
+  mi_ap <- getCurves(mi, approx_points = 300)
+  expect_true(cor(slingPseudotime(mi)[,2], slingPseudotime(mi_ap)[,2], 
+      use='complete.obs') > .99)
+  
   # one dimension
   m1i <- getLineages(rd[,1,drop = FALSE], cl)
   m1i <- getCurves(m1i)

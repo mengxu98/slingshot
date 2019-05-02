@@ -54,6 +54,12 @@ less than \code{thresh}. Default is \code{0.001}, similar to
 endpoints. Default is \code{2}, see
 \code{\link[princurve]{principal_curve}}.}
 
+\item{approx_points}{logical or numeric, whether curves should be
+approximated by a fixed number of points. If \code{FALSE}, no approximation
+will be performed and curves will contain as many points as the input data.
+If numeric, curves will be approximated by this number of points;
+preferably about 100 (see \code{\link[princurve]{principal_curve}}).}
+
 \item{smoother, }{choice of scatter plot smoother. Same as 
 \code{\link[princurve]{principal_curve}}, but \code{"lowess"} option is
 replaced with \code{"loess"} for additional flexibility.}

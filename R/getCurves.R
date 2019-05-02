@@ -352,7 +352,7 @@ setMethod(f = "getCurves",
                 pcurve$s <- apply(pcurve$s, 2, function(sjj){
                     return(approx(x = pcurve$lambda[pcurve$ord],
                                 y = sjj[pcurve$ord], 
-                                xout = xout_lambda)$y)
+                                xout = xout_lambda, ties = 'ordered')$y)
                 })
                 pcurve$ord <- seq_len(approx_points)
             }
@@ -422,7 +422,7 @@ setMethod(f = "getCurves",
                         ...)[ordL]
                     if(approx_points > 0){
                         yjj <- approx(x = pcurve$lambda[ordL], y = yjj, 
-                                      xout = xout_lambda)$y
+                                      xout = xout_lambda, ties = 'ordered')$y
                     }
                     s[, jj] <- yjj
                 }
@@ -434,7 +434,7 @@ setMethod(f = "getCurves",
                     new.pcurve$s <- apply(new.pcurve$s, 2, function(sjj){
                     return(approx(x = new.pcurve$lambda[new.pcurve$ord],
                                   y = sjj[new.pcurve$ord], 
-                                  xout = xout_lambda)$y)
+                                  xout = xout_lambda, ties = 'ordered')$y)
                     })
                     new.pcurve$ord <- seq_len(approx_points)
                 }
