@@ -10,8 +10,9 @@ getCurves(sds, ...)
 
 \S4method{getCurves}{SlingshotDataSet}(sds, shrink = TRUE,
   extend = "y", reweight = TRUE, reassign = TRUE, thresh = 0.001,
-  maxit = 15, stretch = 2, smoother = "smooth.spline",
-  shrink.method = "cosine", allow.breaks = TRUE, ...)
+  maxit = 15, stretch = 2, approx_points = FALSE,
+  smoother = "smooth.spline", shrink.method = "cosine",
+  allow.breaks = TRUE, ...)
 }
 \arguments{
 \item{sds}{The \code{SlingshotDataSet} for which to construct simultaneous 
@@ -68,9 +69,9 @@ to the origin should be allowed to have different starting points.}
 \value{
 An updated \code{\link{SlingshotDataSet}} object containing the 
   oringinal input, arguments provided to \code{getCurves} as well as the 
-  following new elements: \itemize{ \item{curves}{A list of 
+  following new elements: \itemize{ \item{\code{curves}} {A list of 
   \code{\link[princurve]{principal_curve}} objects.}
-  \item{slingParams}{Additional parameters used for fitting simultaneous
+  \item{\code{slingParams}} {Additional parameters used for fitting simultaneous
   principal curves.}}
 }
 \description{

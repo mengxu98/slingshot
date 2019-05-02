@@ -89,9 +89,9 @@
 #'   
 #' @return An updated \code{\link{SlingshotDataSet}} object containing the 
 #'   oringinal input, arguments provided to \code{getCurves} as well as the 
-#'   following new elements: \itemize{ \item{curves}{A list of 
+#'   following new elements: \itemize{ \item{\code{curves}} {A list of 
 #'   \code{\link[princurve]{principal_curve}} objects.}
-#'   \item{slingParams}{Additional parameters used for fitting simultaneous
+#'   \item{\code{slingParams}} {Additional parameters used for fitting simultaneous
 #'   principal curves.}}
 #'   
 #' @references Hastie, T., and Stuetzle, W. (1989). "Principal Curves."
@@ -425,15 +425,15 @@ setMethod(f = "getCurves",
                 }
                 new.pcurve <- project_to_curve(X, s = s, stretch = stretch)
                 if(approx_points > 0){
-                  xout_lambda <- seq(min(new.pcurve$lambda),
+                    xout_lambda <- seq(min(new.pcurve$lambda),
                                      max(new.pcurve$lambda),
                                      length.out = approx_points)
-                  new.pcurve$s <- apply(new.pcurve$s, 2, function(sjj){
+                    new.pcurve$s <- apply(new.pcurve$s, 2, function(sjj){
                     return(approx(x = new.pcurve$lambda[new.pcurve$ord],
                                   y = sjj[new.pcurve$ord], 
                                   xout = xout_lambda)$y)
-                  })
-                  new.pcurve$ord <- seq_len(approx_points)
+                    })
+                    new.pcurve$ord <- seq_len(approx_points)
                 }
                 new.pcurve$dist_ind <- abs(new.pcurve$dist_ind)
                 new.pcurve$lambda <- new.pcurve$lambda - 
@@ -476,7 +476,8 @@ setMethod(f = "getCurves",
                             rep(TRUE,nrow(X)))) == 1
                         pct.shrink[[i]] <- lapply(to.avg,function(crv){
                             .percent_shrinkage(crv, common.ind, 
-                                method = shrink.method)
+                                               approx_points = approx_points,
+                                               method = shrink.method)
                         })
                         # check for degenerate case (if one curve won't be
                         # shrunk, then the other curve shouldn't be,
@@ -520,7 +521,8 @@ setMethod(f = "getCurves",
                             crv <- to.shrink[[jj]]
                             return(.shrink_to_avg(crv, avg, 
                                 pct.shrink[[j]][[jj]] * shrink, 
-                                X, stretch = stretch))
+                                X, approx_points = approx_points,
+                                stretch = stretch))
                         })
                         for(jj in seq_along(ns)){
                             n <- ns[jj]
