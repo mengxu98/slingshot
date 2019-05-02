@@ -607,28 +607,6 @@ setMethod(
 ### Datasets ###
 ################
 
-#' @title Parameters for simulating a single lineage
-#' @name splatterParameters
-#' @aliases splatterParameters params
-#'
-#' @description A \code{SplatParams} object containing the parameters
-#'   needed to perform the simulation shown in the Slingshot vignette. Values
-#'   are designed to produce a single, non-branching trajectory. Code for
-#'   producing these parameters can be found in the Slingshot vignette.
-#'   
-#' @format A \code{\link[splatter:SplatParams]{SplatParams}} object with some
-#'   path-related parameters set manually.
-#' @source Most parameters were learned by
-#'   \code{\link[splatter:splatEstimate]{splatEstimate}} and based on the
-#'   \code{\link[HSMMSingleCell:HSMM]{HSMM}} dataset.
-#'   
-#' @examples
-#' library(splatter)
-#' data("splatterParameters")
-#' splatSimulate(params, method = "paths")
-"params"
-
-
 #' @title Bifurcating lineages data
 #' @name slingshotExample
 #' @aliases slingshotExample rd cl
