@@ -50,6 +50,11 @@
 #' @param stretch numeric factor by which curves can be extrapolated beyond 
 #'   endpoints. Default is \code{2}, see
 #'   \code{\link[princurve]{principal_curve}}.
+#' @param approx_points logical or numeric, whether curves should be
+#'   approximated by a fixed number of points. If \code{FALSE}, no approximation
+#'   will be performed and curves will contain as many points as the input data.
+#'   If numeric, curves will be approximated by this number of points;
+#'   preferably about 100 (see \code{\link[princurve]{principal_curve}}).
 #' @param smoother, choice of scatter plot smoother. Same as 
 #'   \code{\link[princurve]{principal_curve}}, but \code{"lowess"} option is
 #'   replaced with \code{"loess"} for additional flexibility.
@@ -170,6 +175,7 @@ setMethod(f = "slingshot",
                                 reweight = TRUE,
                                 reassign = TRUE,
                                 thresh = 0.001, maxit = 15, stretch = 2,
+                                approx_points = FALSE,
                                 smoother = 'smooth.spline',
                                 shrink.method = 'cosine',
                                 allow.breaks = TRUE, ...){
@@ -180,6 +186,7 @@ setMethod(f = "slingshot",
                                shrink = shrink, extend = extend,
                                reweight = reweight, reassign = reassign,
                                thresh = thresh, maxit = maxit,
+                               approx_points = approx_points,
                                stretch = stretch, smoother = smoother,
                                shrink.method = shrink.method,
                                allow.breaks = allow.breaks, ...)
@@ -202,6 +209,7 @@ setMethod(f = "slingshot",
                                 reweight = TRUE,
                                 reassign = TRUE,
                                 thresh = 0.001, maxit = 15, stretch = 2,
+                                approx_points = FALSE,
                                 smoother = 'smooth.spline',
                                 shrink.method = 'cosine',
                                 allow.breaks = TRUE, ...){
@@ -212,6 +220,7 @@ setMethod(f = "slingshot",
                                shrink = shrink, extend = extend,
                                reweight = reweight, reassign = reassign,
                                thresh = thresh, maxit = maxit,
+                               approx_points = approx_points,
                                stretch = stretch, smoother = smoother,
                                shrink.method = shrink.method,
                                allow.breaks = allow.breaks, ...)
@@ -234,6 +243,7 @@ setMethod(f = "slingshot",
                                 reweight = TRUE,
                                 reassign = TRUE,
                                 thresh = 0.001, maxit = 15, stretch = 2,
+                                approx_points = FALSE,
                                 smoother = 'smooth.spline',
                                 shrink.method = 'cosine', 
                                 allow.breaks = TRUE, ...){
@@ -245,6 +255,7 @@ setMethod(f = "slingshot",
                              shrink = shrink, extend = extend,
                              reweight = reweight, reassign = reassign,
                              thresh = thresh, maxit = maxit,
+                             approx_points = approx_points,
                              stretch = stretch, smoother = smoother,
                              shrink.method = shrink.method,
                              allow.breaks = allow.breaks, ...))
@@ -265,6 +276,7 @@ setMethod(f = "slingshot",
                                 reweight = TRUE,
                                 reassign = TRUE,
                                 thresh = 0.001, maxit = 15, stretch = 2,
+                                approx_points = FALSE,
                                 smoother = 'smooth.spline',
                                 shrink.method = 'cosine',
                                 allow.breaks = TRUE, ...){
@@ -278,6 +290,7 @@ setMethod(f = "slingshot",
                              shrink = shrink, extend = extend,
                              reweight = reweight, reassign = reassign,
                              thresh = thresh, maxit = maxit,
+                             approx_points = approx_points,
                              stretch = stretch, smoother = smoother,
                              shrink.method = shrink.method,
                              allow.breaks = allow.breaks, ...))
@@ -298,6 +311,7 @@ setMethod(f = "slingshot",
                                 reweight = TRUE,
                                 reassign = TRUE,
                                 thresh = 0.001, maxit = 15, stretch = 2,
+                                approx_points = FALSE,
                                 smoother = 'smooth.spline',
                                 shrink.method = 'cosine', 
                                 allow.breaks = TRUE, ...){
@@ -310,6 +324,7 @@ setMethod(f = "slingshot",
                              reweight = reweight, reassign = reassign,
                              thresh = thresh, maxit = maxit,
                              stretch = stretch, smoother = smoother,
+                             approx_points = approx_points,
                              shrink.method = shrink.method, 
                              allow.breaks = allow.breaks, ...))
           })
@@ -329,6 +344,7 @@ setMethod(f = "slingshot",
                                 reweight = TRUE,
                                 reassign = TRUE,
                                 thresh = 0.001, maxit = 15, stretch = 2,
+                                approx_points = FALSE,
                                 smoother = 'smooth.spline',
                                 shrink.method = 'cosine', 
                                 allow.breaks = TRUE, ...){
@@ -341,6 +357,7 @@ setMethod(f = "slingshot",
                              reweight = reweight, reassign = reassign,
                              thresh = thresh, maxit = maxit,
                              stretch = stretch, smoother = smoother,
+                             approx_points = approx_points,
                              shrink.method = shrink.method, 
                              allow.breaks = allow.breaks, ...))
           })
@@ -360,6 +377,7 @@ setMethod(f = "slingshot",
                                 reweight = TRUE,
                                 reassign = TRUE,
                                 thresh = 0.001, maxit = 15, stretch = 2,
+                                approx_points = FALSE,
                                 smoother = 'smooth.spline',
                                 shrink.method = 'cosine', 
                                 allow.breaks = TRUE, ...){
@@ -381,6 +399,7 @@ setMethod(f = "slingshot",
                              reweight = reweight, reassign = reassign,
                              thresh = thresh, maxit = maxit,
                              stretch = stretch, smoother = smoother,
+                             approx_points = approx_points,
                              shrink.method = shrink.method, 
                              allow.breaks = allow.breaks, ...))
           })
@@ -407,6 +426,7 @@ setMethod(f = "slingshot",
                                 reweight = TRUE,
                                 reassign = TRUE,
                                 thresh = 0.001, maxit = 15, stretch = 2,
+                                approx_points = FALSE,
                                 smoother = 'smooth.spline',
                                 shrink.method = 'cosine', 
                                 allow.breaks = TRUE, ...){
@@ -480,6 +500,7 @@ setMethod(f = "slingshot",
                                shrink = shrink, extend = extend,
                                reweight = reweight, reassign = reassign,
                                thresh = thresh, maxit = maxit,
+                               approx_points = approx_points,
                                stretch = stretch, smoother = smoother,
                                shrink.method = shrink.method, 
                                allow.breaks = allow.breaks, ...)
@@ -507,6 +528,7 @@ setMethod(f = "slingshot",
                                 reweight = TRUE,
                                 reassign = TRUE,
                                 thresh = 0.001, maxit = 15, stretch = 2,
+                                approx_points = FALSE,
                                 smoother = 'smooth.spline',
                                 shrink.method = 'cosine', 
                                 allow.breaks = TRUE, ...){
@@ -572,6 +594,7 @@ setMethod(f = "slingshot",
                                shrink = shrink, extend = extend,
                                reweight = reweight, reassign = reassign,
                                thresh = thresh, maxit = maxit,
+                               approx_points = approx_points,
                                stretch = stretch, smoother = smoother,
                                shrink.method = shrink.method, 
                                allow.breaks = allow.breaks, ...)

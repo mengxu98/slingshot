@@ -36,6 +36,11 @@
 #' @param stretch numeric factor by which curves can be extrapolated beyond 
 #'   endpoints. Default is \code{2}, see
 #'   \code{\link[princurve]{principal_curve}}.
+#' @param approx_points logical or numeric, whether curves should be
+#'   approximated by a fixed number of points. If \code{FALSE}, no approximation
+#'   will be performed and curves will contain as many points as the input data.
+#'   If numeric, curves will be approximated by this number of points;
+#'   preferably about 100 (see \code{\link[princurve]{principal_curve}}).
 #' @param smoother, choice of scatter plot smoother. Same as 
 #'   \code{\link[princurve]{principal_curve}}, but \code{"lowess"} option is
 #'   replaced with \code{"loess"} for additional flexibility.
@@ -123,8 +128,6 @@ setMethod(f = "getCurves",
         shrink.method = 'cosine',
         allow.breaks = TRUE, ...){
       
-      print('new getCUrves')
-        
         X <- reducedDim(sds)
         clusterLabels <- clusterLabels(sds)
         lineages <- slingLineages(sds)
