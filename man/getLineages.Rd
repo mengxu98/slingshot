@@ -10,6 +10,7 @@
 \alias{getLineages,data.frame,ANY-method}
 \alias{getLineages,matrix,numeric-method}
 \alias{getLineages,matrix,factor-method}
+\alias{getLineages,SingleCellExperiment,ANY-method}
 \title{Infer Lineage Structure from Clustered Samples}
 \usage{
 getLineages(data, clusterLabels, ...)
@@ -39,6 +40,10 @@ getLineages(data, clusterLabels, ...)
   dist.fun = NULL, omega = NULL)
 
 \S4method{getLineages}{matrix,factor}(data, clusterLabels,
+  reducedDim = NULL, start.clus = NULL, end.clus = NULL,
+  dist.fun = NULL, omega = NULL)
+
+\S4method{getLineages}{SingleCellExperiment,ANY}(data, clusterLabels,
   reducedDim = NULL, start.clus = NULL, end.clus = NULL,
   dist.fun = NULL, omega = NULL)
 }

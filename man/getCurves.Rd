@@ -4,11 +4,18 @@
 \name{getCurves}
 \alias{getCurves}
 \alias{getCurves,SlingshotDataSet-method}
+\alias{getCurves,SingleCellExperiment-method}
 \title{Construct Smooth Lineage Curves}
 \usage{
 getCurves(sds, ...)
 
 \S4method{getCurves}{SlingshotDataSet}(sds, shrink = TRUE,
+  extend = "y", reweight = TRUE, reassign = TRUE, thresh = 0.001,
+  maxit = 15, stretch = 2, approx_points = FALSE,
+  smoother = "smooth.spline", shrink.method = "cosine",
+  allow.breaks = TRUE, ...)
+
+\S4method{getCurves}{SingleCellExperiment}(sds, shrink = TRUE,
   extend = "y", reweight = TRUE, reassign = TRUE, thresh = 0.001,
   maxit = 15, stretch = 2, approx_points = FALSE,
   smoother = "smooth.spline", shrink.method = "cosine",

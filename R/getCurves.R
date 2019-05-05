@@ -593,3 +593,33 @@ setMethod(f = "getCurves",
         return(sds)
     })
 
+#' @rdname getCurves
+#' @export
+setMethod(f = "getCurves",
+          signature = signature(sds = "SingleCellExperiment"),
+          definition = function(sds,
+                                shrink = TRUE, 
+                                extend = 'y', 
+                                reweight = TRUE,
+                                reassign = TRUE, 
+                                thresh = 0.001, maxit = 15, stretch = 2, 
+                                approx_points = FALSE,
+                                smoother = 'smooth.spline', 
+                                shrink.method = 'cosine',
+                                allow.breaks = TRUE, ...){
+            sce <- sds
+            sds <- getCurves(sce@int_metadata$slingshot,
+                             shrink = shrink, extend = extend,
+                             reweight = reweight, reassign = reassign,
+                             thresh = thresh, maxit = maxit,
+                             approx_points = approx_points,
+                             stretch = stretch, smoother = smoother,
+                             shrink.method = shrink.method, 
+                             allow.breaks = allow.breaks, ...)
+            # combine slingshot output with SCE
+            sce@int_metadata$slingshot <- sds
+            pst <- slingPseudotime(sds)
+            colnames(pst) <- paste0('slingPseudotime_',seq_len(ncol(pst)))
+            colData(sce) <- cbind(colData(sce), pst)
+            return(sce)
+          })

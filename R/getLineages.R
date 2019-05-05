@@ -473,3 +473,77 @@ setMethod(f = "getLineages",
             start.clus = start.clus, end.clus = end.clus,
             dist.fun = dist.fun, omega = omega))
     })
+
+#' @rdname getLineages
+#' @export
+setMethod(f = "getLineages",
+          signature = signature(data = "SingleCellExperiment"),
+          definition = function(data, clusterLabels, reducedDim = NULL,
+                                start.clus = NULL, end.clus = NULL,
+                                dist.fun = NULL, omega = NULL){
+            # SETUP
+            # determine the cluster labels and reducedDim matrix
+            if(is.null(reducedDim)){
+              if(length(reducedDims(data))==0){
+                stop('No dimensionality reduction found.')
+              }else{
+                message('Dimensionality reduction not explicitly ',
+                        'chosen. Continuing with ', 
+                        names(reducedDims(data))[1])
+                rd <- reducedDims(data)[[1]]
+              }
+            }
+            if(length(reducedDim)==1){
+              if(reducedDim %in% names(reducedDims(data))){
+                rd <- reducedDims(data)[[as.character(reducedDim)]]
+              }else{
+                stop(reducedDim,' not found in reducedDims(data).')
+              }
+            }else{
+              if(!is.null(dim(reducedDim))){
+                rd <- reducedDim
+                reducedDims(data)$slingReducedDim <- reducedDim
+              }
+            }
+            if(!is.matrix(rd)) {
+              stop("Slingshot currently works only with base matrices.")
+            }
+            
+            if(missing(clusterLabels)){
+              message('No cluster labels provided. Continuing with one ',
+                      'cluster.')
+              cl <- rep('1', nrow(rd))
+              colData(data)$slingClusters <- cl
+            }else{
+              if(length(clusterLabels)==1){
+                if(clusterLabels %in% colnames(colData(data))){
+                  cl <- colData(data)[[as.character(clusterLabels)]]
+                }else{
+                  stop(clusterLabels,' not found in colData(data).')
+                }
+              }
+              if(length(clusterLabels)>1){
+                if(!is.null(dim(clusterLabels)) && 
+                   length(dim(clusterLabels)) > 1 &&
+                   all(dim(clusterLabels) > 1)){
+                  cl <- as.matrix(clusterLabels)
+                  colnames(cl) <- paste0('sling_c',seq_len(ncol(cl)))
+                  colData(data) <- cbind(colData(data), cl)
+                }else{
+                  cl <- as.character(clusterLabels)
+                  colData(data)$slingClusters <- cl
+                }
+              }
+            }
+            # run slingshot
+            sds <- getLineages(data = rd, clusterLabels = cl,
+                              reducedDim = NULL,
+                              start.clus = start.clus, end.clus = end.clus,
+                              dist.fun = dist.fun, omega = omega)
+            # combine getLineages output with SCE
+            sce <- data
+            sce@int_metadata$slingshot <- sds
+            return(sce)
+          })
+
+
