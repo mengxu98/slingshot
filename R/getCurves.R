@@ -608,6 +608,10 @@ setMethod(f = "getCurves",
                                 shrink.method = 'cosine',
                                 allow.breaks = TRUE, ...){
             sce <- sds
+            if(is.null(sce@int_metadata$slingshot)){
+              stop("No lineage information found. Either run getLineages() ",
+                   "first or use slingshot() function.")
+            }
             sds <- getCurves(sce@int_metadata$slingshot,
                              shrink = shrink, extend = extend,
                              reweight = reweight, reassign = reassign,

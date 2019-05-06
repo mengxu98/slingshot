@@ -64,6 +64,34 @@ test_that("getLineages works for different input types", {
   expect_is(c1, "SlingshotDataSet")
   expect_equal(dim(slingAdjacency(c1)), c(1,1))
   
+  # with SingleCellExperiment objects
+  require(SingleCellExperiment)
+  u <- matrix(rpois(140*50, 5), nrow=50)
+  sce <- SingleCellExperiment(assays=list(counts=u))
+  expect_error(getLineages(sce), 'No dimensionality reduction found')
+  
+  reducedDims(sce) <- SimpleList(PCA = rd, 
+                                 tSNE = matrix(rnorm(140*2),ncol=2))
+  # implicit reducedDim
+  c0 <- getLineages(sce)
+  expect_equal(dim(slingAdjacency(c0)), c(1,1))
+  # reducedDim provided by name
+  c0 <- getLineages(sce, reducedDim='tSNE')
+  expect_equal(dim(slingAdjacency(c0)), c(1,1))
+  # reducedDim provided as matrix
+  c0 <- getLineages(sce, reducedDim = matrix(rnorm(140*2),ncol=2))
+  expect_equal(dim(slingAdjacency(c0)), c(1,1))
+  # cluster labels provided separately
+  c0 <- getLineages(sce, clusterLabels = cl)
+  expect_equal(dim(slingAdjacency(c0)), c(5,5))
+  expect_true('slingClusters' %in% names(colData(c0)))
+  # accessor functions
+  SlingshotDataSet(c0)
+  expect_equal(length(slingLineages(c0)),2)
+  expect_equal(length(slingCurves(c0)),0)
+  expect_true(all(c('start.clus','end.clus','start.given','end.given',
+                    'dist') %in% names(slingParams(c0)) ))
+
   # invalid inputs
   expect_error(getLineages(reducedDim[,-(seq_len(ncol(reducedDim)))], 
                            clusterLabels), 'has zero columns')
@@ -110,6 +138,17 @@ test_that("getCurves works as expected", {
   mi3 <- getCurves(mi3)
   expect_equal(length(slingCurves(mi3)),3)
   
+  # with SingleCellExperiment objects
+  require(SingleCellExperiment)
+  u <- matrix(rpois(140*50, 5), nrow=50)
+  sce <- SingleCellExperiment(assays=list(counts=u))
+  reducedDims(sce) <- SimpleList(PCA = rd,
+                                 tSNE = matrix(rnorm(140*2),ncol=2))
+  expect_error(getCurves(sce), 'No lineage information found')
+  sce <- getLineages(sce, cl, 'PCA')
+  sce <- getCurves(sce)
+  expect_equal(length(slingCurves(sce)),2)
+
   # using approx_points produces similar curves
   mi_ap <- getCurves(mi, approx_points = 100)
   expect_true(cor(slingPseudotime(mi)[,2], slingPseudotime(mi_ap)[,2], 
@@ -144,7 +183,7 @@ test_that("getCurves works as expected", {
 
 test_that("slingshot works for different input types", {
     reducedDim <- matrix(rnorm(100), ncol = 2)
-    clusterLabels <- rep(seq_len(5), each = 10)
+    clusterLabels <- rep(seq_len(5), length.out = 50)
     
     # matrix / integer
     mi <- slingshot(reducedDim, clusterLabels)
@@ -152,8 +191,8 @@ test_that("slingshot works for different input types", {
     expect_equal(dim(slingAdjacency(mi)), c(5,5))
     # 1-column matrix / integer
     m1i <- slingshot(reducedDim[,1,drop = FALSE], clusterLabels)
-    expect_is(mi, "SlingshotDataSet")
-    expect_equal(dim(slingAdjacency(mi)), c(5,5))
+    expect_is(m1i, "SlingshotDataSet")
+    expect_equal(dim(slingAdjacency(m1i)), c(5,5))
     # matrix / character
     mc <- slingshot(reducedDim, as.character(clusterLabels))
     expect_is(mc, "SlingshotDataSet")
@@ -163,7 +202,7 @@ test_that("slingshot works for different input types", {
     expect_is(mf, "SlingshotDataSet")
     expect_equal(dim(slingAdjacency(mf)), c(5,5))
     # matrix / matrix
-    cl.imb <- cbind(clusterLabels, sample(5,50, replace = TRUE))
+    cl.imb <- cbind(clusterLabels, sample(3,50, replace = TRUE))
     mm <- slingshot(reducedDim, cl.imb)
     expect_is(mm, "SlingshotDataSet")
     expect_equal(dim(slingAdjacency(mm)), c(2,2))
