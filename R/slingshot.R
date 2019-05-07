@@ -559,10 +559,10 @@ setMethod(f = "slingshot",
               if(!is.matrix(rd)) {
                   stop("Slingshot currently works only with base matrices.")
               }
-              
+            
               if(missing(clusterLabels)){
-                  message('No cluster labels provided. Continuing with one ',
-                          'cluster.')
+                  message('No cluster labels provided. Continuing with ',
+                          'one cluster.')
                   cl <- rep('1', nrow(rd))
                   colData(data)$slingClusters <- cl
               }else{
