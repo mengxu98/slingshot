@@ -20,10 +20,13 @@ notifications:
     on_failure: change
 
 # dependency for gsl>copula>zinbwave>splatter
-addons:
-  apt:
-    packages:
-      - libgsl-dev
+#addons:
+#  apt:
+#    packages:
+#      - libgsl-dev
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y libgsl-dev
 
 # define cache warmup and test stages
 jobs:
