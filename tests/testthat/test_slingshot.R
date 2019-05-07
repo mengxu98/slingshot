@@ -245,6 +245,15 @@ test_that("slingshot works for different input types", {
     expect_is(c1, "SlingshotDataSet")
     expect_equal(dim(slingAdjacency(c1)), c(1,1))
     
+    # using approx_points produces similar curves
+    v1 <- slingshot(rd, cl)
+    v2 <- slingshot(rd, cl, approx_points = 100) # a_p < n
+    expect_true(cor(slingPseudotime(v1)[,2], slingPseudotime(v2)[,2], 
+                    use='complete.obs') > .99)
+    v2 <- slingshot(rd, cl, approx_points = 300) # a_p > n
+    expect_true(cor(slingPseudotime(v1)[,2], slingPseudotime(v2)[,2], 
+                    use='complete.obs') > .99)
+    
     # invalid inputs
     expect_error(slingshot(reducedDim[,-(seq_len(ncol(reducedDim)))], 
                            clusterLabels), 'has zero columns')
