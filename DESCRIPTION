@@ -23,7 +23,6 @@ Depends:
     stats
 Imports:
     ape,
-    clusterExperiment,
     graphics,
     grDevices,
     igraph,
@@ -35,6 +34,7 @@ Imports:
 Suggests:
     BiocGenerics,
     BiocStyle,
+    clusterExperiment,
     destiny,
     gam,
     knitr,

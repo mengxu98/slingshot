@@ -20,8 +20,8 @@ slingLineages(x)
 the list of lineages, represented by ordered sets of clusters.
 }
 \description{
-Extract lineages (represented by ordered sets of clusters) from
-  a \code{SlingshotDataSet}.
+Extract lineages (represented by ordered sets of clusters)
+  identified by \code{\link{slingshot}}.
 }
 \section{Methods (by class)}{
 \itemize{

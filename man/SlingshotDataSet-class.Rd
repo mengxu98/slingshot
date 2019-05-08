@@ -6,7 +6,6 @@
 \alias{show,SlingshotDataSet-method}
 \alias{reducedDim,SlingshotDataSet-method}
 \alias{reducedDims,SlingshotDataSet-method}
-\alias{clusterLabels,SlingshotDataSet-method}
 \alias{[,SlingshotDataSet,ANY,ANY,ANY-method}
 \title{Class \code{SlingshotDataSet}}
 \usage{
@@ -15,8 +14,6 @@
 \S4method{reducedDim}{SlingshotDataSet}(x)
 
 \S4method{reducedDims}{SlingshotDataSet}(x)
-
-\S4method{clusterLabels}{SlingshotDataSet}(x)
 
 \S4method{[}{SlingshotDataSet,ANY,ANY,ANY}(x, i, j)
 }
@@ -39,9 +36,6 @@ The accessor functions \code{reducedDim}, \code{clusterLabels},
   \code{curveWeights} extract useful output elements of a 
   \code{SlingshotDataSet}, provided that curves have already been fit with 
   either \code{slingshot} or \code{getCurves}.
-
-A matrix of cluster weights for each cell or a vector of cluster
-  assignments.
 }
 \description{
 The \code{SlingshotDataSet} class holds data relevant for 
@@ -49,9 +43,6 @@ The \code{SlingshotDataSet} class holds data relevant for
   reduced dimensional representation of the data and a set of cluster labels.
   All \code{slingshot} methods can take an object of the class 
   \code{SlingshotDataSet} as input and will output the same.
-
-Extract cluster labels, either a character vector or matrix of 
-  weights.
 }
 \details{
 Warning: this will remove any existing lineages or curves from the 
@@ -67,9 +58,6 @@ dimensional dataset.
 
 \item \code{reducedDims}: returns the matrix representing the reduced
 dimensional dataset.
-
-\item \code{clusterLabels}: extracts cluster labels from a
-\code{SlingshotDataSet} object.
 
 \item \code{[}: Subset dataset and cluster labels.
 }}
@@ -136,9 +124,3 @@ function (default is \code{"cosine"}), as well as \code{"tricube"} and
 \code{\link[princurve]{principal_curve}}}. }}
 }}
 
-\examples{
-rd <- matrix(data=rnorm(100), ncol=2)
-cl <- sample(letters[seq_len(5)], 50, replace = TRUE)
-sds <- newSlingshotDataSet(rd, cl)
-clusterLabels(sds)
-}

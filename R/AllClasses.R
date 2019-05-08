@@ -97,7 +97,7 @@ setValidity("SlingshotDataSet", function(object) {
     if(ncol(X)==0){
         return('reducedDim has zero columns.')
     }
-    if(nrow(clusterLabels(object)) != n){
+    if(nrow(slingClusterLabels(object)) != n){
         return(paste('Reduced dimensional coordinates and cluster labels', 
             'contain different numbers of cells.'))
     }
@@ -116,7 +116,7 @@ setValidity("SlingshotDataSet", function(object) {
     # if lineages present
     if(length(slingLineages(object)) > 0){
         L <- length(slingLineages(object))
-        clus.names <- colnames(clusterLabels(object))
+        clus.names <- colnames(slingClusterLabels(object))
         K <- length(clus.names)
         if(any(vapply(slingLineages(object),class,'') != 'character')){
             return("lineages must be a list of character vectors.")

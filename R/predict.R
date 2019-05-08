@@ -133,8 +133,9 @@ setMethod(f = "predict",
             crv.proj[[l]]$w <- W.proj[,l]
         }
         
-        cl.mat <- matrix(0, nrow = nrow(x), ncol = ncol(clusterLabels(sds)))
-        colnames(cl.mat) <- colnames(clusterLabels(sds))
+        cl.mat <- matrix(0, nrow = nrow(x), 
+                         ncol = ncol(slingClusterLabels(sds)))
+        colnames(cl.mat) <- colnames(slingClusterLabels(sds))
         rownames(cl.mat) <- rownames(x)
         
         out <- newSlingshotDataSet(reducedDim = x, 

@@ -90,7 +90,7 @@ setMethod(
         
         if(lineages){
             X <- reducedDim(x)
-            clusterLabels <- clusterLabels(x)
+            clusterLabels <- slingClusterLabels(x)
             connectivity <- slingAdjacency(x)
             clusters <- rownames(connectivity)
             nclus <- nrow(connectivity)
@@ -345,7 +345,7 @@ plot3d.SlingshotDataSet <- function(x,
     
     if(lineages){
         X <- reducedDim(x)
-        clusterLabels <- clusterLabels(x)
+        clusterLabels <- slingClusterLabels(x)
         connectivity <- slingAdjacency(x)
         clusters <- rownames(connectivity)
         nclus <- nrow(connectivity)
@@ -560,7 +560,7 @@ pairs.SlingshotDataSet <-
             clusters <- rownames(forest)
             nclus <- nrow(forest)
             centers <- t(vapply(clusters,function(clID){
-                w <- clusterLabels(sds)[,clID]
+                w <- slingClusterLabels(sds)[,clID]
                 return(apply(x, 2, weighted.mean, w = w))
             }, rep(0,ncol(reducedDim(sds)))))
             rownames(centers) <- clusters
@@ -583,7 +583,7 @@ pairs.SlingshotDataSet <-
             } else {
                 cc <- seq_len(100)
             }
-            col <- cc[apply(clusterLabels(sds),1,which.max)]
+            col <- cc[apply(slingClusterLabels(sds),1,which.max)]
         }
         #####
         if(doText <- missing(text.panel) || is.function(text.panel))

@@ -129,7 +129,7 @@ setMethod(f = "getCurves",
         allow.breaks = TRUE, ...){
       
         X <- reducedDim(sds)
-        clusterLabels <- clusterLabels(sds)
+        clusterLabels <- slingClusterLabels(sds)
         lineages <- slingLineages(sds)
         
         .slingParams(sds) <- c(

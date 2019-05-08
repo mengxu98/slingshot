@@ -312,8 +312,6 @@ test_that("slingshot works for different input types", {
     expect_is(ce.sling, "ClusterExperiment")
 
     colData(ce) <- cbind(colData(ce), cl2 = sample(2,140, replace=TRUE))
-    ce.sling <- slingshot(ce, 'cluster1')
-    expect_is(ce.sling, "ClusterExperiment")
     ce.sling <- slingshot(ce, 'cl2')
     expect_is(ce.sling, "ClusterExperiment")
     ce.sling <- slingshot(ce, sample(2,140, replace=TRUE))
@@ -357,7 +355,7 @@ test_that("predict works as expected", {
     x.mat <- cbind(runif(100, min = -5, max = 10), 
         runif(100, min = -4, max = 4))
     pred <- predict(sds, x.mat)
-    expect_true(all(clusterLabels(pred)==0))
+    expect_true(all(slingClusterLabels(pred)==0))
     expect_equal(length(slingLineages(pred)), 0)
     expect_equal(length(slingCurves(pred)), 2)
     

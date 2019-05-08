@@ -157,31 +157,25 @@ setMethod(
     signature = "SlingshotDataSet",
     definition = function(x) x@reducedDim
 )
-#' @describeIn SlingshotDataSet extracts cluster labels from a
-#'   \code{SlingshotDataSet} object.
-#' @description Extract cluster labels, either a character vector or matrix of 
-#'   weights.
-#' @return A matrix of cluster weights for each cell or a vector of cluster
-#'   assignments.
-#' @examples
-#' rd <- matrix(data=rnorm(100), ncol=2)
-#' cl <- sample(letters[seq_len(5)], 50, replace = TRUE)
-#' sds <- newSlingshotDataSet(rd, cl)
-#' clusterLabels(sds)
-#' @importFrom clusterExperiment clusterLabels
+#' @describeIn slingClusterLabels returns the cluster labels stored in a
+#'   \code{\link{SlingshotDataSet}} object.
 #' @export
 setMethod(
-    f = "clusterLabels",
+    f = "slingClusterLabels",
     signature = signature(x="SlingshotDataSet"),
     definition = function(x){
-        cl <- x@clusterLabels
-        # if(all(cl %in% 0:1) || all(cl %in% c(TRUE,FALSE))){
-        #     cl <- colnames(cl)[apply(cl,1,which.max)]
-        # }
-        return(cl)
+        return(x@clusterLabels)
     }
 )
-
+#' @describeIn slingClusterLabels returns the cluster labels used by
+#'   \code{\link{slingshot}} in a \code{\link{SingleCellExperiment}} object.
+#' @importClassesFrom SingleCellExperiment SingleCellExperiment
+#' @export
+setMethod(
+    f = "slingClusterLabels",
+    signature = "SingleCellExperiment",
+    definition = function(x) x@int_metadata$slingshot@clusterLabels
+)
 #' @describeIn slingAdjacency returns the adjacency matrix between
 #'   clusters from a \code{\link{SlingshotDataSet}} object.
 #' @export
@@ -313,7 +307,7 @@ setMethod(f = "[",
           function(x, i, j)
           {
               rd <- reducedDim(x)[i,j, drop=FALSE]
-              cl <- clusterLabels(x)[i, , drop=FALSE]
+              cl <- slingClusterLabels(x)[i, , drop=FALSE]
               initialize(x, reducedDim = rd,
                          clusterLabels  = cl,
                          lineages = list(),

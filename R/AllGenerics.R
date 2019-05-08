@@ -138,8 +138,8 @@ setGeneric(
 #' @title Extract the Slingshot lineages
 #' @name slingLineages
 #' 
-#' @description Extract lineages (represented by ordered sets of clusters) from
-#'   a \code{SlingshotDataSet}.
+#' @description Extract lineages (represented by ordered sets of clusters)
+#'   identified by \code{\link{slingshot}}.
 #'   
 #' @param x an object containing \code{\link{slingshot}} output.
 #' @return the list of lineages, represented by ordered sets of clusters.
@@ -151,6 +151,22 @@ setGeneric(
 setGeneric(name = "slingLineages",
            signature = "x",
            def = function(x) standardGeneric("slingLineages"))
+
+#' @title Extract cluster labels used by Slingshot
+#' @name slingClusterLabels
+#' 
+#' @description Extract the cluster labels used by \code{\link{slingshot}}.
+#'   
+#' @param x an object containing \code{\link{slingshot}} output.
+#' @return a vector of cluster labels or a matrix of cluster assignment weights.
+#' @examples
+#' data("slingshotExample")
+#' sds <- getLineages(rd, cl)
+#' slingClusterLabels(sds)
+#' @export
+setGeneric(name = "slingClusterLabels",
+           signature = "x",
+           def = function(x) standardGeneric("slingClusterLabels"))
 
 #' @title Extract Slingshot adjacency matrix
 #' @name slingAdjacency
