@@ -267,7 +267,7 @@ To run `slingshot` with the dimensionality reduction produced by PCA and cluster
 labels identified by Gaussian mixutre modeling, we would do the following:
 
 ```{r sling_sce}
-sce <- slingshot(sim, clusterLabels = 'GMM', reducedDim = 'PCA')
+sim <- slingshot(sim, clusterLabels = 'GMM', reducedDim = 'PCA')
 ```
 
 As noted above, if no clustering results are provided, it is assumed that all
@@ -286,21 +286,21 @@ the inferred lineage for the single-trajectory data with points colored by
 pseudotime.
 
 ```{r plot_curve_1}
-summary(sce$slingPseudotime_1)
+summary(sim$slingPseudotime_1)
 
 colors <- colorRampPalette(brewer.pal(11,'Spectral')[-6])(100)
-plotcol <- colors[cut(sce$slingPseudotime_1, breaks=100)]
+plotcol <- colors[cut(sim$slingPseudotime_1, breaks=100)]
 
-plot(reducedDims(sce)$PCA, col = plotcol, pch=16, asp = 1)
-lines(SlingshotDataSet(sce), lwd=2, col='black')
+plot(reducedDims(sim)$PCA, col = plotcol, pch=16, asp = 1)
+lines(SlingshotDataSet(sim), lwd=2, col='black')
 ```
 
 We can also see how the lineage structure was intially estimated by the
 cluster-based minimum spanning tree by using the `type` argument.
 
 ```{r plot_curve_2}
-plot(reducedDims(sce)$PCA, col = brewer.pal(9,'Set1')[sce$GMM], pch=16, asp = 1)
-lines(SlingshotDataSet(sce), lwd=2, type = 'lineages', col = 'black')
+plot(reducedDims(sim)$PCA, col = brewer.pal(9,'Set1')[sim$GMM], pch=16, asp = 1)
+lines(SlingshotDataSet(sim), lwd=2, type = 'lineages', col = 'black')
 ```
 
 # Downstream Analysis
@@ -317,7 +317,7 @@ gene expression.
 
 ```{r fitgam, cache = TRUE}
 require(gam)
-t <- sce$slingPseudotime_1
+t <- sim$slingPseudotime_1
 
 # for time, only look at the 100 most variable genes
 Y <- log1p(assays(sim)$norm)
@@ -327,7 +327,9 @@ Y <- Y[var1K,]
 # fit a GAM with a loess term for pseudotime
 gam.pval <- apply(Y,1,function(z){
     d <- data.frame(z=z, t=t)
-    tmp <- gam(z ~ lo(t), data=d)
+    suppressWarnings({
+      tmp <- gam(z ~ lo(t), data=d)
+    })
     p <- summary(tmp)[4][[1]][1,5]
     p
 })
@@ -337,14 +339,12 @@ We can then pick out the top genes based on p-value and visualize their
 expression over developmental time with a heatmap.
 
 ```{r heatmaps}
-require(clusterExperiment)
 topgenes <- names(sort(gam.pval, decreasing = FALSE))[1:100]
-heatdata <- assays(sim)$norm[rownames(assays(sim)$norm) %in% topgenes, 
-    order(t, na.last = NA)]
-heatclus <- sce$GMM[order(t, na.last = NA)]
-ce <- ClusterExperiment(heatdata, heatclus, transformation = log1p)
-plotHeatmap(ce, clusterSamplesData = "orderSamplesValue",
-    visualizeData = 'transformed')
+heatdata <- assays(sim)$norm[topgenes, order(t, na.last = NA)]
+heatclus <- sim$GMM[order(t, na.last = NA)]
+
+heatmap(log1p(heatdata), Colv = NA,
+        ColSideColors = brewer.pal(9,"Set1")[heatclus])
 ```
 
 # Detailed Slingshot Functionality
