@@ -299,23 +299,31 @@ test_that("slingshot works for different input types", {
         'shrink.method') %in% names(slingParams(c0)) ))
     expect_equal(dim(slingPseudotime(c0)), c(140,2))
     expect_equal(dim(slingCurveWeights(c0)), c(140,2))
-    
-    # with ClusterExperiment objects
-    require(clusterExperiment)
-    ce <- ClusterExperiment(sce, factor(cl), transformation = function(x){x})
-    
-    ce.sling <- slingshot(ce)
-    expect_is(ce.sling, "ClusterExperiment")
-    ce.sling <- slingshot(ce, reducedDim = 'tSNE')
-    expect_is(ce.sling, "ClusterExperiment")
-    ce.sling <- slingshot(ce, reducedDim = matrix(rnorm(140*2),ncol=2))
-    expect_is(ce.sling, "ClusterExperiment")
+})
 
-    colData(ce) <- cbind(colData(ce), cl2 = sample(2,140, replace=TRUE))
-    ce.sling <- slingshot(ce, 'cl2')
-    expect_is(ce.sling, "ClusterExperiment")
-    ce.sling <- slingshot(ce, sample(2,140, replace=TRUE))
-    expect_is(ce.sling, "ClusterExperiment")
+test_that("slingshot works with ClusterExperiment objects", {
+  if(! requireNamespace('clusterExperiment', quietly = TRUE)){
+    skip('clusterExperiment package not available.')
+  }
+  require(SingleCellExperiment)
+  u <- matrix(rpois(140*50, 5), nrow=50)
+  sce <- SingleCellExperiment(assays=list(counts=u))
+  reducedDims(sce) <- SimpleList(PCA = rd, 
+                                 tSNE = matrix(rnorm(140*2),ncol=2))
+  ce <- clusterExperiment::ClusterExperiment(sce, factor(cl),
+                                             transformation = function(x){x})
+  ce.sling <- slingshot(ce)
+  expect_is(ce.sling, "ClusterExperiment")
+  ce.sling <- slingshot(ce, reducedDim = 'tSNE')
+  expect_is(ce.sling, "ClusterExperiment")
+  ce.sling <- slingshot(ce, reducedDim = matrix(rnorm(140*2),ncol=2))
+  expect_is(ce.sling, "ClusterExperiment")
+  
+  colData(ce) <- cbind(colData(ce), cl2 = sample(2,140, replace=TRUE))
+  ce.sling <- slingshot(ce, 'cl2')
+  expect_is(ce.sling, "ClusterExperiment")
+  ce.sling <- slingshot(ce, sample(2,140, replace=TRUE))
+  expect_is(ce.sling, "ClusterExperiment")
 })
 
 test_that("Plotting functions don't give errors", {
