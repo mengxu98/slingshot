@@ -61,6 +61,7 @@ install:
   - R -e 'devtools::install_cran("covr")'
   - R -e 'devtools::install_bioc("BiocCheck")'
   - R -e 'devtools::install_bioc("destiny")'
+  - R -e 'devtools::install_cran("mclust")'
   - R -e 'setRepositories(ind = 1:2); devtools::install(dependencies = NA, upgrade = TRUE)'
 
 ## Run code coverage after successful build
