@@ -60,10 +60,7 @@ install:
   - R -e 'if ("devtools" %in% rownames(installed.packages())) update.packages(oldPkgs = "devtools", ask = FALSE) else install.packages("devtools")'
   - R -e 'devtools::install_cran("covr")'
   - R -e 'devtools::install_bioc("BiocCheck")'
-  - R -e 'devtools::install_bioc("destiny")'
-  - R -e 'devtools::install_cran("mclust")'
-  - R -e 'devtools::install_cran("gam")'
-  - R -e 'setRepositories(ind = 1:2); devtools::install(dependencies = NA, upgrade = TRUE)'
+  - R -e 'setRepositories(ind = 1:2); devtools::install(dependencies = TRUE, upgrade = TRUE)'
 
 ## Run code coverage after successful build
 after_success:
