@@ -18,7 +18,7 @@ slingCurves(x)
 }
 \value{
 the list of smooth lineage curves, each of which is a
-  \code{\link[princurve]{principal.curve}} object.
+  \code{\link[princurve]{principal_curve}} object.
 }
 \description{
 Extract the simultaneous principal curves from an object

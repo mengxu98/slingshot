@@ -57,8 +57,8 @@
 #'   function (default is \code{"cosine"}), as well as \code{"tricube"} and 
 #'   \code{"density"}. See \code{\link{getCurves}} for details.} 
 #'   \item{Other parameters specified by 
-#'   \code{\link[princurve]{principal.curve}}}. }
-#' @param curves list. A list of \code{\link[princurve]{principal.curve}}
+#'   \code{\link[princurve]{principal_curve}}}. }
+#' @param curves list. A list of \code{\link[princurve]{principal_curve}}
 #'   objects produced by \code{\link{getCurves}}.
 #'   
 #' @return A \code{SlingshotDataSet} object with all specified values.
@@ -207,7 +207,7 @@ setGeneric(name = "slingParams",
 #'   
 #' @param x an object containing \code{\link{slingshot}} output.
 #' @return the list of smooth lineage curves, each of which is a
-#'   \code{\link[princurve]{principal.curve}} object.
+#'   \code{\link[princurve]{principal_curve}} object.
 #' @examples
 #' data("slingshotExample")
 #' sds <- slingshot(rd, cl)
