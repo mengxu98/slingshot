@@ -23,7 +23,7 @@ notifications:
 addons:
   apt:
     packages:
-      - libgsl-dev
+      - mesa-common-dev
 
 # define cache warmup and test stages
 jobs:
