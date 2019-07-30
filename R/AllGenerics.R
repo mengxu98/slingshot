@@ -247,7 +247,7 @@ setGeneric(name = "slingPseudotime",
 #' @export
 setGeneric(name = "slingCurveWeights",
            signature = "x",
-           def = function(x) standardGeneric("slingCurveWeights"))
+           def = function(x, ...) standardGeneric("slingCurveWeights"))
 
 
 # plotting

@@ -355,11 +355,17 @@ setMethod(
 
 #' @describeIn slingPseudotime returns the matrix of cell weights along each
 #'   lineage from a \code{\link{SlingshotDataSet}} object.
+#' @param as.probs logical. If \code{FALSE} (default), output will be the
+#'   weights used to construct the curves, appropriate for downstream analysis
+#'   of individual lineages (ie. a cell shared between two lineages can have two
+#'   weights of \code{1}). If \code{TRUE}, output will be scaled to represent
+#'   probabilistic assignment of cells to lineages (ie. a cell shared between
+#'   two lineages will have two weights that sum to \code{1}).
 #' @export
 setMethod(
     f = "slingCurveWeights",
     signature = "SlingshotDataSet",
-    definition = function(x){
+    definition = function(x, as.probs = FALSE){
         if(length(slingCurves(x))==0){
             stop('No curves detected.')
         }
@@ -367,6 +373,9 @@ setMethod(
             rep(0, nrow(reducedDim(x))))
         rownames(weights) <- rownames(reducedDim(x))
         colnames(weights) <- names(slingCurves(x))
+        if(as.probs){
+            weights <- weights / rowSums(weights)
+        }
         return(weights)
     }
 )

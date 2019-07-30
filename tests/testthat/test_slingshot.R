@@ -396,7 +396,11 @@ test_that("Helper functions work as expected", {
         'dist','shrink','extend','reweight','reassign',
         'shrink.method') %in% names(slingParams(sds)) ))
     expect_equal(dim(slingPseudotime(sds)), c(140,2))
+    expect_equal(sum(is.na(slingPseudotime(sds, na = FALSE))), 0)
     expect_equal(dim(slingCurveWeights(sds)), c(140,2))
+    expect_true(all(
+        abs(rowSums(slingCurveWeights(sds, as.probs = TRUE))-1) < .001))
+    
     expect_equal(dim(reducedDim(sds[1:50])), c(50,2))
     
     # newSlingshotDataSet

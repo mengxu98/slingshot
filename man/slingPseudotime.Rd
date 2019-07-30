@@ -12,13 +12,13 @@
 \usage{
 slingPseudotime(x, ...)
 
-slingCurveWeights(x)
+slingCurveWeights(x, ...)
 
 \S4method{slingPseudotime}{SlingshotDataSet}(x, na = TRUE)
 
 \S4method{slingPseudotime}{SingleCellExperiment}(x, na = TRUE)
 
-\S4method{slingCurveWeights}{SlingshotDataSet}(x)
+\S4method{slingCurveWeights}{SlingshotDataSet}(x, as.probs = FALSE)
 
 \S4method{slingCurveWeights}{SingleCellExperiment}(x)
 }
@@ -30,6 +30,13 @@ slingCurveWeights(x)
 \item{na}{logical. If \code{TRUE} (default), cells that are not assigned to a
 lineage will have a pseudotime value of \code{NA}. Otherwise, their
 arclength along each curve will be returned.}
+
+\item{as.probs}{logical. If \code{FALSE} (default), output will be the
+weights used to construct the curves, appropriate for downstream analysis
+of individual lineages (ie. a cell shared between two lineages can have two
+weights of \code{1}). If \code{TRUE}, output will be scaled to represent
+probabilistic assignment of cells to lineages (ie. a cell shared between
+two lineages will have two weights that sum to \code{1}).}
 }
 \value{
 an \code{n} by \code{L} matrix representing each cell's pseudotime
