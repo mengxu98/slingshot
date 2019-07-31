@@ -24,6 +24,7 @@ addons:
   apt:
     packages:
       - libgsl-dev
+      - libglu1-mesa-dev
 
 # define cache warmup and test stages
 jobs:
