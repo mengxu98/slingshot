@@ -326,7 +326,7 @@ test_that("slingshot works with ClusterExperiment objects", {
   expect_is(ce.sling, "ClusterExperiment")
 })
 
-test_that("Plotting functions don't give errors", {
+test_that("2D Plotting functions don't give errors", {
     sds <- slingshot(rd,cl, start.clus = '1', end.clus = c('4','5'))
     
     u <- matrix(rpois(140*50, 5), nrow=50)
@@ -348,11 +348,16 @@ test_that("Plotting functions don't give errors", {
     plotGenePseudotime(sds, 'gene2', counts)
     
     plotGenePseudotime(sce, 2)
-    
+})
+
+test_that("3D Plotting functions don't give errors", {
+    if(! requireNamespace('rgl', quietly = TRUE)){
+        skip('rgl package not available.')
+    }
     rd3 <- cbind(rd, rnorm(140))
     sds3 <- slingshot(rd3, cl)
-    plot3d(sds3)
-    plot3d(sds3, type = 'lineages')
+    rgl::plot3d(sds3)
+    rgl::plot3d(sds3, type = 'lineages')
 })
 
 test_that("predict works as expected", {

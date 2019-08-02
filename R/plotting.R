@@ -298,7 +298,7 @@ setMethod(
 #' plot3d(rd, col = 'grey50', aspect = 'iso')
 #' plot3d(sds, lwd = 3, add = TRUE)
 #' }
-#' @importFrom rgl plot3d
+# #' @importFrom rgl plot3d
 #' @export
 plot3d.SlingshotDataSet <- function(x,
                                     type = NULL,

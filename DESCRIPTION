@@ -28,7 +28,6 @@ Imports:
     igraph,
     matrixStats,
     methods,
-    rgl,
     SingleCellExperiment,
     SummarizedExperiment
 Suggests:
@@ -40,6 +39,7 @@ Suggests:
     knitr,
     mclust,
     RColorBrewer,
+    rgl,
     rmarkdown,
     testthat,
     covr
