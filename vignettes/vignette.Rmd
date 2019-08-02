@@ -309,7 +309,7 @@ lines(SlingshotDataSet(sim), lwd=2, type = 'lineages', col = 'black')
 
 After running `slingshot`, an interesting next step may be to find genes that
 change their expression over the course of development. We demonstrate one
-possible method for this type of analysis on the $1,000$ most variable genes.
+possible method for this type of analysis on the $100$ most variable genes.
 
 We will regress each gene on the pseudotime variable we have generated, using a
 general additive model (GAM). This allows us to detect non-linear patterns in
@@ -321,8 +321,8 @@ t <- sim$slingPseudotime_1
 
 # for time, only look at the 100 most variable genes
 Y <- log1p(assays(sim)$norm)
-var1K <- names(sort(apply(Y,1,var),decreasing = TRUE))[1:100]
-Y <- Y[var1K,]
+var100 <- names(sort(apply(Y,1,var),decreasing = TRUE))[1:100]
+Y <- Y[var100,]
 
 # fit a GAM with a loess term for pseudotime
 gam.pval <- apply(Y,1,function(z){
@@ -330,7 +330,7 @@ gam.pval <- apply(Y,1,function(z){
     suppressWarnings({
       tmp <- gam(z ~ lo(t), data=d)
     })
-    p <- summary(tmp)[4][[1]][1,5]
+    p <- summary(tmp)[3][[1]][2,3]
     p
 })
 ```
