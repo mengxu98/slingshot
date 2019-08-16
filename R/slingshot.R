@@ -410,6 +410,7 @@ setMethod(f = "slingshot",
 #' @rdname slingshot
 #' @importFrom SingleCellExperiment colData
 #' @importFrom SummarizedExperiment colData<-
+#' @importFrom SingleCellExperiment reducedDims
 #' @importFrom SingleCellExperiment reducedDims<-
 #' @export
 setMethod(f = "slingshot",
@@ -517,6 +518,7 @@ setMethod(f = "slingshot",
 #' @rdname slingshot
 #' @importFrom SingleCellExperiment colData
 #' @importFrom SummarizedExperiment colData<-
+#' @importFrom SingleCellExperiment reducedDims
 #' @importFrom SingleCellExperiment reducedDims<-
 #' @export
 setMethod(f = "slingshot",
