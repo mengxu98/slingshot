@@ -1,0 +1,170 @@
+---
+title: "Comparing Conditions along a Trajectory"
+author: "Kelly Street"
+date: "`r Sys.Date()`"
+output: 
+  BiocStyle::html_document:
+    toc: true
+vignette: >
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+require(slingshot)
+require(RColorBrewer)
+set.seed(1)
+```
+
+# Problem Statement
+
+This vignette is designed to help you think about the problem of trajectory inference in the presence of two or more conditions. These conditions may be thought of as an organism-level status with potential effects on the lineage topology, ie. "case" vs. "control" or "mutant" vs. "wild-type." While some such conditions may induce global changes in cell composition or cell state, we will assume that at least some cell types along the trajectory of interest remain comparable between conditions.
+
+# Approach
+
+While it may seem reasonable to perform trajectory inference separately on cells from our different conditions, this is problematic for two reasons: 1) inferred trajectories will be less stable, as they would use only a subset of the available data, and 2) there would be no straightforward method for combining these results (eg. how would we map a branching trajectory onto a non-branching trajectory?).
+
+Therefore, we propose the following workflow: first, use all available cells to construct the most stable trajectory possible. Second, use this common trajectory framework to compare distributions of cells from different conditions. We will demonstrate this process on an example dataset.
+
+```{r dataSetup}
+data('slingshotExample')
+condition <- factor(rep(c('A','B'), length.out = nrow(rd)))
+condition[110:140] <- 'A'
+ls()
+```
+```{r, echo=FALSE}
+plot(rd, asp = 1, pch = 16, col = brewer.pal(3,'Set1')[condition])
+legend('topleft','(x,y)',legend = c('A','B'), title = 'Condition', pch=16, col = brewer.pal(3,'Set1')[1:2])
+```
+
+This dataset consists of a branching trajectory with two conditions (`A` and `B`). Under condition `A`, we find cells from all possible states along the trajectory, but under condition `B`, one of the branches is blocked and only one terminal state can be reached.
+
+## Trajectory Inference
+
+We will start by performing trajectory inference on the full dataset. In principle, any method could be used here, but we will use `slingshot` (cf. [PopGenGoogling](https://twitter.com/popgengoogling/status/1065022894659592192)).
+
+```{r}
+sds <- slingshot(rd, cl)
+```
+
+```{r, echo=FALSE}
+plot(rd, asp = 1, pch = 16, col = brewer.pal(3,'Set1')[condition])
+lines(sds, lwd=3)
+legend('topleft','(x,y)',legend = c('A','B'), title = 'Condition', pch=16, col = brewer.pal(3,'Set1')[1:2])
+
+```
+
+Each cell has now been assigned to one or two lineages (with an associated weight indicating the certainty of each assignment) and pseudotime values have been calculated.
+
+```{r, fig.height=4, fig.width=8, echo = FALSE}
+n <- nrow(rd); L <- ncol(slingPseudotime(sds))
+noise <- runif(n, -.2,.2)
+plot(as.numeric(slingPseudotime(sds)), rep(1:L, each=n)+noise,pch=16, col = brewer.pal(9,'Set1')[condition], axes=FALSE, xlab='Pseudotime', ylab='Lineage')
+axis(1); axis(2, at=1:L)
+```
+
+## Distributional Differences
+
+```{r, echo=FALSE}
+# tA1 <- slingPseudotime(sds, na=FALSE)[condition=='A',1]
+# wA1 <- slingCurveWeights(sds)[condition=='A',1]; wA1 <- wA1/sum(wA1)
+# dA1 <- density(tA1, weights = wA1)
+# tB1 <- slingPseudotime(sds, na=FALSE)[condition=='B',1]
+# wB1 <- slingCurveWeights(sds)[condition=='B',1]; wB1 <- wB1/sum(wB1)
+# dB1 <- density(tB1, weights = wB1)
+# tA2 <- slingPseudotime(sds, na=FALSE)[condition=='A',2]
+# wA2 <- slingCurveWeights(sds)[condition=='A',2]; wA2 <- wA2/sum(wA2)
+# dA2 <- density(tA2, weights = wA2)
+# tB2 <- slingPseudotime(sds, na=FALSE)[condition=='B',2]
+# wB2 <- slingCurveWeights(sds)[condition=='B',2]; wB2 <- wB2/sum(wB2)
+# dB2 <- density(tB2, weights = wB2)
+# 
+# plot(range(slingPseudotime(sds),na.rm=TRUE), c(1,2+7*max(c(dA2$y,dB2$y))), col='white', xlab='Pseudotime', ylab='Lineage', axes = FALSE)
+# axis(1); axis(2, at=1:2)
+# polygon(c(min(dA1$x),dA1$x,max(dA1$x)), 1+7*c(0,dA1$y,0), col=rgb(1,0,0,.5))
+# polygon(c(min(dB1$x),dB1$x,max(dB1$x)), 1+7*c(0,dB1$y,0), col=rgb(0,0,1,.5))
+# polygon(c(min(dA2$x),dA2$x,max(dA2$x)), 2+7*c(0,dA2$y,0), col=rgb(1,0,0,.5))
+# polygon(c(min(dB2$x),dB2$x,max(dB2$x)), 2+7*c(0,dB2$y,0), col=rgb(0,0,1,.5))
+
+layout(matrix(1:2,nrow=1))
+boxplot(slingPseudotime(sds)[,1] ~ condition, col = colorby(c('A','B')), main = 'Lineage 1', xlab='Condition', ylab='Pseudotime')
+boxplot(slingPseudotime(sds)[,2] ~ condition, col = colorby(c('A','B')), main = 'Lineage 2', xlab='Condition', ylab='Pseudotime')
+layout(1)
+```
+
+
+Now that we have the trajectory, we are interested in testing for differences between the conditions. Any difference in the distribution of cells along a lineage may be meaningful, but let's start by looking for a location shift. A T-test would work for this, but we'll use a slightly more robust permutation test. Specifically, we will look for a difference in the weighted means of the pseudotime values between the two conditions.
+
+```{r, eval=FALSE}
+# Permutation test
+t1 <- slingPseudotime(sds, na=FALSE)[,1]
+w1 <- slingCurveWeights(sds)[,1]
+d1 <- weighted.mean(t1[condition=='A'], w1[condition=='A']) - 
+    weighted.mean(t1[condition=='B'], w1[condition=='B'])
+dist1 <- replicate(1e4, {
+    condition.i <- sample(condition)
+    weighted.mean(t1[condition.i=='A'], w1[condition.i=='A']) - 
+        weighted.mean(t1[condition.i=='B'], w1[condition.i=='B'])
+})
+```
+```{r, echo=FALSE, fig.height=4, fig.width=9}
+t1 <- slingPseudotime(sds, na=FALSE)[,1]
+w1 <- slingCurveWeights(sds)[,1]
+d1 <- weighted.mean(t1[condition=='A'], w1[condition=='A']) - 
+    weighted.mean(t1[condition=='B'], w1[condition=='B'])
+dist1 <- replicate(1e4, {
+    condition.i <- sample(condition)
+    weighted.mean(t1[condition.i=='A'], w1[condition.i=='A']) - 
+        weighted.mean(t1[condition.i=='B'], w1[condition.i=='B'])
+})
+t2 <- slingPseudotime(sds, na=FALSE)[,2]
+w2 <- slingCurveWeights(sds)[,2]
+d2 <- weighted.mean(t2[condition=='A'], w2[condition=='A']) - 
+    weighted.mean(t2[condition=='B'], w2[condition=='B'])
+dist2 <- replicate(1e4, {
+    condition.i <- sample(condition)
+    weighted.mean(t2[condition.i=='A'], w2[condition.i=='A']) - 
+        weighted.mean(t2[condition.i=='B'], w2[condition.i=='B'])
+})
+
+layout(matrix(1:2,nrow = 1))
+hist(dist1, breaks=50, col='grey50', xlim = range(c(d1,dist1)), probability = TRUE, xlab = 'Difference of Weighted Means', main = 'Lineage 1 Permutation Test')
+abline(v=d1, col=2, lwd=2)
+legend('topright','(x,y)',legend = c('Null Distn.','Observed'), fill=c('grey50',NA), border=c(1,NA), lty=c(NA,1), lwd=c(NA,2), col=c(NA,2), merge = TRUE, seg.len = .6)
+
+hist(dist2, breaks=50, col='grey50', xlim = range(c(d2,dist2)), probability = TRUE, xlab = 'Difference of Weighted Means', main = 'Lineage 2 Permutation Test')
+abline(v=d2, col=2, lwd=2)
+legend('topright','(x,y)',legend = c('Null Distn.','Observed'), fill=c('grey50',NA), border=c(1,NA), lty=c(NA,1), lwd=c(NA,2), col=c(NA,2), merge = TRUE, seg.len = .6)
+layout(1)
+```
+```{r}
+paste0('Lineage 1 p-value: ', mean(abs(dist1) > abs(d1)))
+paste0('Lineage 2 p-value: ', mean(abs(dist2) > abs(d2)))
+```
+
+As we would expect, we see a significant difference in the second lineage (where condition `B` is impeded), but not in the first.
+
+Another, more general approach we could take to test for a difference in distributions would be the Kolmogorov-Smirnov test (or a similar permutation test using that test's statistic). This test would, in theory, allow us to pick up subtler differences between the conditions, such as an overabundance of a cell type in one condition.
+
+```{r}
+# Kolmogorov-Smirnov test
+ks.test(slingPseudotime(sds)[condition=='A',1], slingPseudotime(sds)[condition=='B',1])
+ks.test(slingPseudotime(sds)[condition=='A',2], slingPseudotime(sds)[condition=='B',2])
+```
+
+Again, we see a significant difference in the second lineage, but not in the first. Note that unlike the difference of weighted means we used above, this test largely ignores the weights which assign cells to lineages, using any cell with a lineage weight greater than 0 (those with weights of zero are assigned pseudotime values of `NA`). Theoretically, one could use weights with the Kolmogorov-Smirnov test, as the test statistic is based on the maximum difference between cumulative distribution functions, but we were unable to find an implementation of this in base `R` or the `stats` package. For more stringent cutoffs, the user could specify a minimum lineage weight, say of $0.5$. Due to this test's ability to detect a wide variety of differences, we would recommend it over the previous procedure for general purpose use.
+
+
+# Parting Words
+
+For both of the above procedures, it is important to note that we are making multiple comparisons (in this case, 2). The p-values we obtain from these tests should be corrected for multiple testing, especially for trajectories with a large number of lineages.
+
+That said, trajectory inference is often one of the last computational methods in a very long analysis pipeline (generally including gene-level quantification, gene filtering / feature selection, and dimensionality reduction). Hence, we strongly discourage the reader from putting too much faith in any p-value that comes out of this analysis. Such values may be useful suggestions, indicating particular features or cells for follow-up study, but should not be treated as meaningful statistical quantities.
+
+Finally, unlike Slingshot, the suggestions laid out here are not (yet) based on a long, iterative process of extensive testing and revision. If you have any ideas, questions, or results of applying these procedures to real data, I would love to hear them! Feel free to email me (Kelly Street) or open an issue on the [Slingshot GitHub repository](https://github.com/kstreet13/slingshot).
+
+# Session Info
+
+```{r session}
+sessionInfo()
+```
