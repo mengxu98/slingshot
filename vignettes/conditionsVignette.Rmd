@@ -1,5 +1,5 @@
 ---
-title: "Comparing Conditions along a Trajectory"
+title: "Differential Topology: Comparing Conditions along a Trajectory"
 author: "Kelly Street"
 date: "`r Sys.Date()`"
 output: 

@@ -113,10 +113,11 @@ setMethod(
                 ys <- c(ys, centers[,dims[2]])
             }
             if(curves){
+                npoints <- nrow(slingCurves(x)[[1]]$s)
                 xs <- c(xs, as.numeric(vapply(slingCurves(x), 
-                    function(c){ c$s[,dims[1]] }, rep(0,nrow(reducedDim(x))))))
+                    function(c){ c$s[,dims[1]] }, rep(0,npoints))))
                 ys <- c(ys, as.numeric(vapply(slingCurves(x), 
-                    function(c){ c$s[,dims[2]] }, rep(0,nrow(reducedDim(x))))))
+                    function(c){ c$s[,dims[2]] }, rep(0,npoints))))
             }
             plot(x = NULL, y = NULL, asp = asp,
                  xlim = range(xs), ylim = range(ys),
