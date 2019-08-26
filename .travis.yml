@@ -23,6 +23,7 @@ notifications:
 addons:
   apt:
     packages:
+      - gsl-bin
       - libgsl-dev
 
 # define cache warmup and test stages
