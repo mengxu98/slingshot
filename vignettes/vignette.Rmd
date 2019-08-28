@@ -12,7 +12,7 @@ vignette: >
 
 <!--
 %\VignetteEngine{knitr::rmarkdown}
-%\VignetteIndexEntry{slingshot Vignette}
+%\VignetteIndexEntry{Slingshot}
 -->
 
 ```{r options, results="hide", include=FALSE, cache=FALSE, message=FALSE}

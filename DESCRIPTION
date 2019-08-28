@@ -38,6 +38,7 @@ Suggests:
     gam,
     knitr,
     mclust,
+    mgcv,
     RColorBrewer,
     rgl,
     rmarkdown,
