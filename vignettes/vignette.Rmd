@@ -328,7 +328,7 @@ Y <- Y[var100,]
 gam.pval <- apply(Y,1,function(z){
     d <- data.frame(z=z, t=t)
     suppressWarnings({
-      tmp <- gam(z ~ lo(t), data=d)
+      tmp <- suppressWarnings(gam(z ~ lo(t), data=d))
     })
     p <- summary(tmp)[3][[1]][2,3]
     p
