@@ -4,14 +4,14 @@
 \name{SlingshotDataSet-class}
 \alias{SlingshotDataSet-class}
 \alias{show,SlingshotDataSet-method}
-\alias{reducedDim,SlingshotDataSet-method}
+\alias{reducedDim,SlingshotDataSet,ANY-method}
 \alias{reducedDims,SlingshotDataSet-method}
 \alias{[,SlingshotDataSet,ANY,ANY,ANY-method}
 \title{Class \code{SlingshotDataSet}}
 \usage{
 \S4method{show}{SlingshotDataSet}(object)
 
-\S4method{reducedDim}{SlingshotDataSet}(x)
+\S4method{reducedDim}{SlingshotDataSet,ANY}(x)
 
 \S4method{reducedDims}{SlingshotDataSet}(x)
 

@@ -145,7 +145,7 @@ setMethod(
 #' @export
 setMethod(
     f = "reducedDim",
-    signature = "SlingshotDataSet",
+    signature = c("SlingshotDataSet", "ANY"),
     definition = function(x) x@reducedDim
 )
 #' @describeIn SlingshotDataSet returns the matrix representing the reduced
