@@ -8,6 +8,9 @@
 #' @param type character, the type of output to be plotted, can be one of 
 #'   \code{"lineages"}, \code{"curves"}, or \code{"both"} (by partial matching),
 #'   see Details for more.
+#' @param linInd integer, an index indicating which lineages should be plotted
+#'   (default is to plot all lineages). If \code{col} is a vector, it will be
+#'   subsetted by \code{linInd}.
 #' @param show.constraints logical, whether or not the user-specified initial 
 #'   and terminal clusters should be specially denoted by green and red dots,
 #'   respectively.
@@ -47,6 +50,7 @@ setMethod(
     f = "plot",
     signature = signature(x = "SlingshotDataSet"),
     definition = function(x, type = NULL,
+                          linInd = NULL,
                           show.constraints = FALSE,
                           add = FALSE,
                           dims = seq_len(2),
@@ -88,6 +92,25 @@ setMethod(
             stop('No curves detected.')
         }
         
+        if(is.null(linInd)){
+            linInd <- seq_along(slingLineages(x))
+        }else{
+            linInd <- as.integer(linInd)
+            if(!all(linInd %in% seq_along(slingLineages(x)))){
+                if(any(linInd %in% seq_along(slingLineages(x)))){
+                    linInd.removed <- 
+                        linInd[! linInd %in% seq_along(slingLineages(x))]
+                    linInd <- 
+                        linInd[linInd %in% seq_along(slingLineages(x))]
+                    message('Unrecognized lineage indices (linInd): ',
+                            paste(linInd.removed, collapse = ", "))
+                }else{
+                    stop('None of the provided lineage indices',
+                         ' (linInd) were found.')
+                }
+            }
+        }
+        
         if(lineages){
             X <- reducedDim(x)
             clusterLabels <- slingClusterLabels(x)
@@ -103,6 +126,7 @@ setMethod(
             clusterLabels <- clusterLabels[rowSums(clusterLabels) > 0, , 
                                            drop = FALSE]
             linC <- slingParams(x)
+            clus2include <- unique(unlist(slingLineages(x)[linInd]))
         }
         
         if(!add){
@@ -128,12 +152,15 @@ setMethod(
         if(lineages){
             for(i in seq_len(nclus-1)){
                 for(j in seq(i+1,nclus)){
-                    if(connectivity[i,j]==1){
-                        lines(centers[c(i,j), dims], lwd = lwd, col = col, ...)
+                    if(connectivity[i,j]==1 & 
+                       all(clusters[c(i,j)] %in% clus2include)){
+                        lines(centers[c(i,j), dims], 
+                              lwd = lwd, col = col[1], ...)
                     }
                 }
             }
-            points(centers[, dims], cex = cex, pch = 16, col = col)
+            points(centers[clusters %in% clus2include, dims], 
+                   cex = cex, pch = 16, col = col[1])
             if(show.constraints){
                 if(any(linC$start.given)){
                     points(centers[clusters %in% 
@@ -142,7 +169,9 @@ setMethod(
                            col = 'green3', pch = 16)
                 }
                 if(any(linC$end.given)){
-                    points(centers[clusters %in% linC$end.clus[linC$end.given],
+                    points(centers[clusters %in% 
+                                       linC$end.clus[linC$end.given] &
+                                       clusters %in% clus2include,
                                    dims,drop=FALSE], cex = cex / 2, 
                            col = 'red2', pch = 16)
                 }
@@ -150,7 +179,7 @@ setMethod(
             
         }
         if(curves){
-            for(ii in seq_along(slingCurves(x))){
+            for(ii in seq_along(slingCurves(x))[linInd]){
                 c <- slingCurves(x)[[ii]]
                 lines(c$s[c$ord, dims], lwd = lwd, col = col[ii], ...)
             }
@@ -270,16 +299,22 @@ setMethod(
 #' @param type character, the type of output to be plotted, can be one of 
 #'   \code{"lineages"}, \code{curves}, or \code{both} (by partial matching), see
 #'   Details for more.
+#' @param linInd integer, an index indicating which lineages should be plotted
+#'   (default is to plot all lineages). If \code{col} is a vector, it will be
+#'   subsetted by \code{linInd}.
 #' @param add logical, indicates whether the output should be added to an
 #'   existing plot.
 #' @param dims numeric, which dimensions to plot (default is \code{1:3}).
 #' @param aspect either a logical indicating whether to adjust the aspect ratio 
 #'   or a new ratio, see \code{\link[rgl:plot3d]{plot3d}}.
+#' @param size numeric, size of points for MST (default is \code{10}), see
+#'   \code{\link[rgl:plot3d]{plot3d}}.
+#' @param col character or numeric, color(s) for lines, see \code{\link{par}}.
 #' @param ... additional parameters to be passed to \code{lines3d}.
 #'   
 #' @details If \code{type == 'lineages'}, straight line connectors between
 #'   cluster centers will be plotted. If \code{type == 'curves'}, simultaneous
-#'   princiapl curves will be plotted.
+#'   principal curves will be plotted.
 #'   
 #' @details When \code{type} is not specified, the function will first check the
 #'   \code{curves} slot and plot the curves, if present. Otherwise,
@@ -303,14 +338,18 @@ setMethod(
 #' @export
 plot3d.SlingshotDataSet <- function(x,
                                     type = NULL,
+                                    linInd = NULL,
                                     add = FALSE,
                                     dims = seq_len(3),
                                     aspect = 'iso',
+                                    size = 10,
+                                    col = 1,
                                     ...){
     if (!requireNamespace("rgl", quietly = TRUE)) {
         stop("Package 'rgl' is required for 3D plotting.",
              call. = FALSE)
     }
+    col <- rep(col, length(slingLineages(x)))
     n <- nrow(reducedDim(x))
     curves <- FALSE
     lineages <- FALSE
@@ -344,6 +383,25 @@ plot3d.SlingshotDataSet <- function(x,
         stop('No curves detected.')
     }
     
+    if(is.null(linInd)){
+        linInd <- seq_along(slingLineages(x))
+    }else{
+        linInd <- as.integer(linInd)
+        if(!all(linInd %in% seq_along(slingLineages(x)))){
+            if(any(linInd %in% seq_along(slingLineages(x)))){
+                linInd.removed <- 
+                    linInd[! linInd %in% seq_along(slingLineages(x))]
+                linInd <- 
+                    linInd[linInd %in% seq_along(slingLineages(x))]
+                message('Unrecognized lineage indices (linInd): ',
+                        paste(linInd.removed, collapse = ", "))
+            }else{
+                stop('None of the provided lineage indices',
+                     ' (linInd) were found.')
+            }
+        }
+    }
+    
     if(lineages){
         X <- reducedDim(x)
         clusterLabels <- slingClusterLabels(x)
@@ -358,6 +416,7 @@ plot3d.SlingshotDataSet <- function(x,
         X <- X[rowSums(clusterLabels) > 0, , drop = FALSE]
         clusterLabels <- clusterLabels[rowSums(clusterLabels) > 0, , 
                                        drop = FALSE]
+        clus2include <- unique(unlist(slingLineages(x)[linInd]))
     }
     
     if(!add){
@@ -387,66 +446,26 @@ plot3d.SlingshotDataSet <- function(x,
     if(lineages){
         for(i in seq_len(nclus-1)){
             for(j in seq(i+1,nclus)){
-                if(connectivity[i,j]==1){
+                if(connectivity[i,j]==1 & 
+                   all(clusters[c(i,j)] %in% clus2include)){
                     rgl::lines3d(x = centers[c(i,j),dims[1]], 
                                  y = centers[c(i,j),dims[2]],
-                                 z = centers[c(i,j),dims[3]], ...)
+                                 z = centers[c(i,j),dims[3]],
+                                 col = col[1], ...)
                 }
             }
         }
+        rgl::points3d(centers[clusters %in% clus2include, dims], 
+               size = size, col = col[1])
     }
     if(curves){
-        for(c in slingCurves(x)){ rgl::lines3d(c$s[c$ord,dims], ...) }
+        for(ii in seq_along(slingCurves(x))[linInd]){
+            c <- slingCurves(x)[[ii]]
+            rgl::lines3d(c$s[c$ord,dims], col = col[ii], ...)
+        }
     }
     invisible(NULL)
 }
-
-# #' @rdname SlingshotDataSet-plot3d
-# #' @export
-# setMethod(
-#   f = "plot3d",
-#   signature = "SlingshotDataSet",
-#   definition = function(x,
-#                         type = NULL,
-#                         add = FALSE,
-#                         dims = 1:3,
-#                         aspect = 'iso',
-#                         ...) {
-#     plot3d.SlingshotDataSet(x, type = type, add = add, dims = dims, 
-#                             aspect = aspect, ...)
-#   }
-# )
-
-# #' @rdname SlingshotDataSet-plot3d
-# #' @examples
-# #' %\dontrun{
-# #' data("slingshotExample")
-# #' rd <- cbind(rd, rnorm(nrow(rd)))
-# #' sds <- slingshot(rd, cl, start.clus = "1")
-# #' plot3d(rd, col = 'grey50', aspect = 'iso')
-# #' lines3d(sds, lwd = 3)
-# #' }
-# #' @export
-# lines3d.SlingshotDataSet <- function(x,
-#                                      type = NULL,
-#                                      dims = 1:3,
-#                                      ...) {
-#   plot3d(x, type = type, add = TRUE, dims = dims, ...)
-#   invisible(NULL)
-# }
-# #' @rdname SlingshotDataSet-plot3d
-# #' @export
-# setMethod(
-#   f = "lines3d",
-#   signature = "SlingshotDataSet",
-#   definition = function(x,
-#                         type = NULL,
-#                         dims = 1:3,
-#                         ...) {
-#     lines3d.SlingshotDataSet(x, type = type, add = TRUE, dims = dims, ...)
-#   }
-# )
-
 
 #' @title Pairs plot of Slingshot output
 #' @name pairs-SlingshotDataSet
@@ -485,7 +504,7 @@ plot3d.SlingshotDataSet <- function(x,
 #'   
 #' @details If \code{type == 'lineages'}, straight line connectors between
 #'   cluster centers will be plotted. If \code{type == 'curves'}, simultaneous
-#'   princiapl curves will be plotted.
+#'   principal curves will be plotted.
 #'   
 #' @details When \code{type} is not specified, the function will first check the
 #'   \code{curves} slot and plot the curves, if present. Otherwise,

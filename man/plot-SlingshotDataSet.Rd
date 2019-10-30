@@ -7,7 +7,7 @@
 \alias{lines,SlingshotDataSet-method}
 \title{Plot Slingshot output}
 \usage{
-\S4method{plot}{SlingshotDataSet,ANY}(x, type = NULL,
+\S4method{plot}{SlingshotDataSet,ANY}(x, type = NULL, linInd = NULL,
   show.constraints = FALSE, add = FALSE, dims = seq_len(2),
   asp = 1, cex = 2, lwd = 2, col = 1, ...)
 
@@ -20,6 +20,10 @@
 \item{type}{character, the type of output to be plotted, can be one of 
 \code{"lineages"}, \code{"curves"}, or \code{"both"} (by partial matching),
 see Details for more.}
+
+\item{linInd}{integer, an index indicating which lineages should be plotted
+(default is to plot all lineages). If \code{col} is a vector, it will be
+subsetted by \code{linInd}.}
 
 \item{show.constraints}{logical, whether or not the user-specified initial 
 and terminal clusters should be specially denoted by green and red dots,

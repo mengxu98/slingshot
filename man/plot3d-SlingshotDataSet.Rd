@@ -5,8 +5,8 @@
 \alias{plot3d.SlingshotDataSet}
 \title{Plot Slingshot output in 3D}
 \usage{
-plot3d.SlingshotDataSet(x, type = NULL, add = FALSE,
-  dims = seq_len(3), aspect = "iso", ...)
+plot3d.SlingshotDataSet(x, type = NULL, linInd = NULL, add = FALSE,
+  dims = seq_len(3), aspect = "iso", size = 10, col = 1, ...)
 }
 \arguments{
 \item{x}{a \code{SlingshotDataSet} with results to be plotted.}
@@ -15,6 +15,10 @@ plot3d.SlingshotDataSet(x, type = NULL, add = FALSE,
 \code{"lineages"}, \code{curves}, or \code{both} (by partial matching), see
 Details for more.}
 
+\item{linInd}{integer, an index indicating which lineages should be plotted
+(default is to plot all lineages). If \code{col} is a vector, it will be
+subsetted by \code{linInd}.}
+
 \item{add}{logical, indicates whether the output should be added to an
 existing plot.}
 
@@ -22,6 +26,11 @@ existing plot.}
 
 \item{aspect}{either a logical indicating whether to adjust the aspect ratio 
 or a new ratio, see \code{\link[rgl:plot3d]{plot3d}}.}
+
+\item{size}{numeric, size of points for MST (default is \code{10}), see
+\code{\link[rgl:plot3d]{plot3d}}.}
+
+\item{col}{character or numeric, color(s) for lines, see \code{\link{par}}.}
 
 \item{...}{additional parameters to be passed to \code{lines3d}.}
 }
@@ -34,7 +43,7 @@ Tools for visualizing lineages inferred by \code{slingshot}.
 \details{
 If \code{type == 'lineages'}, straight line connectors between
   cluster centers will be plotted. If \code{type == 'curves'}, simultaneous
-  princiapl curves will be plotted.
+  principal curves will be plotted.
 
 When \code{type} is not specified, the function will first check the
   \code{curves} slot and plot the curves, if present. Otherwise,
