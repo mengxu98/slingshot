@@ -336,9 +336,13 @@ test_that("2D Plotting functions don't give errors", {
     sce <- slingshot(sce, clusterLabels = cl)
     
     plot(sds)
+    expect_error(plot(sds, linInd = 3:5), 
+                 'None of the provided lineage indices')
+    plot(sds, type = "lineages", show.constraints = TRUE, linInd = 2:3)
     plot(sds, type = "lineages", show.constraints = TRUE)
-    lines(sds)
+    lines(sds, linInd = 2)
     lines(sds, type = "lineages", show.constraints = TRUE)
+    lines(sds, type = "lineages", show.constraints = TRUE, linInd = c(1,3))
     pairs(sds, lower.panel = TRUE)
     pairs(sds, lower.panel = TRUE, type = "lineages", show.constraints = TRUE)
     
@@ -359,6 +363,10 @@ test_that("3D Plotting functions don't give errors", {
     sds3 <- slingshot(rd3, cl)
     rgl::plot3d(sds3)
     rgl::plot3d(sds3, type = 'lineages')
+    rgl::plot3d(sds3, linInd = 1)
+    rgl::plot3d(sds3, type = 'lineages', linInd = 2:3)
+    expect_error(rgl::plot3d(sds3, linInd = 3:5), 
+                 'None of the provided lineage indices')
 })
 
 test_that("predict works as expected", {
