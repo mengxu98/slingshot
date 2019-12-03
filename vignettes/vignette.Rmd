@@ -1,5 +1,5 @@
 ---
-title: "Slingshot: Lineage Inference for Single-cell Data"
+title: "Slingshot: Lineage Inference for Single-Cell Data"
 author: "Kelly Street"
 date: "`r Sys.Date()`"
 bibliography: bibFile.bib
@@ -116,9 +116,9 @@ keeping the loss of information to a minimum.
 
 For the gene filtering step, we retained any genes robustly expressed in at
 least enough cells to constitute a cluster, making them potentially interesting
-cell-type marker genes. We set this minimum cluster
-size to 10 cells and define a gene as being "robustly expressed" if it has a
-simulated count of at least 10 reads.
+cell-type marker genes. We set this minimum cluster size to 10 cells and define
+a gene as being "robustly expressed" if it has a simulated count of at least 3
+reads.
 
 ```{r genefilt}
 # filter genes down to potential cell-type markers
@@ -137,7 +137,10 @@ normalization method. This allows us to remove unwanted technical or biological
 artifacts from the data, such as batch, sequencing depth, cell cycle effects,
 etc. In practice, it is valuable to compare a variety of normalization
 techniques and compare them along different evaluation criteria, for which we
-recommend the `scone` package [@scone].
+recommend the `scone` package [@scone]. We also note that the order of these
+steps may change depending on the choice of method. ZINB-WaVE [@zinbwave]
+performs dimensionality reduction while accounting for technical variables and
+MNN [@mnn] corrects for batch effects after dimensionality reduction.
 
 Since we are working with simulated data, we do not need to worry about batch
 effects or other potential confounders. Hence, we will proceed with full
@@ -257,8 +260,8 @@ will use the wrapper function for the analysis of the single-trajectory dataset,
 but demonstrate the usage of the individual functions later, on the bifurcating
 dataset.
 
-The `slingshot` wrapper function performs both steps of lineage inference in a
-single call. The necessary inputs are a reduced dimensional matrix of
+The `slingshot` wrapper function performs both steps of trajectory inference in
+a single call. The necessary inputs are a reduced dimensional matrix of
 coordinates and a set of cluster labels. These can be separate objects or, in
 the case of the single-trajectory data, elements contained in a
 `SingleCellExperiment` object.
@@ -478,6 +481,36 @@ weights of `1` (or very close to 1) for multiple lineages, if they are
 positioned before a branching event. A matrix of these values is returned by the
 `slingCurveWeights` function.
 
+
+## Running Slingshot on large datasets
+
+For large datasets, we recommend using the `approx_points` argument with
+`slingshot` (or similarly with `getCurves`). While the MST construction operates
+on clusters, the process of iteratively projecting all points onto one or more
+curves may become computationally impractical as the size of the dataset grows.
+By default, `slingshot` constructs curves consisting of $n$ points, where $n$ is
+the number of cells, meaning that the computational complexity of the projection
+step is proportional to $n^2$. In the presence of branching lineages, these
+"dense" curves also affect the complexity of curve averaging and shrinkage.
+
+Setting `approx_points` allows the user to specify the resolution (the number of
+unique points) of the curves, which can greatly speed up the computation time
+with minimal loss of accuracy. We recommend a value of 100-200. Note that
+restricting the number of unique points along the curve does not impose a
+similar limit on the number of unique pseudotime values, as demonstrated below
+(even with an unrealistically low value of 5 for `approx_points`, we still see a
+full color gradient from the pseudotime values):
+
+```{r sling_approxpoints}
+sim5 <- slingshot(sim, clusterLabels = 'GMM', reducedDim = 'PCA',
+                   approx_points = 5)
+
+colors <- colorRampPalette(brewer.pal(11,'Spectral')[-6])(100)
+plotcol <- colors[cut(sim5$slingPseudotime_1, breaks=100)]
+
+plot(reducedDims(sim5)$PCA, col = plotcol, pch=16, asp = 1)
+lines(SlingshotDataSet(sim5), lwd=2, col='black')
+```
 
 
 # Session Info
