@@ -19,11 +19,11 @@ notifications:
     on_success: change
     on_failure: change
 
-# dependency for gsl>copula>zinbwave>splatter
 addons:
   apt:
     packages:
-      - libgsl-dev
+      - libgsl-dev # dependency for gsl>copula>zinbwave>splatter
+      - libglu1-mesa-dev # dependency for rgl
 
 # define cache warmup and test stages
 jobs:
@@ -44,16 +44,6 @@ jobs:
       r: bioc-release
     - stage: test
       r: bioc-devel
-
-## To appease rgl
-before_script:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
-  - sleep 3
-
-# can we remove this?
-#r_build_args: "--no-build-vignettes"
-#r_check_args: "--no-vignettes"
 
 ## install and upgrade dependencies
 install:
