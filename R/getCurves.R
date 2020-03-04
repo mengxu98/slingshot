@@ -138,7 +138,13 @@ setMethod(f = "getCurves",
             extend = extend,
             reweight = reweight,
             reassign = reassign,
-            shrink.method = shrink.method
+            thresh = thresh,
+            maxit = maxit,
+            stretch = stretch,
+            approx_points = approx_points,
+            smoother = smoother,
+            shrink.method = shrink.method,
+            allow.breaks = allow.breaks
         )
         
         shrink <- as.numeric(shrink)
