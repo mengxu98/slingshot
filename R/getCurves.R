@@ -414,7 +414,8 @@ setMethod(f = "getCurves",
                 s <- pcurve$s
                 ordL <- order(pcurve$lambda)
                 if(approx_points > 0){
-                  xout_lambda <- seq(min(pcurve$lambda), max(pcurve$lambda),
+                  xout_lambda <- seq(min(pcurve$lambda), max(pcurve$lambda[
+                                                        which(pcurve$w > 0)]),
                                       length.out = approx_points)
                 }
                 for(jj in seq_len(p)){
@@ -429,7 +430,8 @@ setMethod(f = "getCurves",
                 new.pcurve <- project_to_curve(X, s = s, stretch = stretch)
                 if(approx_points > 0){
                     xout_lambda <- seq(min(new.pcurve$lambda),
-                                     max(new.pcurve$lambda),
+                                     max(new.pcurve$lambda[
+                                         which(pcurve$w > 0)]),
                                      length.out = approx_points)
                     new.pcurve$s <- apply(new.pcurve$s, 2, function(sjj){
                     return(approx(x = new.pcurve$lambda[new.pcurve$ord],
