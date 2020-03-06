@@ -13,23 +13,24 @@
 \usage{
 newSlingshotDataSet(reducedDim, clusterLabels, ...)
 
-\S4method{newSlingshotDataSet}{data.frame,ANY}(reducedDim, clusterLabels,
-  ...)
+\S4method{newSlingshotDataSet}{data.frame,ANY}(reducedDim, clusterLabels, ...)
 
-\S4method{newSlingshotDataSet}{matrix,numeric}(reducedDim, clusterLabels,
-  ...)
+\S4method{newSlingshotDataSet}{matrix,numeric}(reducedDim, clusterLabels, ...)
 
-\S4method{newSlingshotDataSet}{matrix,factor}(reducedDim, clusterLabels,
-  ...)
+\S4method{newSlingshotDataSet}{matrix,factor}(reducedDim, clusterLabels, ...)
 
 \S4method{newSlingshotDataSet}{matrix,ANY}(reducedDim, clusterLabels, ...)
 
-\S4method{newSlingshotDataSet}{matrix,character}(reducedDim, clusterLabels,
-  ...)
+\S4method{newSlingshotDataSet}{matrix,character}(reducedDim, clusterLabels, ...)
 
-\S4method{newSlingshotDataSet}{matrix,matrix}(reducedDim, clusterLabels,
-  lineages = list(), adjacency = matrix(NA, 0, 0), curves = list(),
-  slingParams = list())
+\S4method{newSlingshotDataSet}{matrix,matrix}(
+  reducedDim,
+  clusterLabels,
+  lineages = list(),
+  adjacency = matrix(NA, 0, 0),
+  curves = list(),
+  slingParams = list()
+)
 }
 \arguments{
 \item{reducedDim}{matrix. An \code{n} by \code{p} numeric matrix or data
@@ -101,19 +102,19 @@ Constructs a \code{SlingshotDataSet} object. Additional helper
   methods for manipulating \code{SlingshotDataSet} objects are  also 
   described below.
 }
-\section{Methods (by class)}{
+\section{Functions}{
 \itemize{
-\item \code{reducedDim = data.frame,clusterLabels = ANY}: returns a \code{SlingshotDataSet} object.
+\item \code{newSlingshotDataSet,data.frame,ANY-method}: returns a \code{SlingshotDataSet} object.
 
-\item \code{reducedDim = matrix,clusterLabels = numeric}: returns a \code{SlingshotDataSet} object.
+\item \code{newSlingshotDataSet,matrix,numeric-method}: returns a \code{SlingshotDataSet} object.
 
-\item \code{reducedDim = matrix,clusterLabels = factor}: returns a \code{SlingshotDataSet} object.
+\item \code{newSlingshotDataSet,matrix,factor-method}: returns a \code{SlingshotDataSet} object.
 
-\item \code{reducedDim = matrix,clusterLabels = ANY}: returns a \code{SlingshotDataSet} object.
+\item \code{newSlingshotDataSet,matrix,ANY-method}: returns a \code{SlingshotDataSet} object.
 
-\item \code{reducedDim = matrix,clusterLabels = character}: returns a \code{SlingshotDataSet} object.
+\item \code{newSlingshotDataSet,matrix,character-method}: returns a \code{SlingshotDataSet} object.
 
-\item \code{reducedDim = matrix,clusterLabels = matrix}: returns a \code{SlingshotDataSet} object.
+\item \code{newSlingshotDataSet,matrix,matrix-method}: returns a \code{SlingshotDataSet} object.
 }}
 
 \examples{
