@@ -118,9 +118,14 @@ setMethod(
     f = "show",
     signature = "SlingshotDataSet",
     definition = function(object) {
-        cat("class:", class(object), "\n\n")
+        cat("class:", class(object), "\n")
+        if(!is.null(slingParams(object)$embedding) &&
+           slingParams(object)$embedding){
+            cat('Embedding of slingshot trajectory\n')
+        }
         df <- data.frame(Samples = nrow(reducedDim(object)), 
                          Dimensions = ncol(reducedDim(object)))
+        cat('\n')
         print(df, row.names = FALSE)
         cat('\nlineages:', length(slingLineages(object)), "\n")
         for(i in seq_len(length(slingLineages(object)))){

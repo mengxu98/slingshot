@@ -249,6 +249,13 @@ setGeneric(name = "slingCurveWeights",
            signature = "x",
            def = function(x, ...) standardGeneric("slingCurveWeights"))
 
+#' @title Embed trajectory in new space
+#' @rdname embedCurves 
+#' @export
+setGeneric(name = "embedCurves",
+           signature = c("x", "newDimRed"),
+           def = function(x, newDimRed, ...) standardGeneric("embedCurves"))
+
 
 # plotting
 #' @title Plot Gene Expression by Pseudotime
