@@ -3,11 +3,23 @@
 \name{embedCurves}
 \alias{embedCurves}
 \alias{embedCurves,SlingshotDataSet,matrix-method}
+\alias{embedCurves,SingleCellExperiment,matrix-method}
 \title{Embed trajectory in new space}
 \usage{
 embedCurves(x, newDimRed, ...)
 
 \S4method{embedCurves}{SlingshotDataSet,matrix}(
+  x,
+  newDimRed,
+  shrink = NULL,
+  stretch = NULL,
+  approx_points = NULL,
+  smoother = NULL,
+  shrink.method = NULL,
+  ...
+)
+
+\S4method{embedCurves}{SingleCellExperiment,matrix}(
   x,
   newDimRed,
   shrink = NULL,
@@ -76,5 +88,9 @@ data("slingshotExample")
 sds <- slingshot(rd, cl)
 rd2 <- cbind(rd[,2] + rnorm(nrow(rd)), -rd[,1] + rnorm(nrow(rd)))
 sds.new <- embedCurves(sds, rd2)
+sds.new
+
+plot(rd2, col = cl, asp = 1)
+lines(sds.new, lwd = 3)
 
 }
