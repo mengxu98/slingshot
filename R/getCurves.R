@@ -36,11 +36,11 @@
 #' @param stretch numeric factor by which curves can be extrapolated beyond 
 #'   endpoints. Default is \code{2}, see
 #'   \code{\link[princurve]{principal_curve}}.
-#' @param approx_points logical or numeric, whether curves should be
-#'   approximated by a fixed number of points. If \code{FALSE}, no approximation
-#'   will be performed and curves will contain as many points as the input data.
-#'   If numeric, curves will be approximated by this number of points;
-#'   preferably about 100 (see \code{\link[princurve]{principal_curve}}).
+#' @param approx_points numeric, whether curves should be approximated by a
+#'   fixed number of points. If \code{FALSE} (or 0), no approximation will be
+#'   performed and curves will contain as many points as the input data. If
+#'   numeric, curves will be approximated by this number of points; preferably
+#'   about 100 (see \code{\link[princurve]{principal_curve}}).
 #' @param smoother, choice of scatter plot smoother. Same as 
 #'   \code{\link[princurve]{principal_curve}}, but \code{"lowess"} option is
 #'   replaced with \code{"loess"} for additional flexibility.
@@ -138,7 +138,13 @@ setMethod(f = "getCurves",
             extend = extend,
             reweight = reweight,
             reassign = reassign,
-            shrink.method = shrink.method
+            thresh = thresh,
+            maxit = maxit,
+            stretch = stretch,
+            approx_points = approx_points,
+            smoother = smoother,
+            shrink.method = shrink.method,
+            allow.breaks = allow.breaks
         )
         
         shrink <- as.numeric(shrink)
@@ -414,7 +420,8 @@ setMethod(f = "getCurves",
                 s <- pcurve$s
                 ordL <- order(pcurve$lambda)
                 if(approx_points > 0){
-                  xout_lambda <- seq(min(pcurve$lambda), max(pcurve$lambda),
+                  xout_lambda <- seq(min(pcurve$lambda), max(pcurve$lambda[
+                                                        which(pcurve$w > 0)]),
                                       length.out = approx_points)
                 }
                 for(jj in seq_len(p)){
@@ -429,7 +436,8 @@ setMethod(f = "getCurves",
                 new.pcurve <- project_to_curve(X, s = s, stretch = stretch)
                 if(approx_points > 0){
                     xout_lambda <- seq(min(new.pcurve$lambda),
-                                     max(new.pcurve$lambda),
+                                     max(new.pcurve$lambda[
+                                         which(pcurve$w > 0)]),
                                      length.out = approx_points)
                     new.pcurve$s <- apply(new.pcurve$s, 2, function(sjj){
                     return(approx(x = new.pcurve$lambda[new.pcurve$ord],

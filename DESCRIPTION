@@ -1,6 +1,6 @@
 Package: slingshot
 Title: Tools for ordering single-cell sequencing
-Version: 1.5.0
+Version: 1.5.1
 Description: Provides functions for inferring continuous, branching 
     lineage structures in low-dimensional data. Slingshot was designed
     to model developmental trajectories in single-cell RNA sequencing 
@@ -46,7 +46,7 @@ Suggests:
     covr
 VignetteBuilder: knitr
 LazyData: false
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 biocViews:
     Clustering,
     DifferentialExpression,
