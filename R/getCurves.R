@@ -152,7 +152,7 @@ setMethod(f = "getCurves",
         # CHECKS
         if(shrink < 0 | shrink > 1){
             stop("'shrink' parameter must be logical or numeric between",
-                "0 and 1")
+                " 0 and 1")
         }
         if(nrow(X)==0){
             stop('reducedDim has zero rows.')
