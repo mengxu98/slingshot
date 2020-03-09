@@ -65,9 +65,13 @@ lineage from a \code{\link{SingleCellExperiment}} object.
 
 \examples{
 data("slingshotExample")
+rd <- slingshotExample$rd
+cl <- slingshotExample$cl
 sds <- slingshot(rd, cl)
 slingPseudotime(sds)
 data("slingshotExample")
+rd <- slingshotExample$rd
+cl <- slingshotExample$cl
 sds <- slingshot(rd, cl)
 slingCurveWeights(sds)
 }

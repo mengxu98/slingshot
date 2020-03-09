@@ -19,7 +19,7 @@ slingParams(x)
 the list of additional parameters used by Slingshot.
 }
 \description{
-Extracts additional control parameters used by Slingshot in 
+Extracts additional control parameters used by Slingshot in
 lineage inference and fitting simultaneous principal curves.
 }
 \section{Methods (by class)}{
@@ -33,6 +33,8 @@ by Slingshot from a \code{\link{SingleCellExperiment}} object.
 
 \examples{
 data("slingshotExample")
+rd <- slingshotExample$rd
+cl <- slingshotExample$cl
 sds <- slingshot(rd, cl, start.clus = '5')
 slingParams(sds)
 }

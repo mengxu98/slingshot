@@ -7,10 +7,10 @@
 \S4method{predict}{SlingshotDataSet}(object, newdata = NULL)
 }
 \arguments{
-\item{object}{a \code{\link{SlingshotDataSet}} containing simultaneous 
+\item{object}{a \code{\link{SlingshotDataSet}} containing simultaneous
 principal curves to use for prediction.}
 
-\item{newdata}{a matrix or data frame of new points in the same 
+\item{newdata}{a matrix or data frame of new points in the same
 reduced-dimensional space as the original input to \code{slingshot} (or
 \code{getLineages}).}
 }
@@ -36,6 +36,8 @@ This function is a method for the generic function \code{predict}
 }
 \examples{
 data("slingshotExample")
+rd <- slingshotExample$rd
+cl <- slingshotExample$cl
 sds <- slingshot(rd, cl, start.clus = '1')
 
 x <- cbind(runif(100, min = -5, max = 10), runif(100, min = -4, max = 4))

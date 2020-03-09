@@ -32,6 +32,8 @@ Extract the cluster labels used by \code{\link{slingshot}}.
 
 \examples{
 data("slingshotExample")
+rd <- slingshotExample$rd
+cl <- slingshotExample$cl
 sds <- getLineages(rd, cl)
 slingClusterLabels(sds)
 }

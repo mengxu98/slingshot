@@ -25,7 +25,7 @@
 \arguments{
 \item{x}{a \code{SlingshotDataSet} with results to be plotted.}
 
-\item{type}{character, the type of output to be plotted, can be one of 
+\item{type}{character, the type of output to be plotted, can be one of
 \code{"lineages"}, \code{"curves"}, or \code{"both"} (by partial matching),
 see Details for more.}
 
@@ -33,7 +33,7 @@ see Details for more.}
 (default is to plot all lineages). If \code{col} is a vector, it will be
 subsetted by \code{linInd}.}
 
-\item{show.constraints}{logical, whether or not the user-specified initial 
+\item{show.constraints}{logical, whether or not the user-specified initial
 and terminal clusters should be specially denoted by green and red dots,
 respectively.}
 
@@ -70,6 +70,8 @@ When \code{type} is not specified, the function will first check the
 }
 \examples{
 data("slingshotExample")
+rd <- slingshotExample$rd
+cl <- slingshotExample$cl
 sds <- slingshot(rd, cl, start.clus = "1")
 plot(sds, type = 'b')
 

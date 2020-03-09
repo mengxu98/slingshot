@@ -28,3 +28,4 @@ NEWS\.md
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^codecov\.yml$
+^data-raw

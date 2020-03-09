@@ -45,7 +45,7 @@ The \code{SlingshotDataSet} class holds data relevant for
   \code{SlingshotDataSet} as input and will output the same.
 }
 \details{
-Warning: this will remove any existing lineages or curves from the 
+Warning: this will remove any existing lineages or curves from the
 \code{SlingshotDataSet} object.
 }
 \section{Methods (by generic)}{

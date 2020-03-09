@@ -27,12 +27,14 @@ Extract lineages (represented by ordered sets of clusters)
 \item \code{SlingshotDataSet}: returns the list of lineages, represented by
 ordered sets of clusters from a \code{\link{SlingshotDataSet}} object.
 
-\item \code{SingleCellExperiment}: returns the list of lineages, represented by 
+\item \code{SingleCellExperiment}: returns the list of lineages, represented by
 ordered sets of clusters from a \code{\link{SingleCellExperiment}} object.
 }}
 
 \examples{
 data("slingshotExample")
+rd <- slingshotExample$rd
+cl <- slingshotExample$cl
 sds <- getLineages(rd, cl)
 slingLineages(sds)
 }
