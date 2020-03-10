@@ -103,8 +103,8 @@ An updated \code{\link{SlingshotDataSet}} object containing the
   oringinal input, arguments provided to \code{getCurves} as well as the
   following new elements: \itemize{ \item{\code{curves}} {A list of
   \code{\link[princurve]{principal_curve}} objects.}
-  \item{\code{slingParams}} {Additional parameters used for fitting simultaneous
-  principal curves.}}
+  \item{\code{slingParams}} {Additional parameters used for fitting
+  simultaneous principal curves.}}
 }
 \description{
 This function takes a reduced data matrix \code{n} by \code{p},

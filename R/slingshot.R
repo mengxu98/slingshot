@@ -483,7 +483,8 @@ setMethod(f = "slingshot",
                       }
                   }
                   if(length(clusterLabels)>1){
-                      if(!is.null(dim(clusterLabels)) && length(dim(clusterLabels)) > 1 &&
+                      if(!is.null(dim(clusterLabels)) && 
+                         length(dim(clusterLabels)) > 1 &&
                          all(dim(clusterLabels) > 1)){
                           cl <- as.matrix(clusterLabels)
                           colnames(cl) <- paste0('sling_c',seq_len(ncol(cl)))

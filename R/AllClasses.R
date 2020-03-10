@@ -99,18 +99,18 @@ setValidity("SlingshotDataSet", function(object) {
     }
     if(nrow(slingClusterLabels(object)) != n){
         return(paste('Reduced dimensional coordinates and cluster labels', 
-            'contain different numbers of cells.'))
+                     'contain different numbers of cells.'))
     }
     # something requires row and column names. Princurve?
     if(is.null(rownames(reducedDim(object)))){
         rownames(reducedDim(object)) <- paste('Cell',
-            seq_len(nrow(reducedDim(object))),
-            sep='-')
+                                              seq_len(nrow(reducedDim(object))),
+                                              sep='-')
     }
     if(is.null(colnames(reducedDim(object)))){
         colnames(reducedDim(object)) <- paste('Dim',
-            seq_len(ncol(reducedDim(object))),
-            sep='-')
+                                              seq_len(ncol(reducedDim(object))),
+                                              sep='-')
     }
     
     # if lineages present
@@ -122,16 +122,16 @@ setValidity("SlingshotDataSet", function(object) {
             return("lineages must be a list of character vectors.")
         }
         if(!all(vapply(slingLineages(object), 
-            function(lin){all(lin %in% clus.names)}, TRUE))){
+                       function(lin){all(lin %in% clus.names)}, TRUE))){
             return(paste0("lineages must be a list of character vectors ",
-                "composed of cluster names."))
+                          "composed of cluster names."))
         }
         if(!is.numeric(slingAdjacency(object))) {
             return("adjacency matrix must be numeric or logical.")
         }
         if(any(dim(slingAdjacency(object)) != K)){
             return(paste("adjacency matrix must be square with number of",
-                "dimensions equal to number of clusters"))
+                         "dimensions equal to number of clusters"))
         }
         if(! is.null(slingParams(object)$start.clus)){
             if(!all(slingParams(object)$start.clus %in% clus.names)){

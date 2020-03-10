@@ -88,6 +88,16 @@ setGeneric(
 #' @param ... additional arguments to pass to object-specific methods.
 #' @return A \code{SlingshotDataSet} object containing the output of
 #' \code{slingshot}.
+#'
+#' @examples 
+#' library(SingleCellExperiment)
+#' u <- matrix(rpois(140*50, 5), nrow = 50)
+#' sce <- SingleCellExperiment(assays = list(counts = u), 
+#'                             reducedDims = SimpleList(PCA = rd),
+#'                             colData = data.frame(clus = cl))
+#' sce <- slingshot(sce, clusterLabels = 'clus', reducedDim = 'PCA')
+#' SlingshotDataSet(sce)
+#' 
 #' @export
 setGeneric(
     name = "SlingshotDataSet",

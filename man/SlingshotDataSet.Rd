@@ -26,3 +26,13 @@ This is a convenience function to extract a
   \code{SlingshotDataSet} from an object containing \code{\link{slingshot}}
   output.
 }
+\examples{
+library(SingleCellExperiment)
+u <- matrix(rpois(140*50, 5), nrow = 50)
+sce <- SingleCellExperiment(assays = list(counts = u), 
+                            reducedDims = SimpleList(PCA = rd),
+                            colData = data.frame(clus = cl))
+sce <- slingshot(sce, clusterLabels = 'clus', reducedDim = 'PCA')
+SlingshotDataSet(sce)
+
+}

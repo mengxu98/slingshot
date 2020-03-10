@@ -96,8 +96,8 @@
 #'   oringinal input, arguments provided to \code{getCurves} as well as the
 #'   following new elements: \itemize{ \item{\code{curves}} {A list of
 #'   \code{\link[princurve]{principal_curve}} objects.}
-#'   \item{\code{slingParams}} {Additional parameters used for fitting simultaneous
-#'   principal curves.}}
+#'   \item{\code{slingParams}} {Additional parameters used for fitting
+#'   simultaneous principal curves.}}
 #'
 #' @references Hastie, T., and Stuetzle, W. (1989). "Principal Curves."
 #'   \emph{Journal of the American Statistical Association}, 84:502--516.
