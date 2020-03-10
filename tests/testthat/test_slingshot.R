@@ -1,5 +1,5 @@
 context("Test slingshot methods and SlingshotDataSet class.")
-#load("../../data/slingshotExample.RData")
+
 data("slingshotExample")
 rd <- slingshotExample$rd
 cl <- slingshotExample$cl
