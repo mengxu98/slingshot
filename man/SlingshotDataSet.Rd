@@ -27,6 +27,9 @@ This is a convenience function to extract a
   output.
 }
 \examples{
+data("slingshotExample")
+rd <- slingshotExample$rd
+cl <- slingshotExample$cl
 library(SingleCellExperiment)
 u <- matrix(rpois(140*50, 5), nrow = 50)
 sce <- SingleCellExperiment(assays = list(counts = u), 
