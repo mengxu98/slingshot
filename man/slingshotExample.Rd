@@ -11,7 +11,7 @@
 Simulated data provided with the \code{slingshot} package.
 }
 \usage{
-slingshotExample
+data("slingshotExample")
 }
 \description{
 This simulated dataset contains a low-dimensional representation
