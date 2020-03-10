@@ -447,6 +447,8 @@ test_that("Helper functions work as expected", {
 
 test_that("embedCurves works as expected", {
     data("slingshotExample")
+    rd <- slingshotExample$rd
+    cl <- slingshotExample$cl
     sds <- getLineages(rd, cl)
     tsne <- rd + rnorm(nrow(rd)*2)
 
