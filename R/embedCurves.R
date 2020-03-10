@@ -1,16 +1,16 @@
 #' @rdname embedCurves
-#' 
+#'
 #' @description This function takes the output of \code{\link{slingshot}} (or
 #'   \code{\link{getCurves}}) and attempts to embed the curves in a different
 #'   coordinate space than the one in which they were constructed. This should
 #'   be considered as a visualization tool, only.
-#' 
+#'
 #' @param x an object containing \code{\link{slingshot}} output.
 #' @param newDimRed a matrix representing the new coordinate space in which to
 #'   embed the \code{slingshot} curves.
-#' @param shrink logical or numeric between 0 and 1, determines whether and how 
+#' @param shrink logical or numeric between 0 and 1, determines whether and how
 #'   much to shrink branching lineages toward their average prior to the split.
-#' @param stretch numeric factor by which curves can be extrapolated beyond 
+#' @param stretch numeric factor by which curves can be extrapolated beyond
 #'   endpoints. Default is \code{2}, see
 #'   \code{\link[princurve]{principal_curve}}.
 #' @param approx_points numeric, whether curves should be approximated by a
@@ -18,16 +18,16 @@
 #'   performed and curves will contain as many points as the input data. If
 #'   numeric, curves will be approximated by this number of points; preferably
 #'   about 100 (see \code{\link[princurve]{principal_curve}}).
-#' @param smoother, choice of scatter plot smoother. Same as 
+#' @param smoother, choice of scatter plot smoother. Same as
 #'   \code{\link[princurve]{principal_curve}}, but \code{"lowess"} option is
 #'   replaced with \code{"loess"} for additional flexibility.
-#' @param shrink.method character denoting how to determine the appropriate 
-#'   amount of shrinkage for a branching lineage. Accepted values are the same 
+#' @param shrink.method character denoting how to determine the appropriate
+#'   amount of shrinkage for a branching lineage. Accepted values are the same
 #'   as for \code{kernel} in \code{\link{density}} (default is \code{"cosine"}),
 #'   as well as \code{"tricube"} and \code{"density"}. See 'Details' for more.
-#' @param ... Additional parameters to pass to scatter plot smoothing function, 
+#' @param ... Additional parameters to pass to scatter plot smoothing function,
 #'   \code{smoother}.
-#'   
+#'
 #' @details Many of the same parameters are used here as in \code{getCurves}.
 #'   This function attempts to translate curves from one reduced dimensional
 #'   space to another by predicting each dimension as a function of pseudotime
@@ -35,23 +35,25 @@
 #'   predicting the coordinates in the new space as a function of pseudotime).
 #'   Because the pseudotime values are not changed, this amounts to a single
 #'   iteration of the iterative curve-fitting process used by \code{getCurves}.
-#' 
+#'
 #' @details Note that non-linear dimensionality reduction techniques (such as
 #'   tSNE and UMAP) may produce discontinuities not observed in other spaces.
 #'   Use caution when embedding curves in these spaces.
-#'   
+#'
 #' @return a \code{\link{SlingshotDataSet}} containing curves in the new space.
-#' 
+#'
 #' @examples
 #' data("slingshotExample")
+#' rd <- slingshotExample$rd
+#' cl <- slingshotExample$cl
 #' sds <- slingshot(rd, cl)
 #' rd2 <- cbind(rd[,2] + rnorm(nrow(rd)), -rd[,1] + rnorm(nrow(rd)))
 #' sds.new <- embedCurves(sds, rd2)
 #' sds.new
-#' 
+#'
 #' plot(rd2, col = cl, asp = 1)
 #' lines(sds.new, lwd = 3)
-#' 
+#'
 #' @importFrom princurve project_to_curve
 #' @export
 setMethod(f = "embedCurves",
@@ -67,7 +69,7 @@ setMethod(f = "embedCurves",
               sds <- x
               X <- reducedDim(sds)
               newX <- newDimRed
-              
+
               # if new arguments are not provided, use existing arguments
               if(is.null(shrink)){
                   shrink <- slingParams(sds)$shrink
@@ -75,7 +77,7 @@ setMethod(f = "embedCurves",
               # some were not previously included in slingParams output, so we
               # assume the default values were used
               if(is.null(stretch)){
-                  stretch <- ifelse(is.null(slingParams(sds)$stretch), 2, 
+                  stretch <- ifelse(is.null(slingParams(sds)$stretch), 2,
                                     slingParams(sds)$stretch)
               }
               if(is.null(approx_points)){
@@ -91,7 +93,7 @@ setMethod(f = "embedCurves",
               if(is.null(shrink.method)){
                   shrink.method <- slingParams(sds)$shrink.method
               }
-              
+
               # CHECKS
               if(length(slingCurves(sds)) == 0){
                   stop("No slingshot curves found in original space.")
@@ -101,7 +103,7 @@ setMethod(f = "embedCurves",
                        " 0 and 1")
               }
               if(nrow(X)!=nrow(newX)){
-                  stop("'newX' must have same number of rows as original", 
+                  stop("'newX' must have same number of rows as original",
                        "'reducedDim'.")
               }
               if(any(is.na(newX))){
@@ -124,14 +126,14 @@ setMethod(f = "embedCurves",
                   miss.ind <- which(colnames(newX) == '')
                   colnames(newX)[miss.ind] <- paste('Dim',miss.ind,sep='-')
               }
-              
+
               # SETUP
               p.new <- ncol(newX)
               lineages <- slingLineages(sds)
               L <- length(grep("Lineage", names(lineages))) #number of lineages
               clusters <- colnames(slingClusterLabels(sds))
               d <- dim(X); n <- d[1]
-              
+
               C <- as.matrix(vapply(lineages[seq_len(L)], function(lin) {
                   vapply(clusters, function(clID) {
                       as.numeric(clID %in% lin)
@@ -149,27 +151,27 @@ setMethod(f = "embedCurves",
                   segmnts <- cbind(segmnts[, !idx, drop = FALSE],new.col)
                   colnames(segmnts)[ncol(segmnts)] <- paste('average',i,sep='')
               }
-              
+
               # DEFINE SMOOTHER FUNCTION
-              smootherFcn <- switch(smoother, loess = function(lambda, xj, 
+              smootherFcn <- switch(smoother, loess = function(lambda, xj,
                                                                w = NULL, ...){
                   loess(xj ~ lambda, weights = w, ...)$fitted
-              }, smooth.spline = function(lambda, xj, w = NULL, ..., df = 5, 
+              }, smooth.spline = function(lambda, xj, w = NULL, ..., df = 5,
                                           tol = 1e-4){
-                  # fit <- smooth.spline(lambda, xj, w = w, ..., df = df, 
+                  # fit <- smooth.spline(lambda, xj, w = w, ..., df = df,
                   #                      tol = tol, keep.data = FALSE)
                   fit <- tryCatch({
-                      smooth.spline(lambda, xj, w = w, ..., df = df, 
+                      smooth.spline(lambda, xj, w = w, ..., df = df,
                                     tol = tol, keep.data = FALSE)
                   }, error = function(e){
-                      smooth.spline(lambda, xj, w = w, ..., df = df, 
+                      smooth.spline(lambda, xj, w = w, ..., df = df,
                                     tol = tol, keep.data = FALSE, spar = 1)
                   })
                   predict(fit, x = lambda)$y
               })
-              
+
               pcurves <- slingCurves(sds)
-              
+
               # for each curve,
               #   construct a new curve by predicting each (new) dimension as a
               #   function of pseudotime.
@@ -177,7 +179,7 @@ setMethod(f = "embedCurves",
                   pcurve <- pcurves[[l]]
                   ordL <- order(pcurve$lambda)
                   s <- matrix(NA, nrow = n, ncol = p.new)
-                  
+
                   if(approx_points > 0){
                       xout_lambda <- seq(min(pcurve$lambda), max(pcurve$lambda),
                                          length.out = approx_points)
@@ -185,9 +187,9 @@ setMethod(f = "embedCurves",
                   }
                   for(jj in seq_len(p.new)){
                       yjj <- smootherFcn(pcurve$lambda, newX[,jj], w = pcurve$w,
-                                         ...)[ordL] 
+                                         ...)[ordL]
                       if(approx_points > 0){
-                          yjj <- approx(x = pcurve$lambda[ordL], y = yjj, 
+                          yjj <- approx(x = pcurve$lambda[ordL], y = yjj,
                                         xout = xout_lambda, ties = 'ordered')$y
                       }
                       s[, jj] <- yjj
@@ -199,22 +201,22 @@ setMethod(f = "embedCurves",
                                          length.out = approx_points)
                       new.pcurve$s <- apply(new.pcurve$s, 2, function(sjj){
                           return(approx(x = new.pcurve$lambda[new.pcurve$ord],
-                                        y = sjj[new.pcurve$ord], 
+                                        y = sjj[new.pcurve$ord],
                                         xout = xout_lambda, ties = 'ordered')$y)
                       })
                       new.pcurve$ord <- seq_len(approx_points)
                   }
                   new.pcurve$dist_ind <- abs(new.pcurve$dist_ind)
-                  new.pcurve$lambda <- new.pcurve$lambda - 
+                  new.pcurve$lambda <- new.pcurve$lambda -
                       min(new.pcurve$lambda, na.rm = TRUE)
                   new.pcurve$w <- pcurve$w
                   pcurves[[l]] <- new.pcurve
               }
-              
+
               # shrink together lineages near shared cells
               if(shrink > 0){
                   if(max(rowSums(C)) > 1){
-                      
+
                       segmnts <- unique(C[rowSums(C)>1,,drop=FALSE])
                       segmnts <- segmnts[order(rowSums(segmnts),
                                                decreasing = FALSE),
@@ -222,7 +224,7 @@ setMethod(f = "embedCurves",
                       seg.mix <- segmnts
                       avg.lines <- list()
                       pct.shrink <- list()
-                      
+
                       # determine average curves and amount of shrinkage
                       for(i in seq_along(avg.order)){
                           ns <- avg.order[[i]]
@@ -243,7 +245,7 @@ setMethod(f = "embedCurves",
                               vapply(to.avg, function(crv){ crv$w > 0 },
                                      rep(TRUE, n))) == 1
                           pct.shrink[[i]] <- lapply(to.avg,function(crv){
-                              .percent_shrinkage(crv, common.ind, 
+                              .percent_shrinkage(crv, common.ind,
                                                  approx_points = approx_points,
                                                  method = shrink.method)
                           })
@@ -254,7 +256,7 @@ setMethod(f = "embedCurves",
                               return(all(pij == 0))
                           }, TRUE)
                           if(any(all.zero)){
-                              pct.shrink[[i]] <- lapply(pct.shrink[[i]], 
+                              pct.shrink[[i]] <- lapply(pct.shrink[[i]],
                                                         function(pij){
                                                             pij[] <- 0
                                                             return(pij)
@@ -277,8 +279,8 @@ setMethod(f = "embedCurves",
                           })
                           shrunk <- lapply(seq_along(ns),function(jj){
                               crv <- to.shrink[[jj]]
-                              return(.shrink_to_avg(crv, avg, 
-                                            pct.shrink[[j]][[jj]] * shrink, 
+                              return(.shrink_to_avg(crv, avg,
+                                            pct.shrink[[j]][[jj]] * shrink,
                                             newX, approx_points = approx_points,
                                             stretch = stretch))
                           })

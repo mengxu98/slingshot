@@ -48,13 +48,13 @@ embedCurves(x, newDimRed, ...)
 \item{newDimRed}{a matrix representing the new coordinate space in which to
 embed the \code{slingshot} curves.}
 
-\item{...}{Additional parameters to pass to scatter plot smoothing function, 
+\item{...}{Additional parameters to pass to scatter plot smoothing function,
 \code{smoother}.}
 
-\item{shrink}{logical or numeric between 0 and 1, determines whether and how 
+\item{shrink}{logical or numeric between 0 and 1, determines whether and how
 much to shrink branching lineages toward their average prior to the split.}
 
-\item{stretch}{numeric factor by which curves can be extrapolated beyond 
+\item{stretch}{numeric factor by which curves can be extrapolated beyond
 endpoints. Default is \code{2}, see
 \code{\link[princurve]{principal_curve}}.}
 
@@ -64,12 +64,12 @@ performed and curves will contain as many points as the input data. If
 numeric, curves will be approximated by this number of points; preferably
 about 100 (see \code{\link[princurve]{principal_curve}}).}
 
-\item{smoother, }{choice of scatter plot smoother. Same as 
+\item{smoother, }{choice of scatter plot smoother. Same as
 \code{\link[princurve]{principal_curve}}, but \code{"lowess"} option is
 replaced with \code{"loess"} for additional flexibility.}
 
-\item{shrink.method}{character denoting how to determine the appropriate 
-amount of shrinkage for a branching lineage. Accepted values are the same 
+\item{shrink.method}{character denoting how to determine the appropriate
+amount of shrinkage for a branching lineage. Accepted values are the same
 as for \code{kernel} in \code{\link{density}} (default is \code{"cosine"}),
 as well as \code{"tricube"} and \code{"density"}. See 'Details' for more.}
 }
@@ -97,6 +97,8 @@ Note that non-linear dimensionality reduction techniques (such as
 }
 \examples{
 data("slingshotExample")
+rd <- slingshotExample$rd
+cl <- slingshotExample$cl
 sds <- slingshot(rd, cl)
 rd2 <- cbind(rd[,2] + rnorm(nrow(rd)), -rd[,1] + rnorm(nrow(rd)))
 sds.new <- embedCurves(sds, rd2)

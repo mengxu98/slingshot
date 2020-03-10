@@ -33,6 +33,8 @@ Therefore, we propose the following workflow: first, use all available cells to 
 
 ```{r dataSetup}
 data('slingshotExample')
+rd <- slingshotExample$rd
+cl <- slingshotExample$cl
 condition <- factor(rep(c('A','B'), length.out = nrow(rd)))
 condition[110:140] <- 'A'
 ls()

@@ -20,7 +20,7 @@ plot3d.SlingshotDataSet(
 \arguments{
 \item{x}{a \code{SlingshotDataSet} with results to be plotted.}
 
-\item{type}{character, the type of output to be plotted, can be one of 
+\item{type}{character, the type of output to be plotted, can be one of
 \code{"lineages"}, \code{curves}, or \code{both} (by partial matching), see
 Details for more.}
 
@@ -33,7 +33,7 @@ existing plot.}
 
 \item{dims}{numeric, which dimensions to plot (default is \code{1:3}).}
 
-\item{aspect}{either a logical indicating whether to adjust the aspect ratio 
+\item{aspect}{either a logical indicating whether to adjust the aspect ratio
 or a new ratio, see \code{\link[rgl:plot3d]{plot3d}}.}
 
 \item{size}{numeric, size of points for MST (default is \code{10}), see
@@ -62,6 +62,8 @@ When \code{type} is not specified, the function will first check the
 \dontrun{
 library(rgl)
 data("slingshotExample")
+rd <- slingshotExample$rd
+cl <- slingshotExample$cl
 rd <- cbind(rd, rnorm(nrow(rd)))
 sds <- slingshot(rd, cl, start.clus = "1")
 plot3d(sds, type = 'b')

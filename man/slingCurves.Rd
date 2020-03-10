@@ -34,6 +34,8 @@ Extract the simultaneous principal curves from an object
 
 \examples{
 data("slingshotExample")
+rd <- slingshotExample$rd
+cl <- slingshotExample$cl
 sds <- slingshot(rd, cl)
 slingCurves(sds)
 }

@@ -32,17 +32,17 @@
 \arguments{
 \item{x}{a \code{SlingshotDataSet} with results to be plotted.}
 
-\item{type}{character, the type of output to be plotted, can be one of 
+\item{type}{character, the type of output to be plotted, can be one of
 \code{"lineages"}, \code{curves}, or \code{both} (by partial matching), see
 Details for more.}
 
-\item{show.constraints}{logical, whether or not the user-specified initial 
+\item{show.constraints}{logical, whether or not the user-specified initial
 and terminal clusters should be specially denoted by green and red dots,
 respectively.}
 
 \item{col}{character, color vector for points.}
 
-\item{pch}{integer or character specifying the plotting symbol, see 
+\item{pch}{integer or character specifying the plotting symbol, see
 \code{\link{par}}.}
 
 \item{cex}{numeric, amount by which points should be magnified, see
@@ -50,7 +50,7 @@ respectively.}
 
 \item{lwd}{numeric, the line width, see \code{\link{par}}.}
 
-\item{...}{additional parameters for \code{plot} or \code{axis}, see 
+\item{...}{additional parameters for \code{plot} or \code{axis}, see
 \code{\link{pairs}}.}
 
 \item{labels}{character, the names of the variables, see \code{\link{pairs}}.}
@@ -97,6 +97,8 @@ When \code{type} is not specified, the function will first check the
 }
 \examples{
 data("slingshotExample")
+rd <- slingshotExample$rd
+cl <- slingshotExample$cl
 sds <- slingshot(rd, cl, start.clus = "1")
 pairs(sds, type = 'curves')
 

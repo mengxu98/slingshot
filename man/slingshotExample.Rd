@@ -3,8 +3,6 @@
 \docType{data}
 \name{slingshotExample}
 \alias{slingshotExample}
-\alias{rd}
-\alias{cl}
 \title{Bifurcating lineages data}
 \format{\code{rd} is a matrix of coordinates in two dimensions, representing
   140 cells. \code{cl} is a numeric vector of 140 corresponding cluster
@@ -13,9 +11,7 @@
 Simulated data provided with the \code{slingshot} package.
 }
 \usage{
-rd
-
-cl
+data("slingshotExample")
 }
 \description{
 This simulated dataset contains a low-dimensional representation
@@ -24,6 +20,8 @@ This simulated dataset contains a low-dimensional representation
 }
 \examples{
 data("slingshotExample")
+rd <- slingshotExample$rd
+cl <- slingshotExample$cl
 slingshot(rd, cl)
 }
 \keyword{datasets}

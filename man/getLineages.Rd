@@ -96,7 +96,7 @@ getLineages(data, clusterLabels, ...)
 }
 \arguments{
 \item{data}{a data object containing the matrix of coordinates to be used for
-lineage inference. Supported types include \code{matrix}, 
+lineage inference. Supported types include \code{matrix},
 \code{\link{SingleCellExperiment}}, and \code{\link{SlingshotDataSet}}.}
 
 \item{clusterLabels}{character, a vector of length \code{n} denoting cluster
@@ -114,32 +114,32 @@ default.}
 \item{start.clus}{(optional) character, indicates the cluster(s) *from* which
 lineages will be drawn.}
 
-\item{end.clus}{(optional) character, indicates the cluster(s) which will be 
+\item{end.clus}{(optional) character, indicates the cluster(s) which will be
 forced leaf nodes in their trees.}
 
 \item{dist.fun}{(optional) function, method for calculating distances between
-clusters. Must take two matrices as input, corresponding to points in 
-reduced-dimensional space. If the minimum cluster size is larger than the 
+clusters. Must take two matrices as input, corresponding to points in
+reduced-dimensional space. If the minimum cluster size is larger than the
 number dimensions, the default is to use the joint covariance matrix to
 find squared distance between cluster centers. If not, the default is to
 use the diagonal of the joint covariance matrix.}
 
-\item{omega}{(optional) numeric, this granularity parameter determines the 
-distance between every real cluster and the artificial cluster, OMEGA. It 
-is parameterized such that this distance is \code{omega / 2}, making 
-\code{omega} the maximum distance between two connected clusters. By 
+\item{omega}{(optional) numeric, this granularity parameter determines the
+distance between every real cluster and the artificial cluster, OMEGA. It
+is parameterized such that this distance is \code{omega / 2}, making
+\code{omega} the maximum distance between two connected clusters. By
 default, \code{omega = Inf}.}
 }
 \value{
-An object of class \code{\link{SlingshotDataSet}} containing the 
-  arguments provided to \code{getLineages} as well as the following new 
+An object of class \code{\link{SlingshotDataSet}} containing the
+  arguments provided to \code{getLineages} as well as the following new
   elements: \itemize{ \item{\code{lineages}}{ a list of \code{L} items, where
   \code{L} is the number of lineages identified. Each lineage is represented
   by a character vector with the names of the clusters included in that
   lineage, in order.} \item{\code{connectivity}}{ the inferred cluster
-  connectivity matrix.} 
+  connectivity matrix.}
   \item{\code{slingParams$start.given},\code{slingParams$end.given}} {
-  logical values indicating whether the starting and ending clusters were 
+  logical values indicating whether the starting and ending clusters were
   specified a priori.} \item{\code{slingParams$dist}}{ the pairwise
   cluster distance matrix.}}
 }
@@ -151,7 +151,7 @@ Given a reduced-dimension data matrix \code{n} by \code{p} and a
 }
 \details{
 The \code{connectivity} matrix is learned by fitting a (possibly
-  constrained) minimum-spanning tree on the clusters and the artificial 
+  constrained) minimum-spanning tree on the clusters and the artificial
   cluster, OMEGA, which is a fixed distance away from every real cluster.
   This effectively limits the maximum branch length in the MST to twice the
   chosen distance, meaning that the output may contain multiple trees.
@@ -167,6 +167,8 @@ Once the \code{connectivity} is known, lineages are identified in
 }
 \examples{
 data("slingshotExample")
+rd <- slingshotExample$rd
+cl <- slingshotExample$cl
 sds <- getLineages(rd, cl, start.clus = '1')
 
 plot(rd, col = cl, asp = 1)

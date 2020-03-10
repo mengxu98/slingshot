@@ -72,7 +72,7 @@ setMethod(
 setMethod(
     f = "newSlingshotDataSet",
     signature = signature("matrix","matrix"),
-    definition = function(reducedDim, clusterLabels, 
+    definition = function(reducedDim, clusterLabels,
                           lineages=list(),
                           adjacency=matrix(NA,0,0),
                           curves=list(),
@@ -111,7 +111,7 @@ setMethod(
 
 #' @describeIn SlingshotDataSet a short summary of \code{SlingshotDataSet}
 #'   object.
-#'   
+#'
 #' @param object a \code{SlingshotDataSet} object.
 #' @export
 setMethod(
@@ -123,21 +123,21 @@ setMethod(
            slingParams(object)$embedding){
             cat('Embedding of slingshot trajectory\n')
         }
-        df <- data.frame(Samples = nrow(reducedDim(object)), 
+        df <- data.frame(Samples = nrow(reducedDim(object)),
                          Dimensions = ncol(reducedDim(object)))
         cat('\n')
         print(df, row.names = FALSE)
         cat('\nlineages:', length(slingLineages(object)), "\n")
         for(i in seq_len(length(slingLineages(object)))){
-            cat('Lineage',i,": ", paste(slingLineages(object)[[i]],' '), "\n", 
+            cat('Lineage',i,": ", paste(slingLineages(object)[[i]],' '), "\n",
                 sep='')
         }
         cat('\ncurves:', length(slingCurves(object)), "\n")
         for(i in seq_len(length(slingCurves(object)))){
-            cat('Curve',i,": ", "Length: ", 
-                signif(max(slingCurves(object)[[i]]$lambda), digits = 5), 
-                "\tSamples: ", round(sum(slingCurves(object)[[i]]$w), 
-                                     digits = 2), 
+            cat('Curve',i,": ", "Length: ",
+                signif(max(slingCurves(object)[[i]]$lambda), digits = 5),
+                "\tSamples: ", round(sum(slingCurves(object)[[i]]$w),
+                                     digits = 2),
                 "\n", sep='')
         }
     }
@@ -207,7 +207,7 @@ setMethod(
     signature = "SlingshotDataSet",
     definition = function(x) x@lineages
 )
-#' @describeIn slingLineages returns the list of lineages, represented by 
+#' @describeIn slingLineages returns the list of lineages, represented by
 #'   ordered sets of clusters from a \code{\link{SingleCellExperiment}} object.
 #' @export
 setMethod(
@@ -255,9 +255,9 @@ setMethod(
 # #' @describeIn SlingshotDataSet Updated object with new reduced dimensional
 # #'   matrix.
 # #' @param value matrix, the new reduced dimensional dataset.
-# #' 
-# #' @details 
-# #' Warning: this will remove any existing lineages or curves from the 
+# #'
+# #' @details
+# #' Warning: this will remove any existing lineages or curves from the
 # #' \code{SlingshotDataSet} object.
 # #' @importFrom SingleCellExperiment reducedDim<-
 # #' @export
@@ -266,14 +266,14 @@ setMethod(
 #     signature = "SlingshotDataSet",
 #     definition = function(x, value) initialize(x, reducedDim = value,
 #                                          clusterLabels = clusterLabels(x)))
-# 
+#
 #' # replacement methods
 # #' @describeIn SlingshotDataSet Updated object with new reduced dimensional
 # #'   matrix.
 # #' @param value matrix, the new reduced dimensional dataset.
-# #' 
-# #' @details 
-# #' Warning: this will remove any existing lineages or curves from the 
+# #'
+# #' @details
+# #' Warning: this will remove any existing lineages or curves from the
 # #' \code{SlingshotDataSet} object.
 # #' @importFrom SingleCellExperiment reducedDims<-
 # #' @export
@@ -282,13 +282,13 @@ setMethod(
 #     signature = "SlingshotDataSet",
 #     definition = function(x, value) initialize(x, reducedDim = value,
 #                                          clusterLabels = clusterLabels(x)))
-# 
+#
 # #' @describeIn SlingshotDataSet Updated object with new vector of cluster
 # #'   labels.
 # #' @param value character, the new vector of cluster labels.
-# #' 
-# #' @details 
-# #' Warning: this will remove any existing lineages or curves from the 
+# #'
+# #' @details
+# #' Warning: this will remove any existing lineages or curves from the
 # #' \code{SlingshotDataSet} object.
 # #' @export
 # setReplaceMethod(
@@ -303,11 +303,11 @@ setMethod(
 #' matrix and cluster labels.
 #' @param j indices to be applied to the columns (dimensions) of the reduced
 #' dimensional matrix.
-#' @details 
-#' Warning: this will remove any existing lineages or curves from the 
+#' @details
+#' Warning: this will remove any existing lineages or curves from the
 #' \code{SlingshotDataSet} object.
 #' @export
-setMethod(f = "[", 
+setMethod(f = "[",
           signature = c("SlingshotDataSet", "ANY", "ANY", "ANY"),
           function(x, i, j)
           {
@@ -445,7 +445,7 @@ setMethod(
     p <- ncol(pcurves[[1]]$s)
     max.shared.lambda <- min(vapply(pcurves, function(pcv){max(pcv$lambda)},0))
     lambdas.combine <- seq(0, max.shared.lambda, length.out = n)
-    
+
     pcurves.dense <- lapply(pcurves,function(pcv){
         vapply(seq_len(p),function(jj){
             if(approx_points > 0){
@@ -454,13 +454,13 @@ setMethod(
             }else{
                 xin_lambda <- pcv$lambda
             }
-            interpolated <- approx(xin_lambda[pcv$ord], 
+            interpolated <- approx(xin_lambda[pcv$ord],
                                    pcv$s[pcv$ord, jj, drop = FALSE],
                                    xout = lambdas.combine, ties = 'ordered')$y
             return(interpolated)
         }, rep(0,n))
     })
-    
+
     avg <- vapply(seq_len(p),function(jj){
         dim.all <- vapply(seq_along(pcurves.dense),function(i){
             pcurves.dense[[i]][,jj]
@@ -468,19 +468,19 @@ setMethod(
         return(rowMeans(dim.all))
     }, rep(0,n))
     avg.curve <- project_to_curve(X, avg, stretch=stretch)
-    
+
     if(approx_points > 0){
         xout_lambda <- seq(min(avg.curve$lambda),
                          max(avg.curve$lambda),
                          length.out = approx_points)
         avg.curve$s <- apply(avg.curve$s, 2, function(sjj){
             return(approx(x = avg.curve$lambda[avg.curve$ord],
-                          y = sjj[avg.curve$ord], 
+                          y = sjj[avg.curve$ord],
                           xout = xout_lambda, ties = 'ordered')$y)
         })
         avg.curve$ord <- seq_len(approx_points)
     }
-    
+
     avg.curve$w <- rowSums(vapply(pcurves, function(p){ p$w }, rep(0,nrow(X))))
     return(avg.curve)
 }
@@ -561,12 +561,12 @@ setMethod(
         bw1 <- bw.SJ(pst)
         bw2 <- bw.SJ(pst[share.idx])
         bw <- (bw1 + bw2) / 2
-        d2 <- density(pst[share.idx], bw = bw, 
+        d2 <- density(pst[share.idx], bw = bw,
                       weights = crv$w[share.idx]/sum(crv$w[share.idx]))
         d1 <- density(pst, bw = bw, weights = crv$w/sum(crv$w))
         scale <- sum(crv$w[share.idx]) / sum(crv$w)
-        pct.l <- (approx(d2$x,d2$y,xout = pts2wt, yleft = 0, 
-                         yright = 0, ties = mean)$y * scale) / 
+        pct.l <- (approx(d2$x,d2$y,xout = pts2wt, yleft = 0,
+                         yright = 0, ties = mean)$y * scale) /
             approx(d1$x,d1$y,xout = pts2wt, yleft = 0, yright = 0,
                    ties = mean)$y
         pct.l[is.na(pct.l)] <- 0
@@ -578,7 +578,7 @@ setMethod(
                            stretch = 2){
     n <- nrow(pcurve$s)
     p <- ncol(pcurve$s)
-    
+
     if(approx_points > 0){
         lam <- seq(min(pcurve$lambda), max(pcurve$lambda),
                       length.out = approx_points)
@@ -588,7 +588,7 @@ setMethod(
         lam <- pcurve$lambda
         avlam <- avg.curve$lambda
     }
-    
+
     s <- vapply(seq_len(p),function(jj){
         orig.jj <- pcurve$s[,jj]
         avg.jj <- approx(x = avlam, y = avg.curve$s[,jj], xout = lam,
@@ -596,16 +596,16 @@ setMethod(
         return(avg.jj * pct + orig.jj * (1-pct))
     }, rep(0,n))
     w <- pcurve$w
-    pcurve <- project_to_curve(X, as.matrix(s[pcurve$ord, ,drop = FALSE]), 
+    pcurve <- project_to_curve(X, as.matrix(s[pcurve$ord, ,drop = FALSE]),
         stretch = stretch)
     pcurve$w <- w
-    
+
     if(approx_points > 0){
       xout_lambda <- seq(min(pcurve$lambda), max(pcurve$lambda),
                          length.out = approx_points)
       pcurve$s <- apply(pcurve$s, 2, function(sjj){
         return(approx(x = pcurve$lambda[pcurve$ord],
-                      y = sjj[pcurve$ord], 
+                      y = sjj[pcurve$ord],
                       xout = xout_lambda, ties = 'ordered')$y)
       })
       pcurve$ord <- seq_len(approx_points)
@@ -620,21 +620,21 @@ setMethod(
 
 #' @title Bifurcating lineages data
 #' @name slingshotExample
-#' @aliases slingshotExample rd cl
-#'   
+#'
+#' @usage data("slingshotExample")
+#'
 #' @description This simulated dataset contains a low-dimensional representation
 #'   of two bifurcating lineages (\code{rd}) and a vector of cluster labels
 #'   generated by k-means with \code{K = 5} (\code{cl}).
-#'   
+#'
 #' @format \code{rd} is a matrix of coordinates in two dimensions, representing
 #'   140 cells. \code{cl} is a numeric vector of 140 corresponding cluster
 #'   labels for each cell.
 #' @source Simulated data provided with the \code{slingshot} package.
-#' 
-#' @examples 
+#'
+#' @examples
 #' data("slingshotExample")
+#' rd <- slingshotExample$rd
+#' cl <- slingshotExample$cl
 #' slingshot(rd, cl)
-"rd"
-
-#' @rdname slingshotExample
-"cl"
+"slingshotExample"

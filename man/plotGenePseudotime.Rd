@@ -41,6 +41,8 @@ lineages inferred by \code{\link{slingshot}}.
 }
 \examples{
 data("slingshotExample")
+rd <- slingshotExample$rd
+cl <- slingshotExample$cl
 sds <- slingshot(rd, cl, start.clus = "1")
 ex <- matrix(c(rchisq(100,1),rchisq(20,3),rchisq(20,6)),nrow=1)
 rownames(ex) <- 'Gene-1'

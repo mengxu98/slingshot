@@ -33,6 +33,8 @@ clusters from a \code{\link{SingleCellExperiment}} object.
 
 \examples{
 data("slingshotExample")
+rd <- slingshotExample$rd
+cl <- slingshotExample$cl
 sds <- getLineages(rd, cl)
 slingAdjacency(sds)
 }

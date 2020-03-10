@@ -18,7 +18,7 @@ SlingshotDataSet(data, ...)
 \item{...}{additional arguments to pass to object-specific methods.}
 }
 \value{
-A \code{SlingshotDataSet} object containing the output of 
+A \code{SlingshotDataSet} object containing the output of
 \code{slingshot}.
 }
 \description{
