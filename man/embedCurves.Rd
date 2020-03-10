@@ -3,11 +3,35 @@
 \name{embedCurves}
 \alias{embedCurves}
 \alias{embedCurves,SlingshotDataSet,matrix-method}
+\alias{embedCurves,SingleCellExperiment,matrix-method}
+\alias{embedCurves,SingleCellExperiment,character-method}
 \title{Embed trajectory in new space}
 \usage{
 embedCurves(x, newDimRed, ...)
 
 \S4method{embedCurves}{SlingshotDataSet,matrix}(
+  x,
+  newDimRed,
+  shrink = NULL,
+  stretch = NULL,
+  approx_points = NULL,
+  smoother = NULL,
+  shrink.method = NULL,
+  ...
+)
+
+\S4method{embedCurves}{SingleCellExperiment,matrix}(
+  x,
+  newDimRed,
+  shrink = NULL,
+  stretch = NULL,
+  approx_points = NULL,
+  smoother = NULL,
+  shrink.method = NULL,
+  ...
+)
+
+\S4method{embedCurves}{SingleCellExperiment,character}(
   x,
   newDimRed,
   shrink = NULL,

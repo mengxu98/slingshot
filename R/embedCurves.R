@@ -100,7 +100,7 @@ setMethod(f = "embedCurves",
               }
               if(shrink < 0 | shrink > 1){
                   stop("'shrink' parameter must be logical or numeric between",
-                       "0 and 1")
+                       " 0 and 1")
               }
               if(nrow(X)!=nrow(newX)){
                   stop("'newX' must have same number of rows as original",
@@ -243,7 +243,7 @@ setMethod(f = "embedCurves",
                           avg.lines[[i]] <- avg
                           common.ind <- rowMeans(
                               vapply(to.avg, function(crv){ crv$w > 0 },
-                                                        rep(TRUE, n))) == 1
+                                     rep(TRUE, n))) == 1
                           pct.shrink[[i]] <- lapply(to.avg,function(crv){
                               .percent_shrinkage(crv, common.ind,
                                                  approx_points = approx_points,
@@ -298,6 +298,19 @@ setMethod(f = "embedCurves",
                       }
                   }
               }
+              
+              # use the new curves, but keep existing pseudotime, weights, etc.
+              newCurves <- lapply(seq_len(L), function(l){
+                  crv <- list(s = pcurves[[l]]$s,
+                              ord = pcurves[[l]]$ord,
+                              lambda = slingCurves(sds)[[l]]$lambda,
+                              dist_ind = slingCurves(sds)[[l]]$dist_ind,
+                              dist = slingCurves(sds)[[l]]$dist,
+                              w = slingCurves(sds)[[l]]$w)
+                  class(crv) <- "principal_curve"
+                  return(crv)
+              })
+              
               params <- slingParams(sds)
               params$shrink <- shrink
               params$stretch <- stretch
@@ -309,8 +322,59 @@ setMethod(f = "embedCurves",
                                         clusterLabels = slingClusterLabels(sds),
                                         lineages = slingLineages(sds),
                                         adjacency = slingAdjacency(sds),
-                                        curves = pcurves,
+                                        curves = newCurves,
                                         slingParams = params)
               validObject(sds.out)
               return(sds.out)
           })
+
+
+#' @rdname embedCurves
+#' @export
+setMethod(f = "embedCurves",
+          signature = signature(x = "SingleCellExperiment",
+                                newDimRed = "matrix"),
+          definition = function(x, newDimRed,
+                                shrink = NULL,
+                                stretch = NULL,
+                                approx_points = NULL,
+                                smoother = NULL,
+                                shrink.method = NULL, ...){
+              # check for existing slingshot results
+              if(is.null(x@int_metadata$slingshot)){
+                  stop('No previous slingshot results found.')
+              }
+              return(embedCurves(x = SlingshotDataSet(x), 
+                                 newDimRed = newDimRed,
+                                 shrink = shrink,
+                                 stretch = stretch,
+                                 approx_points = approx_points,
+                                 smoother = smoother,
+                                 shrink.method = shrink.method, ...))
+          })
+
+#' @rdname embedCurves
+#' @importFrom SingleCellExperiment reducedDim
+#' @export
+setMethod(f = "embedCurves",
+          signature = signature(x = "SingleCellExperiment",
+                                newDimRed = "character"),
+          definition = function(x, newDimRed,
+                                shrink = NULL,
+                                stretch = NULL,
+                                approx_points = NULL,
+                                smoother = NULL,
+                                shrink.method = NULL, ...){
+              # check for existing slingshot results
+              if(is.null(x@int_metadata$slingshot)){
+                  stop('No previous slingshot results found.')
+              }
+              return(embedCurves(x = SlingshotDataSet(x), 
+                                 newDimRed = reducedDim(x, newDimRed),
+                                 shrink = shrink,
+                                 stretch = stretch,
+                                 approx_points = approx_points,
+                                 smoother = smoother,
+                                 shrink.method = shrink.method, ...))
+          })
+
