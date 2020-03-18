@@ -17,7 +17,7 @@ slingBranchID <- function(x, thresh = NULL){
             stop("'thresh' value must be between 0 and 1.")
         }
     }
-    return(factor(apply(slingCurveWeights(x) > thresh, 1, function(bin){
+    return(factor(apply(slingCurveWeights(x) >= thresh, 1, function(bin){
         paste(which(bin), collapse = '+')
     })))
 }
@@ -39,25 +39,30 @@ slingBranchID <- function(x, thresh = NULL){
 #' @param x an object containing slingshot output.
 #' @param thresh the minimum weight of assignment required to assign a cell to a
 #'   lineage (default = 1/L)
-#' @importFrom igraph graph_from_edgelist vertex_attr vertex_attr<-
+#' @importFrom igraph graph_from_literal graph_from_edgelist vertex_attr vertex_attr<-
 #' @export
 slingBranchGraph <- function(x, thresh = NULL){
     brID <- slingBranchID(x, thresh = thresh)
     nodes <- as.character(levels(brID))
     which.lin <- strsplit(nodes, split='[+]')
-    nlins <- sapply(which.lin, length)
+    nlins <- vapply(which.lin, length, 0)
     maxL <- max(nlins)
+    if(maxL == 1){ # only one lineage
+        g <- graph_from_literal(1)
+        igraph::vertex_attr(g, 'size') <- length(brID)
+        return(g)
+    }
     
     el <- NULL
     # for each node n at level l
-    for(l in 2:maxL){
+    for(l in seq(2,maxL)){
         for(n in nodes[nlins==l]){
             # find all descendants of n
             desc <- .under(n, nodes)
             for(d in desc){
                 if(l - nlins[which(nodes==d)] >= 2){
                     # check for intermediates
-                    granddesc <- unique(unlist(sapply(desc, under, nodes)))
+                    granddesc <- unique(unlist(lapply(desc, .under, nodes)))
                     if(! d %in% granddesc){
                         # add edge
                         el <- rbind(el, c(n, d))
