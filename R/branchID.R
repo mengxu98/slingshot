@@ -17,7 +17,7 @@ slingBranchID <- function(x, thresh = NULL){
             stop("'thresh' value must be between 0 and 1.")
         }
     }
-    return(factor(apply(slingCurveWeights(x) >= thresh, 1, function(bin){
+    return(factor(apply(slingCurveWeights(x) > thresh, 1, function(bin){
         paste(which(bin), collapse = '+')
     })))
 }
@@ -39,7 +39,7 @@ slingBranchID <- function(x, thresh = NULL){
 #' @param x an object containing slingshot output.
 #' @param thresh the minimum weight of assignment required to assign a cell to a
 #'   lineage (default = 1/L)
-#' @importFrom igraph graph_from_literal graph_from_edgelist vertex_attr vertex_attr<-
+#' @importFrom igraph graph_from_literal graph_from_edgelist graph_from_adjacency_matrix vertex_attr vertex_attr<-
 #' @export
 slingBranchGraph <- function(x, thresh = NULL){
     brID <- slingBranchID(x, thresh = thresh)
@@ -49,7 +49,15 @@ slingBranchGraph <- function(x, thresh = NULL){
     maxL <- max(nlins)
     if(maxL == 1){ # only one lineage
         g <- graph_from_literal(1)
-        igraph::vertex_attr(g, 'size') <- length(brID)
+        vertex_attr(g, 'cells') <- length(brID)
+        vertex_attr(g, 'size') <- 100
+        return(g)
+    }
+    if(length(nodes)==1){ # only one node, possibly multiple lineages
+        m <- matrix(0, dimnames = list(nodes[1], nodes[1]))
+        g <- graph_from_adjacency_matrix(m)
+        vertex_attr(g, 'cells') <- length(brID)
+        vertex_attr(g, 'size') <- 100
         return(g)
     }
     
@@ -75,7 +83,9 @@ slingBranchGraph <- function(x, thresh = NULL){
         }
     }
     g <- igraph::graph_from_edgelist(el)
-    igraph::vertex_attr(g, 'size') <- table(brID)[igraph::vertex_attr(g)$name]
+    vertex_attr(g, 'cells') <- table(brID)[igraph::vertex_attr(g)$name]
+    vertex_attr(g, 'size') <- 100 * vertex_attr(g)$cells / 
+                                max(vertex_attr(g)$cells)
     return(g)
 }
 
