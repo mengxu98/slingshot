@@ -1,4 +1,3 @@
-
 #' @rdname slingBranchID
 #' @title Get slingshot branch labels
 #'
@@ -7,6 +6,8 @@
 #' @param x an object containing slingshot output.
 #' @param thresh the minimum weight of assignment required to assign a cell to a
 #'   lineage (default = 1/L)
+#' @return a factor variable that assigns each cell to a particular lineage or
+#'   set of lineages.
 #' @export
 slingBranchID <- function(x, thresh = NULL){
     L <- length(slingLineages(x))
@@ -39,9 +40,15 @@ slingBranchID <- function(x, thresh = NULL){
 #' @param x an object containing slingshot output.
 #' @param thresh the minimum weight of assignment required to assign a cell to a
 #'   lineage (default = 1/L)
-#' @importFrom igraph graph_from_literal graph_from_edgelist graph_from_adjacency_matrix vertex_attr vertex_attr<-
+#' @param max_node_size the size of the largest node in the graph, for plotting
+#'   (all others will be drawn proportionally). See
+#'   \code{\link{igraph.plotting}} for more details.
+#' @return an \code{igraph} object representing the relationships between
+#'   lineages.
+#' @importFrom igraph graph_from_literal graph_from_edgelist
+#'   graph_from_adjacency_matrix vertex_attr vertex_attr<-
 #' @export
-slingBranchGraph <- function(x, thresh = NULL){
+slingBranchGraph <- function(x, thresh = NULL, max_node_size = 100){
     brID <- slingBranchID(x, thresh = thresh)
     nodes <- as.character(levels(brID))
     which.lin <- strsplit(nodes, split='[+]')
@@ -50,14 +57,14 @@ slingBranchGraph <- function(x, thresh = NULL){
     if(maxL == 1){ # only one lineage
         g <- graph_from_literal(1)
         vertex_attr(g, 'cells') <- length(brID)
-        vertex_attr(g, 'size') <- 100
+        vertex_attr(g, 'size') <- max_node_size
         return(g)
     }
     if(length(nodes)==1){ # only one node, possibly multiple lineages
         m <- matrix(0, dimnames = list(nodes[1], nodes[1]))
         g <- graph_from_adjacency_matrix(m)
         vertex_attr(g, 'cells') <- length(brID)
-        vertex_attr(g, 'size') <- 100
+        vertex_attr(g, 'size') <- max_node_size
         return(g)
     }
     
@@ -84,7 +91,7 @@ slingBranchGraph <- function(x, thresh = NULL){
     }
     g <- igraph::graph_from_edgelist(el)
     vertex_attr(g, 'cells') <- table(brID)[igraph::vertex_attr(g)$name]
-    vertex_attr(g, 'size') <- 100 * vertex_attr(g)$cells / 
+    vertex_attr(g, 'size') <- max_node_size * vertex_attr(g)$cells / 
                                 max(vertex_attr(g)$cells)
     return(g)
 }

@@ -4,13 +4,21 @@
 \alias{slingBranchGraph}
 \title{Construct graph of slingshot branch labels}
 \usage{
-slingBranchGraph(x, thresh = NULL)
+slingBranchGraph(x, thresh = NULL, max_node_size = 100)
 }
 \arguments{
 \item{x}{an object containing slingshot output.}
 
 \item{thresh}{the minimum weight of assignment required to assign a cell to a
 lineage (default = 1/L)}
+
+\item{max_node_size}{the size of the largest node in the graph, for plotting
+(all others will be drawn proportionally). See
+\code{\link{igraph.plotting}} for more details.}
+}
+\value{
+an \code{igraph} object representing the relationships between
+  lineages.
 }
 \description{
 Builds a graph describing the relationships between the

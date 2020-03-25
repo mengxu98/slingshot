@@ -12,6 +12,10 @@ slingBranchID(x, thresh = NULL)
 \item{thresh}{the minimum weight of assignment required to assign a cell to a
 lineage (default = 1/L)}
 }
+\value{
+a factor variable that assigns each cell to a particular lineage or
+  set of lineages.
+}
 \description{
 Extracts a categorical variable describing which lineage (or
   combination of lineages) each cell is assigned to.
