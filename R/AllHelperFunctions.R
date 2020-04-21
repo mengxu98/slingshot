@@ -612,6 +612,14 @@ setMethod(
     }
     return(pcurve)
 }
+.under <- function(n, nodes){
+    which.lin <- strsplit(nodes, split='[,]')
+    nlins <- vapply(which.lin, length, 1)
+    out <- nodes[vapply(which.lin, function(wl){
+        all(wl %in% unlist(strsplit(n, split='[,]')))
+    }, FALSE)]
+    return(out[out != n])
+}
 
 
 ################

@@ -283,6 +283,22 @@ setGeneric(name = "embedCurves",
            signature = c("x", "newDimRed"),
            def = function(x, newDimRed, ...) standardGeneric("embedCurves"))
 
+#' @title Get slingshot branch labels
+#' @rdname slingBranchID
+#' @param ... additional arguments passed to object-specific methods.
+#' @export
+setGeneric(name = "slingBranchID",
+           signature = c("x"),
+           def = function(x, ...) standardGeneric("slingBranchID"))
+
+#' @title Construct graph of slingshot branch labels
+#' @rdname slingBranchGraph
+#' @param ... additional arguments passed to object-specific methods.
+#' @export
+setGeneric(name = "slingBranchGraph",
+           signature = c("x"),
+           def = function(x, ...) standardGeneric("slingBranchGraph"))
+
 
 # plotting
 #' @title Plot Gene Expression by Pseudotime

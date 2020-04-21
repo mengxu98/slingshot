@@ -4,9 +4,11 @@
 \name{slingshotExample}
 \alias{slingshotExample}
 \title{Bifurcating lineages data}
-\format{\code{rd} is a matrix of coordinates in two dimensions, representing
+\format{
+\code{rd} is a matrix of coordinates in two dimensions, representing
   140 cells. \code{cl} is a numeric vector of 140 corresponding cluster
-  labels for each cell.}
+  labels for each cell.
+}
 \source{
 Simulated data provided with the \code{slingshot} package.
 }
