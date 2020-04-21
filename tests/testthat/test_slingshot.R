@@ -493,3 +493,33 @@ test_that("embedCurves works as expected", {
 
 })
 
+test_that("branchID functions work as expected", {
+    data("slingshotExample")
+    rd <- slingshotExample$rd
+    cl <- slingshotExample$cl
+    sds <- slingshot(rd, cl)
+    
+    # bad thresh
+    expect_error(slingBranchID(sds, thresh = 5), 'between 0 and 1')
+    expect_error(slingBranchID(sds, thresh = -1), 'between 0 and 1')
+    
+    id <- slingBranchID(sds)
+    expect_equal(levels(id), c('1','1,2','2'))
+    
+    g <- slingBranchGraph(sds)
+    expect_true(all(c('name','cells','size') %in% 
+                        names(igraph::vertex_attr(g))))
+    
+    require(SingleCellExperiment)
+    u <- matrix(rpois(140*50, 5), nrow=50)
+    sce <- SingleCellExperiment(assays=list(counts=u))
+    reducedDims(sce) <- SimpleList(PCA = rd)
+    sce <- slingshot(sce, cl, 'PCA')
+    
+    id <- slingBranchID(sce)
+    expect_equal(levels(id), c('1','1,2','2'))
+    
+    g <- slingBranchGraph(sce)
+    expect_true(all(c('name','cells','size') %in% 
+                        names(igraph::vertex_attr(g))))
+})
