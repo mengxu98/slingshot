@@ -19,6 +19,9 @@ notifications:
     on_success: change
     on_failure: change
 
+env:
+  - CODECOV_TOKEN="1b66ed42-ca8b-466c-8752-aa6754c7899d"
+
 addons:
   apt:
     packages:
