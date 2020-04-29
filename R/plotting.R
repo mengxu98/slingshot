@@ -435,12 +435,13 @@ plot3d.SlingshotDataSet <- function(x,
             zs <- c(zs, centers[,dims[3]])
         }
         if(curves){
+            npoints <- nrow(slingCurves(x)[[1]]$s)
             xs <- c(xs, as.numeric(vapply(slingCurves(x), function(c){
-                c$s[,dims[1]] }, rep(0,n))))
+                c$s[,dims[1]] }, rep(0,npoints))))
             ys <- c(ys, as.numeric(vapply(slingCurves(x), function(c){
-                c$s[,dims[2]] }, rep(0,n))))
+                c$s[,dims[2]] }, rep(0,npoints))))
             zs <- c(zs, as.numeric(vapply(slingCurves(x), function(c){
-                c$s[,dims[3]] }, rep(0,n))))
+                c$s[,dims[3]] }, rep(0,npoints))))
         }
         rgl::plot3d(x = NULL, y = NULL, z = NULL, aspect = aspect,
                     xlim = range(xs), ylim = range(ys), zlim = range(zs),
