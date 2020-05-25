@@ -4,7 +4,7 @@
 #'   a vector of cluster labels (or matrix of soft cluster assignments,
 #'   potentially including a \code{-1} label for "unclustered"), this function
 #'   performs lineage inference using a cluster-based minimum spanning tree and
-#'   constructing simulatenous principal curves for branching paths through the
+#'   constructing simultaneous principal curves for branching paths through the
 #'   tree.
 #'
 #' @description This wrapper function performs lineage inference in two steps:
