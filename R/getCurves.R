@@ -298,9 +298,20 @@ setMethod(f = "getCurves",
                     s = line.initial, stretch = 9999)
                 # do this twice because all points should have projections
                 # on all lineages, but only those points on the lineage
-                # should extend it
+                # should extend it (also need to adjust the s matrix to
+                # have the right number of points, if approx_points specified)
                 pcurve <- project_to_curve(X, s = curve$s[curve$ord, ,
-                    drop = FALSE], stretch=0)
+                                           drop=FALSE], stretch=0)
+                if(approx_points > 0){
+                    xout_lambda <- seq(min(pcurve$lambda), max(pcurve$lambda),
+                                       length.out = approx_points)
+                    pcurve$s <- apply(pcurve$s, 2, function(sjj){
+                        return(approx(x = pcurve$lambda[pcurve$ord],
+                                      y = sjj[pcurve$ord],
+                                      xout = xout_lambda, ties = 'ordered')$y)
+                    })
+                    pcurve$ord <- seq_len(approx_points)
+                }
                 pcurve$dist_ind <- abs(pcurve$dist_ind)
                 # ^ force non-negative distances
                 pcurve$lambda <- pcurve$lambda - min(pcurve$lambda,
