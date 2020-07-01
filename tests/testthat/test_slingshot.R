@@ -124,9 +124,23 @@ test_that("getLineages works as expected", {
     expect_true(all(vapply(slingLineages(sds1),function(l){ l[1] == '2' },
                            TRUE)))
     # set end cluster
-    sds2 <- getLineages(rd,cl, start.clus = 1, end.clus = 3)
+    sds2 <- getLineages(rd, cl, start.clus = 1, end.clus = 3)
     expect_true(any(vapply(slingLineages(sds2),function(l){ (l[1] == '1') &&
             (l[length(l)] == '3') }, TRUE)))
+    
+    # omega
+    # no effect
+    sdsO <- getLineages(rd, cl, omega = 10)
+    expect_identical(slingLineages(sdsO), slingLineages(sds0))
+    # separate the clusters after the branching point
+    sdsO <- getLineages(rd, cl, omega = 7)
+    expect_identical(slingLineages(sdsO)$Lineage1, as.character(1:3))
+    expect_true(all(as.character(4:5) %in% c(slingLineages(sdsO)$Lineage2,
+                                             slingLineages(sdsO)$Lineage3)))
+    # every cluster is its own lineage
+    sdsO <- getLineages(rd, cl, omega = 5)
+    expect_equal(length(slingLineages(sdsO)), 5)
+    expect_true(all(as.character(1:5) %in% unlist(slingLineages(sdsO))))
 })
 
 test_that("getCurves works as expected", {

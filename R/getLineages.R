@@ -26,16 +26,15 @@
 #'   find squared distance between cluster centers. If not, the default is to
 #'   use the diagonal of the joint covariance matrix.
 #' @param omega (optional) numeric, this granularity parameter determines the
-#'   distance between every real cluster and the artificial cluster, OMEGA. It
-#'   is parameterized such that this distance is \code{omega / 2}, making
-#'   \code{omega} the maximum distance between two connected clusters. By
-#'   default, \code{omega = Inf}.
+#'   distance between every real cluster and the artificial cluster,
+#'   \code{.OMEGA}. In practice, this makes \code{omega} the maximum allowable
+#'   distance between two connected clusters. By default, \code{omega = Inf}.
 #'
 #' @details The \code{connectivity} matrix is learned by fitting a (possibly
 #'   constrained) minimum-spanning tree on the clusters and the artificial
-#'   cluster, OMEGA, which is a fixed distance away from every real cluster.
-#'   This effectively limits the maximum branch length in the MST to twice the
-#'   chosen distance, meaning that the output may contain multiple trees.
+#'   cluster, \code{.OMEGA}, which is a fixed distance away from every real
+#'   cluster. This effectively limits the maximum branch length in the MST to
+#'   the chosen distance, meaning that the output may contain multiple trees.
 #'
 #' @details Once the \code{connectivity} is known, lineages are identified in
 #'   any tree with at least two clusters. For a given tree, if there is an
@@ -83,7 +82,9 @@ setMethod(f = "getLineages",
 
         X <- as.matrix(data)
         clusterLabels <- as.matrix(clusterLabels)
-        # CHECKS
+        ####################
+        ### CHECKS
+        ####################
         if(nrow(X)==0){
             stop('reducedDim has zero rows.')
         }
@@ -139,6 +140,17 @@ setMethod(f = "getLineages",
             clusterLabels <- clusterLabels[, colSums(clusterLabels)!=0,
                 drop = FALSE]
         }
+        if(length(omega) > 1){
+            stop('omega must be NULL or length 1')
+        }
+        if(!is.null(omega)){
+            if(is.na(as.numeric(omega))){
+                stop('omega must be numeric, logical, or NULL')
+            }
+            if(omega < 0){
+                stop('omega must be non-negative')
+            }
+        }
 
         # set up, remove unclustered cells (-1's)
         X.original <- X
@@ -183,52 +195,43 @@ setMethod(f = "getLineages",
         rownames(D) <- clusters
         colnames(D) <- clusters
 
-        # if infinite, set omega to largest distance + 1
-        if(is.null(omega)){
+        # if infinite or NULL, set omega to largest distance + 1
+        omega.original <- omega
+        if(is.null(omega) || omega == Inf){
             omega <- max(D) + 1
-        }else{
-            if(omega > 0){
-                if(omega == Inf){
-                    omega <- max(D) + 1
-                }else{
-                    omega <- omega / 2
-                }
-            }else{
-                stop("omega must be a positive number.")
-            }
         }
-        D <- rbind(D, rep(omega, ncol(D)) )
-        D <- cbind(D, c(rep(omega, ncol(D)), 0) )
+        D <- rbind(D, .OMEGA = rep(omega, ncol(D)) )
+        D <- cbind(D, .OMEGA = c(rep(omega, ncol(D)), 0) )
 
-        # draw MST on cluster centers + OMEGA
-        # (possibly excluding endpoint clusters)
-        if(! is.null(end.clus)){
+        ###########################
+        ### draw MST on cluster centers + .OMEGA
+        ###########################
+        # this creates 'forest', the complete cluster adjacency matrix
+        # (possibly excluding specified endpoint clusters, then adding them
+        # back in as either leaf nodes or singleton clusters)
+        if(is.null(end.clus)){
+            mstree <- ape::mst(D)
+            forest <- mstree
+        }else{
             end.idx <- which(clusters %in% end.clus)
             mstree <- ape::mst(D[-end.idx, -end.idx, drop = FALSE])
-        }else{
-            mstree <- ape::mst(D)
-        }
-        # (add in endpoint clusters)
-        if(! is.null(end.clus)){
+            # (add in endpoint clusters)
             forest <- D
-            forest[forest != 0] <- 0
+            forest[,] <- 0
             forest[-end.idx, -end.idx] <- mstree
             for(clID in end.clus){
                 cl.idx <- which(clusters == clID)
                 dists <- D[! rownames(D) %in% end.clus, cl.idx]
                 # get closest non-endpoint cluster
                 closest <- names(dists)[which.min(dists)]
-                closest.idx <- which.max(clusters == closest)
+                closest.idx <- which.max(rownames(D) == closest)
                 forest[cl.idx, closest.idx] <- 1
                 forest[closest.idx, cl.idx] <- 1
             }
-        }else{
-            forest <- mstree
         }
-        # remove OMEGA
+        
+        # remove .OMEGA
         forest <- forest[seq_len(nclus), seq_len(nclus), drop = FALSE]
-        rownames(forest) <- clusters
-        colnames(forest) <- clusters
 
         ###############################
         ### use the "forest" to define lineages
@@ -247,7 +250,7 @@ setMethod(f = "getLineages",
         }
         subtrees <- unique(subtrees)
         trees <- lapply(seq_len(nrow(subtrees)),function(ri){
-            colnames(forest)[subtrees[ri,]]
+            colnames(forest)[as.logical(subtrees[ri,])]
         })
         trees <- trees[order(vapply(trees,length,0),decreasing = TRUE)]
         ntree <- length(trees)
@@ -340,6 +343,8 @@ setMethod(f = "getLineages",
 
         lineageControl$dist <- D[seq_len(nclus),seq_len(nclus),
             drop = FALSE]
+        
+        lineageControl$omega <- omega.original
 
         out <- newSlingshotDataSet(reducedDim = X,
             clusterLabels = clusterLabels,

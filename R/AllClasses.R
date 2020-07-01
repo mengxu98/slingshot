@@ -150,10 +150,14 @@ setValidity("SlingshotDataSet", function(object) {
             }
         }
         if(! is.null(slingParams(object)$omega)){
-            if(slingParams(object)$omega < 0 | 
-               (slingParams(object)$omega > 1 & 
-                slingParams(object)$omega != Inf)){
-                return("Omega must be numeric element of [0,1] or Inf.")
+            if(length(slingParams(object)$omega) > 1){
+                return('omega must be NULL or length 1')
+            }
+            if(is.na(as.numeric(slingParams(object)$omega))){
+                stop('omega must be numeric, logical, or NULL')
+            }
+            if(slingParams(object)$omega < 0){
+                stop('omega must be non-negative')
             }
         }
     }

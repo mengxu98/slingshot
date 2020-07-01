@@ -125,10 +125,9 @@ find squared distance between cluster centers. If not, the default is to
 use the diagonal of the joint covariance matrix.}
 
 \item{omega}{(optional) numeric, this granularity parameter determines the
-distance between every real cluster and the artificial cluster, OMEGA. It
-is parameterized such that this distance is \code{omega / 2}, making
-\code{omega} the maximum distance between two connected clusters. By
-default, \code{omega = Inf}.}
+distance between every real cluster and the artificial cluster,
+\code{.OMEGA}. In practice, this makes \code{omega} the maximum allowable
+distance between two connected clusters. By default, \code{omega = Inf}.}
 }
 \value{
 An object of class \code{\link{SlingshotDataSet}} containing the
@@ -152,9 +151,9 @@ Given a reduced-dimension data matrix \code{n} by \code{p} and a
 \details{
 The \code{connectivity} matrix is learned by fitting a (possibly
   constrained) minimum-spanning tree on the clusters and the artificial
-  cluster, OMEGA, which is a fixed distance away from every real cluster.
-  This effectively limits the maximum branch length in the MST to twice the
-  chosen distance, meaning that the output may contain multiple trees.
+  cluster, \code{.OMEGA}, which is a fixed distance away from every real
+  cluster. This effectively limits the maximum branch length in the MST to
+  the chosen distance, meaning that the output may contain multiple trees.
 
 Once the \code{connectivity} is known, lineages are identified in
   any tree with at least two clusters. For a given tree, if there is an
