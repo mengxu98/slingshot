@@ -21,7 +21,8 @@ getLineages(data, clusterLabels, ...)
   start.clus = NULL,
   end.clus = NULL,
   dist.fun = NULL,
-  omega = NULL
+  omega = NULL,
+  omega_scale = 3
 )
 
 \S4method{getLineages}{matrix,character}(
@@ -31,7 +32,8 @@ getLineages(data, clusterLabels, ...)
   start.clus = NULL,
   end.clus = NULL,
   dist.fun = NULL,
-  omega = NULL
+  omega = NULL,
+  omega_scale = 3
 )
 
 \S4method{getLineages}{matrix,ANY}(
@@ -41,7 +43,8 @@ getLineages(data, clusterLabels, ...)
   start.clus = NULL,
   end.clus = NULL,
   dist.fun = NULL,
-  omega = NULL
+  omega = NULL,
+  omega_scale = 3
 )
 
 \S4method{getLineages}{SlingshotDataSet,ANY}(
@@ -51,7 +54,8 @@ getLineages(data, clusterLabels, ...)
   start.clus = NULL,
   end.clus = NULL,
   dist.fun = NULL,
-  omega = NULL
+  omega = NULL,
+  omega_scale = 3
 )
 
 \S4method{getLineages}{data.frame,ANY}(
@@ -61,7 +65,8 @@ getLineages(data, clusterLabels, ...)
   start.clus = NULL,
   end.clus = NULL,
   dist.fun = NULL,
-  omega = NULL
+  omega = NULL,
+  omega_scale = 3
 )
 
 \S4method{getLineages}{matrix,numeric}(
@@ -71,7 +76,8 @@ getLineages(data, clusterLabels, ...)
   start.clus = NULL,
   end.clus = NULL,
   dist.fun = NULL,
-  omega = NULL
+  omega = NULL,
+  omega_scale = 3
 )
 
 \S4method{getLineages}{matrix,factor}(
@@ -81,7 +87,8 @@ getLineages(data, clusterLabels, ...)
   start.clus = NULL,
   end.clus = NULL,
   dist.fun = NULL,
-  omega = NULL
+  omega = NULL,
+  omega_scale = 3
 )
 
 \S4method{getLineages}{SingleCellExperiment,ANY}(
@@ -91,7 +98,8 @@ getLineages(data, clusterLabels, ...)
   start.clus = NULL,
   end.clus = NULL,
   dist.fun = NULL,
-  omega = NULL
+  omega = NULL,
+  omega_scale = 3
 )
 }
 \arguments{
@@ -127,7 +135,16 @@ use the diagonal of the joint covariance matrix.}
 \item{omega}{(optional) numeric, this granularity parameter determines the
 distance between every real cluster and the artificial cluster,
 \code{.OMEGA}. In practice, this makes \code{omega} the maximum allowable
-distance between two connected clusters. By default, \code{omega = Inf}.}
+distance between two connected clusters. By default, \code{omega = Inf}. If
+\code{omega = TRUE}, the maximum edge length will be set to the median edge
+length of the unsupervised MST times a scaling factor (\code{omega_scale},
+default \code{= 3}). This value is provided as a potentially useful rule of
+thumb for datasets with outlying clusters or multiple, distinct
+trajectories, but it is not otherwise recommended.}
+
+\item{omega_scale}{(optional) numeric, scaling factor to use when \code{omega
+= TRUE}. The maximum edge length will be set to the median edge length of
+the unsupervised MST times \code{omega_scale} (default \code{= 3}).}
 }
 \value{
 An object of class \code{\link{SlingshotDataSet}} containing the

@@ -141,6 +141,15 @@ test_that("getLineages works as expected", {
     sdsO <- getLineages(rd, cl, omega = 5)
     expect_equal(length(slingLineages(sdsO)), 5)
     expect_true(all(as.character(1:5) %in% unlist(slingLineages(sdsO))))
+    # with omega = TRUE
+    # no effect
+    sdsO <- getLineages(rd, cl, omega = TRUE)
+    expect_identical(slingLineages(sdsO), slingLineages(sds0))
+    # same as omega = 7, above
+    sdsO <- getLineages(rd, cl, omega = TRUE, omega_scale = 1)
+    expect_identical(slingLineages(sdsO)$Lineage1, as.character(1:3))
+    expect_true(all(as.character(4:5) %in% c(slingLineages(sdsO)$Lineage2,
+                                             slingLineages(sdsO)$Lineage3)))
 })
 
 test_that("getCurves works as expected", {

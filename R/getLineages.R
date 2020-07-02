@@ -28,7 +28,15 @@
 #' @param omega (optional) numeric, this granularity parameter determines the
 #'   distance between every real cluster and the artificial cluster,
 #'   \code{.OMEGA}. In practice, this makes \code{omega} the maximum allowable
-#'   distance between two connected clusters. By default, \code{omega = Inf}.
+#'   distance between two connected clusters. By default, \code{omega = Inf}. If
+#'   \code{omega = TRUE}, the maximum edge length will be set to the median edge
+#'   length of the unsupervised MST times a scaling factor (\code{omega_scale},
+#'   default \code{= 3}). This value is provided as a potentially useful rule of
+#'   thumb for datasets with outlying clusters or multiple, distinct
+#'   trajectories, but it is not otherwise recommended.
+#' @param omega_scale (optional) numeric, scaling factor to use when \code{omega
+#'   = TRUE}. The maximum edge length will be set to the median edge length of
+#'   the unsupervised MST times \code{omega_scale} (default \code{= 3}).
 #'
 #' @details The \code{connectivity} matrix is learned by fitting a (possibly
 #'   constrained) minimum-spanning tree on the clusters and the artificial
@@ -78,7 +86,7 @@ setMethod(f = "getLineages",
         clusterLabels = "matrix"),
     definition = function(data, clusterLabels, reducedDim = NULL,
         start.clus = NULL, end.clus = NULL,
-        dist.fun = NULL, omega = NULL){
+        dist.fun = NULL, omega = NULL, omega_scale = 3){
 
         X <- as.matrix(data)
         clusterLabels <- as.matrix(clusterLabels)
@@ -199,6 +207,22 @@ setMethod(f = "getLineages",
         omega.original <- omega
         if(is.null(omega) || omega == Inf){
             omega <- max(D) + 1
+        }
+        if(identical(omega, TRUE)){ # to distinguish TRUE from 1
+            # check omega_scale
+            if(!is.numeric(omega_scale)){
+                stop('omega_scale must be numeric')
+            }
+            if(length(omega_scale) != 1){
+                stop('omega_scale must have length 1')
+            }
+            if(omega_scale < 0){
+                stop('omega_scale must be positive')
+            }
+            # use rule of thumb
+            mstree <- ape::mst(D)
+            omega <- omega_scale * 
+                median(D[matrix(as.logical(mstree), nrow = nrow(D))])
         }
         D <- rbind(D, .OMEGA = rep(omega, ncol(D)) )
         D <- cbind(D, .OMEGA = c(rep(omega, ncol(D)), 0) )
@@ -345,6 +369,7 @@ setMethod(f = "getLineages",
             drop = FALSE]
         
         lineageControl$omega <- omega.original
+        lineageControl$omega_scale <- omega_scale
 
         out <- newSlingshotDataSet(reducedDim = X,
             clusterLabels = clusterLabels,
@@ -364,7 +389,7 @@ setMethod(f = "getLineages",
         clusterLabels = "character"),
     definition = function(data, clusterLabels, reducedDim = NULL,
         start.clus = NULL, end.clus = NULL,
-        dist.fun = NULL, omega = NULL){
+        dist.fun = NULL, omega = NULL, omega_scale = 3){
 
         # CHECKS
         clusterLabels <- as.character(clusterLabels)
@@ -392,7 +417,7 @@ setMethod(f = "getLineages",
         return(getLineages(data = data, clusterLabels = clusWeight,
             reducedDim = reducedDim,
             start.clus = start.clus, end.clus = end.clus,
-            dist.fun = dist.fun, omega = omega))
+            dist.fun = dist.fun, omega = omega, omega_scale = omega_scale))
     }
 )
 
@@ -402,7 +427,7 @@ setMethod(f = "getLineages",
     signature = signature(data = "matrix", clusterLabels = "ANY"),
     definition = function(data, clusterLabels, reducedDim = NULL,
         start.clus = NULL, end.clus = NULL,
-        dist.fun = NULL, omega = NULL){
+        dist.fun = NULL, omega = NULL, omega_scale = 3){
         if(missing(clusterLabels)){
             message('No cluster labels provided. Continuing with ',
                 'one cluster.')
@@ -416,7 +441,7 @@ setMethod(f = "getLineages",
         return(getLineages(data = data, clusterLabels = clusterLabels,
             reducedDim = reducedDim,
             start.clus = start.clus, end.clus = end.clus,
-            dist.fun = dist.fun, omega = omega))
+            dist.fun = dist.fun, omega = omega, omega_scale = omega_scale))
     })
 
 #' @rdname getLineages
@@ -427,12 +452,12 @@ setMethod(f = "getLineages",
     definition = function(data, clusterLabels,
         reducedDim = NULL,
         start.clus = NULL, end.clus = NULL,
-        dist.fun = NULL, omega = NULL){
+        dist.fun = NULL, omega = NULL, omega_scale = 3){
         return(getLineages(data = reducedDim(data),
             clusterLabels = .getClusterLabels(data),
             reducedDim = reducedDim,
             start.clus = start.clus, end.clus = end.clus,
-            dist.fun = dist.fun, omega = omega))
+            dist.fun = dist.fun, omega = omega, omega_scale = omega_scale))
     })
 
 #' @rdname getLineages
@@ -442,13 +467,13 @@ setMethod(f = "getLineages",
         clusterLabels = "ANY"),
     definition = function(data, clusterLabels, reducedDim = NULL,
         start.clus = NULL, end.clus = NULL,
-        dist.fun = NULL, omega = NULL){
+        dist.fun = NULL, omega = NULL, omega_scale = 3){
         RD <- as.matrix(data)
         rownames(RD) <- rownames(data)
         return(getLineages(data = RD, clusterLabels = clusterLabels,
             reducedDim = reducedDim,
             start.clus = start.clus, end.clus = end.clus,
-            dist.fun = dist.fun, omega = omega))
+            dist.fun = dist.fun, omega = omega, omega_scale = omega_scale))
     })
 
 #' @rdname getLineages
@@ -458,12 +483,12 @@ setMethod(f = "getLineages",
         clusterLabels = "numeric"),
     definition = function(data, clusterLabels, reducedDim = NULL,
         start.clus = NULL, end.clus = NULL,
-        dist.fun = NULL, omega = NULL){
+        dist.fun = NULL, omega = NULL, omega_scale = 3){
         return(getLineages(data = data,
             clusterLabels = as.character(clusterLabels),
             reducedDim = reducedDim,
             start.clus = start.clus, end.clus = end.clus,
-            dist.fun = dist.fun, omega = omega))
+            dist.fun = dist.fun, omega = omega, omega_scale = omega_scale))
     })
 
 #' @rdname getLineages
@@ -473,12 +498,12 @@ setMethod(f = "getLineages",
         clusterLabels = "factor"),
     definition = function(data, clusterLabels, reducedDim = NULL,
         start.clus = NULL, end.clus = NULL,
-        dist.fun = NULL, omega = NULL){
+        dist.fun = NULL, omega = NULL, omega_scale = 3){
         return(getLineages(data = data,
             clusterLabels = as.character(clusterLabels),
             reducedDim = reducedDim,
             start.clus = start.clus, end.clus = end.clus,
-            dist.fun = dist.fun, omega = omega))
+            dist.fun = dist.fun, omega = omega, omega_scale = omega_scale))
     })
 
 #' @rdname getLineages
@@ -487,7 +512,7 @@ setMethod(f = "getLineages",
           signature = signature(data = "SingleCellExperiment"),
           definition = function(data, clusterLabels, reducedDim = NULL,
                                 start.clus = NULL, end.clus = NULL,
-                                dist.fun = NULL, omega = NULL){
+                                dist.fun = NULL, omega = NULL, omega_scale = 3){
             # SETUP
             # determine the cluster labels and reducedDim matrix
             if(is.null(reducedDim)){
@@ -546,7 +571,8 @@ setMethod(f = "getLineages",
             sds <- getLineages(data = rd, clusterLabels = cl,
                               reducedDim = NULL,
                               start.clus = start.clus, end.clus = end.clus,
-                              dist.fun = dist.fun, omega = omega)
+                              dist.fun = dist.fun, omega = omega, 
+                              omega_scale = omega_scale)
             # combine getLineages output with SCE
             sce <- data
             sce@int_metadata$slingshot <- sds
