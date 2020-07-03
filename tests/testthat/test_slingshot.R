@@ -517,9 +517,6 @@ test_that("embedCurves works as expected", {
 })
 
 test_that("branchID functions work as expected", {
-    data("slingshotExample")
-    rd <- slingshotExample$rd
-    cl <- slingshotExample$cl
     sds <- slingshot(rd, cl)
     
     # bad thresh
@@ -545,4 +542,11 @@ test_that("branchID functions work as expected", {
     g <- slingBranchGraph(sce)
     expect_true(all(c('name','cells','size') %in% 
                         names(igraph::vertex_attr(g))))
+    
+    # one cluster
+    sds1 <- slingshot(rd)
+    id1 <- slingBranchID(sds1)
+    expect_true(all(id1 == 1))
+    g <- slingBranchGraph(sds1)
+    expect_identical(igraph::vertex_attr(g)$name, '1')
 })

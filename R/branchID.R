@@ -6,7 +6,7 @@
 #' @param x an object containing \code{slingshot} output, generally either a
 #'   \code{\link{SlingshotDataSet}} or \code{\link{SingleCellExperiment}}.
 #' @param thresh weight threshold for assigning cells to lineages. A cell's
-#'   weight on a certain lineage must be greater than this value (default =
+#'   weight on a certain lineage must be at least this value (default =
 #'   \code{1/L}, for \code{L} lineages).
 #' @return a factor variable that assigns each cell to a particular lineage or
 #'   set of lineages.
@@ -30,7 +30,7 @@ setMethod(f = "slingBranchID",
                       stop("'thresh' value must be between 0 and 1.")
                   }
               }
-              return(factor(apply(slingCurveWeights(x) > thresh, 1, 
+              return(factor(apply(slingCurveWeights(x) >= thresh, 1, 
                                   function(bin){
                                       paste(which(bin), collapse = ',')
                                   })))

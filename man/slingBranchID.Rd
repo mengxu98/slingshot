@@ -16,7 +16,7 @@ slingBranchID(x, ...)
 \item{...}{additional arguments passed to object-specific methods.}
 
 \item{thresh}{weight threshold for assigning cells to lineages. A cell's
-weight on a certain lineage must be greater than this value (default =
+weight on a certain lineage must be at least this value (default =
 \code{1/L}, for \code{L} lineages).}
 }
 \value{
