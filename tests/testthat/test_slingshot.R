@@ -524,6 +524,8 @@ test_that("branchID functions work as expected", {
     expect_error(slingBranchID(sds, thresh = -1), 'between 0 and 1')
     # odd thresh
     expect_identical(levels(slingBranchID(sds, thresh = 0)), "1,2")
+    g <- slingBranchGraph(sds, thresh = 0)
+    expect_identical(names(g[[1]]), "1,2")
     
     id <- slingBranchID(sds)
     expect_equal(levels(id), c('1','1,2','2'))
