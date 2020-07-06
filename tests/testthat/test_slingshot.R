@@ -522,6 +522,8 @@ test_that("branchID functions work as expected", {
     # bad thresh
     expect_error(slingBranchID(sds, thresh = 5), 'between 0 and 1')
     expect_error(slingBranchID(sds, thresh = -1), 'between 0 and 1')
+    # odd thresh
+    expect_identical(levels(slingBranchID(sds, thresh = 0)), "1,2")
     
     id <- slingBranchID(sds)
     expect_equal(levels(id), c('1','1,2','2'))
@@ -549,4 +551,11 @@ test_that("branchID functions work as expected", {
     expect_true(all(id1 == 1))
     g <- slingBranchGraph(sds1)
     expect_identical(igraph::vertex_attr(g)$name, '1')
+    
+    # case with missing intermediates (ie. '1,2,3' goes directly to '1')
+    rd2 <- rbind(rd, c(-8.1,.1), c(-8,-.1))
+    cl2 <- c(cl, 6,6)
+    g <- slingBranchGraph(slingshot(rd2, cl2, start.clus = '1'))
+    expect_true(all(c("1,2","1","2","1,2,3","3") %in% names(g[[1:5]])))
+    expect_true(all(names(g[[1:5]]) %in% c("1,2","1","2","1,2,3","3")))
 })
