@@ -150,6 +150,13 @@ test_that("getLineages works as expected", {
     expect_identical(slingLineages(sdsO)$Lineage1, as.character(1:3))
     expect_true(all(as.character(4:5) %in% c(slingLineages(sdsO)$Lineage2,
                                              slingLineages(sdsO)$Lineage3)))
+    
+    # two separate trajectories
+    rd2 <- rbind(rd, cbind(rd[,2]-12, rd[,1]-6))
+    cl2 <- c(cl, cl + 10)
+    sds2 <- getLineages(rd2, cl2, omega = TRUE, start.clus = 11)
+    expect_identical(slingParams(sds2)$start.clus, c('1','11'))
+    expect_identical(slingParams(sds2)$start.given, c(FALSE,TRUE))
 })
 
 test_that("getCurves works as expected", {
