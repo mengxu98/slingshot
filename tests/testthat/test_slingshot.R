@@ -65,7 +65,18 @@ test_that("getLineages works for different input types", {
     c0 <- getLineages(reducedDim)
     expect_is(c1, "SlingshotDataSet")
     expect_equal(dim(slingAdjacency(c1)), c(1,1))
-
+    
+    # unclustered
+    clmiss <- clusterLabels
+    clmiss[1] <- -1
+    unclus <- getLineages(reducedDim, clmiss)
+    expect_equal(dim(slingAdjacency(unclus)), c(5,5))
+    expect_true(all(slingClusterLabels(unclus)[1,] == rep(0,5)))
+    clmiss[1] <- NA
+    unclus <- getLineages(reducedDim, clmiss)
+    expect_equal(dim(slingAdjacency(unclus)), c(5,5))
+    expect_true(all(slingClusterLabels(unclus)[1,] == rep(0,5)))
+    
     # with SingleCellExperiment objects
     require(SingleCellExperiment)
     u <- matrix(rpois(140*50, 5), nrow=50)
@@ -98,11 +109,9 @@ test_that("getLineages works for different input types", {
     expect_error(getLineages(reducedDim[,-(seq_len(ncol(reducedDim)))],
                              clusterLabels), 'has zero columns')
     expect_error(getLineages(reducedDim[-(seq_len(nrow(reducedDim))),],
-                             clusterLabels), 'has zero rows')
+                             character(0)), 'has zero rows')
     expect_error(getLineages(reducedDim, clusterLabels[seq_len(10)]),
                  'must equal')
-    expect_error(getLineages(reducedDim[-(seq_len(nrow(reducedDim))),],
-                             clusterLabels[integer(0)]), 'has zero rows')
     rdna <- reducedDim; rdna[1,1] <- NA
     expect_error(getLineages(rdna, clusterLabels),
                  'cannot contain missing values')
@@ -289,10 +298,8 @@ test_that("slingshot works for different input types", {
     expect_error(slingshot(reducedDim[,-(seq_len(ncol(reducedDim)))],
                            clusterLabels), 'has zero columns')
     expect_error(slingshot(reducedDim[-(seq_len(nrow(reducedDim))),],
-                           clusterLabels), 'has zero rows')
+                           character(0)), 'has zero rows')
     expect_error(slingshot(reducedDim, clusterLabels[seq_len(10)]), 'must equal')
-    expect_error(slingshot(reducedDim[-(seq_len(nrow(reducedDim))),],
-                           clusterLabels[integer(0)]), 'has zero rows')
     rdna <- reducedDim; rdna[1,1] <- NA
     expect_error(slingshot(rdna, clusterLabels),
                  'cannot contain missing values')
