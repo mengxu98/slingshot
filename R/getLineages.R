@@ -394,12 +394,6 @@ setMethod(f = "getLineages",
         # CHECKS
         clusterLabels <- as.character(clusterLabels)
         X <- as.matrix(data)
-        if(nrow(X)==0){
-            stop('reducedDim has zero rows.')
-        }
-        if(ncol(X)==0){
-            stop('reducedDim has zero columns.')
-        }
         if(nrow(X) != length(clusterLabels)){
             stop('nrow(data) must equal length(clusterLabels).')
         }
