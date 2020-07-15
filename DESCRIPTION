@@ -40,15 +40,13 @@ Suggests:
     BiocGenerics,
     BiocStyle,
     clusterExperiment,
-    destiny,
-    gam,
     knitr,
     mclust,
-    mgcv,
     RColorBrewer,
     rgl,
     rmarkdown,
     testthat,
+    uwot,
     covr
 VignetteBuilder: knitr
 LazyData: false

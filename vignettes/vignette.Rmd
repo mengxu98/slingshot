@@ -17,7 +17,7 @@ vignette: >
 
 ```{r options, results="hide", include=FALSE, cache=FALSE, message=FALSE}
 knitr::opts_chunk$set(fig.align="center", cache=TRUE,error=FALSE, #stop on error
-fig.width=5, fig.height=5, autodep=TRUE, out.width="600px", out.height="600px",
+fig.width=5, fig.height=5, autodep=TRUE,
 results="markup", echo=TRUE, eval=TRUE)
 #knitr::opts_knit$set(stop_on_error = 2L) #really make it stop
 #knitr::dep_auto()
@@ -169,12 +169,12 @@ reduced-dimensional space. Since we use Euclidean distances in constructing
 lineages and measuring pseudotime, it is important to have a low-dimensional 
 representation of the data.
 
-There are many methods available for this task and we will intentionally avoid 
-the issue of determining which is the "best" method, as this likely depends on 
+There are many methods available for this task and we will intentionally avoid
+the issue of determining which is the "best" method, as this likely depends on
 the type of data, method of collection, upstream computational choices, and many
-other factors. We will demonstrate two methods of dimensionality reduction: 
-principal components analysis (PCA) and diffusion maps (via the `destiny`
-package, [@destiny]).
+other factors. We will demonstrate two methods of dimensionality reduction:
+principal components analysis (PCA) and uniform manifold approximation and
+projection (UMAP, via the `uwot` package).
 
 When performing PCA, we do not scale the genes by their variance because we do 
 not believe that all genes are equally informative. We want to find signal in 
@@ -188,10 +188,11 @@ rd1 <- pca$x[,1:2]
 
 plot(rd1, col = rgb(0,0,0,.5), pch=16, asp = 1)
 ```
-```{r dm, cache=TRUE}
-library(destiny, quietly = TRUE)
-dm <- DiffusionMap(t(log1p(assays(sim)$norm)))
-rd2 <- cbind(DC1 = dm$DC1, DC2 = dm$DC2)
+
+```{r umap, cache=TRUE}
+library(uwot)
+rd2 <- umap(t(log1p(assays(sim)$norm)))
+colnames(rd2) <- c('UMAP1', 'UMAP2')
 
 plot(rd2, col = rgb(0,0,0,.5), pch=16, asp = 1)
 ```
@@ -199,7 +200,7 @@ plot(rd2, col = rgb(0,0,0,.5), pch=16, asp = 1)
 We will add both dimensionality reductions to the `SingleCellExperiment` object,
 but continue our analysis focusing on the PCA results.
 ```{r add_RDs, cache=TRUE}
-reducedDims(sim) <- SimpleList(PCA = rd1, DiffMap = rd2)
+reducedDims(sim) <- SimpleList(PCA = rd1, UMAP = rd2)
 ```
 
 
@@ -313,41 +314,46 @@ lines(SlingshotDataSet(sim), lwd=2, type = 'lineages', col = 'black')
 ## Identifying temporally expressed genes
 
 After running `slingshot`, an interesting next step may be to find genes that
-change their expression over the course of development. We demonstrate one
-possible method for this type of analysis on the $100$ most variable genes.
+change their expression over the course of development. We will demonstrate this
+type of analysis using the `tradeSeq` package [@van2020trajectory].
 
-We will regress each gene on the pseudotime variable we have generated, using a
-general additive model (GAM). This allows us to detect non-linear patterns in
-gene expression.
+For each gene, we will fit a general additive model (GAM) using a negative
+binomial noise distribution to model the (potentially nonlinear)
+relationshipships between gene expression and pseudotime. We will then test for
+significant associations between expression and pseudotime using the
+`associationTest`.
 
-```{r fitgam, cache = TRUE}
-require(gam)
-t <- sim$slingPseudotime_1
+```{r tradeseq, eval=FALSE}
+library(tradeSeq)
 
-# for time, only look at the 100 most variable genes
-Y <- log1p(assays(sim)$norm)
-var100 <- names(sort(apply(Y,1,var),decreasing = TRUE))[1:100]
-Y <- Y[var100,]
+# fit negative binomial GAM
+sim <- fitGAM(sim)
 
-# fit a GAM with a loess term for pseudotime
-gam.pval <- apply(Y,1,function(z){
-    d <- data.frame(z=z, t=t)
-    suppressWarnings({
-      tmp <- suppressWarnings(gam(z ~ lo(t), data=d))
-    })
-    p <- summary(tmp)[3][[1]][2,3]
-    p
-})
+# test for dynamic expression
+ATres <- associationTest(sim)
 ```
 
-We can then pick out the top genes based on p-value and visualize their 
-expression over developmental time with a heatmap.
+We can then pick out the top genes based on p-values and visualize their 
+expression over developmental time with a heatmap. Here we use the top 250 most dynamically expressed genes.
 
-```{r heatmaps}
-topgenes <- names(sort(gam.pval, decreasing = FALSE))[1:100]
-heatdata <- assays(sim)$norm[topgenes, order(t, na.last = NA)]
-heatclus <- sim$GMM[order(t, na.last = NA)]
+```{r heatmaps, eval=FALSE}
+topgenes <- rownames(ATres[order(ATres$pvalue), ])[1:250]
+pst.ord <- order(sim$slingPseudotime_1, na.last = NA)
+heatdata <- assays(sim)$counts[topgenes, pst.ord]
+heatclus <- sim$GMM[pst.ord]
 
+heatmap(log1p(heatdata), Colv = NA,
+        ColSideColors = brewer.pal(9,"Set1")[heatclus])
+```
+
+```{r heatmapsREAL, echo=FALSE, fig.height=7}
+topgenes <- paste0('G',501:750)
+# tradeSeq has too many dependencies (174 at the time of this writing), but I 
+# promise I actually ran it and got this result. This is a *very* clean example 
+# dataset
+pst.ord <- order(sim$slingPseudotime_1, na.last = NA)
+heatdata <- assays(sim)$counts[topgenes, pst.ord]
+heatclus <- sim$GMM[pst.ord]
 heatmap(log1p(heatdata), Colv = NA,
         ColSideColors = brewer.pal(9,"Set1")[heatclus])
 ```
@@ -415,9 +421,11 @@ greater control:
 * `dist.fun` is a function for computing distances between clusters. The default
 is squared distance between cluster centers normalized by their joint covariance
 matrix. 
-* `omega` is a granularity parameter, allowing the user to set an upper
-limit on connection distances. This can be useful for identifying outlier
-clusters which are not a part of any lineage.
+* `omega` is a granularity parameter, allowing the user to set an upper limit on
+connection distances. This can be useful for identifying outlier clusters which
+are not a part of any lineage or for separating distinct trajectories. This is
+typically a numeric argument, but a value of `TRUE` will indicate that a
+heuristic of `3 * (median edge length of unsupervised MST)` should be used.
 
 After constructing the MST, `getLineages` identifies paths through the tree to
 designate as lineages. At this stage, a lineage will consist of an ordered set
