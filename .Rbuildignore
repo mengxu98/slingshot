@@ -29,3 +29,4 @@ NEWS\.md
 ^\.Rproj\.user$
 ^codecov\.yml$
 ^data-raw
+^\.github$
