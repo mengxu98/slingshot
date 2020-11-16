@@ -354,7 +354,7 @@ setMethod(
     f = "slingPseudotime",
     signature = "SingleCellExperiment",
     definition = function(x, na = TRUE){
-        return(slingPseudotime(x@int_metadata$slingshot))
+        return(slingPseudotime(x@int_metadata$slingshot, na = na))
     }
 )
 
