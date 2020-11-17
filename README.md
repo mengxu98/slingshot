@@ -1,5 +1,5 @@
 # R package: slingshot
-[![Build Status](https://travis-ci.org/kstreet13/slingshot.svg?branch=master)](https://travis-ci.org/kstreet13/slingshot)
+[![R build status](https://github.com/kstreet13/slingshot/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/kstreet13/slingshot/actions)
 [![Coverage Status](https://img.shields.io/codecov/c/github/kstreet13/slingshot/master.svg)](https://codecov.io/github/kstreet13/slingshot?branch=master)
 
 <img src=inst/slingshot_sticker.png height="200">
