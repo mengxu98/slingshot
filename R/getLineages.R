@@ -60,7 +60,7 @@
 #'   by a character vector with the names of the clusters included in that
 #'   lineage, in order.} \item{\code{connectivity}}{ the inferred cluster
 #'   connectivity matrix.}
-#'   \item{\code{slingParams$start.given},\code{slingParams$end.given}} {
+#'   \item{\code{slingParams$start.given}, \code{slingParams$end.given}} {
 #'   logical values indicating whether the starting and ending clusters were
 #'   specified a priori.} \item{\code{slingParams$dist}}{ the pairwise
 #'   cluster distance matrix.}}

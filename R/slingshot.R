@@ -62,7 +62,7 @@
 #'   will be performed and curves will contain as many points as the input data.
 #'   If numeric, curves will be approximated by this number of points;
 #'   preferably about 100 (see \code{\link[princurve]{principal_curve}}).
-#' @param smoother, choice of scatter plot smoother. Same as
+#' @param smoother choice of scatter plot smoother. Same as
 #'   \code{\link[princurve]{principal_curve}}, but \code{"lowess"} option is
 #'   replaced with \code{"loess"} for additional flexibility.
 #' @param shrink logical or numeric between 0 and 1, determines whether and how
@@ -123,7 +123,7 @@
 #'   options typically have little to no impact on the final curve, but can
 #'   occasionally help with stability issues.
 #'
-#' @details When \code{shink == TRUE}, we compute a shrinkage curve,
+#' @details When \code{shrink == TRUE}, we compute a shrinkage curve,
 #'   \eqn{w_l(t)}, for each lineage, a non-increasing function of pseudotime
 #'   that determines how much that lineage should be shrunk toward a shared
 #'   average curve. We set \eqn{w_l(0) = 1}, so that the curves will perfectly
@@ -153,12 +153,12 @@
 #'   is the number of lineages identified. Each lineage is represented by a
 #'   character vector with the names of the clusters included in that lineage,
 #'   in order.} \item{\code{connectivity}}{ the inferred cluster connectivity
-#'   matrix.} \item{\code{slingParams}}{Additional parameters used for lineage
+#'   matrix.} \item{\code{slingParams}}{ Additional parameters used for lineage
 #'   inference or fitting simultaneous principal curves. This may include the
 #'   elements \code{start.given} and \code{end.given}, logical values indicating
 #'   whether the starting and ending clusters were specified a priori.
 #'   Additionally, this will always include \code{dist}, the pairwise cluster
-#'   distance matrix.} \item{curves}{A list of
+#'   distance matrix.} \item{\code{curves}}{ A list of
 #'   \code{\link[princurve]{principal_curve}} objects.}}
 #'
 #' @examples
