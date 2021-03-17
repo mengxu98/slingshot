@@ -11,7 +11,7 @@ slingBranchGraph(x, ...)
 }
 \arguments{
 \item{x}{an object containing \code{slingshot} output, generally either a
-\code{\link{SlingshotDataSet}} or \code{\link{SingleCellExperiment}}.}
+\code{\link{PseudotimeOrdering}} or \code{\link{SingleCellExperiment}}.}
 
 \item{...}{additional arguments passed to object-specific methods.}
 
@@ -20,8 +20,8 @@ weight on a certain lineage must be greater than this value (default =
 \code{1/L}, for \code{L} lineages).}
 
 \item{max_node_size}{the \code{size} of the largest node in the graph, for
-plotting (all others will be drawn proportionally). See
-\code{\link{igraph.plotting}} for more details.}
+plotting (all others will be drawn proportionally). Default is \code{100}.
+See \code{\link[igraph]{igraph.plotting}} for more details.}
 }
 \value{
 an \code{igraph} object representing the relationships between
@@ -29,13 +29,13 @@ an \code{igraph} object representing the relationships between
 }
 \description{
 Builds a graph describing the relationships between the
-  different branch assignments
+  different branch assignments.
 }
 \examples{
 data("slingshotExample")
 rd <- slingshotExample$rd
 cl <- slingshotExample$cl
-sds <- slingshot(rd, cl)
-slingBranchGraph(sds)
+pto <- slingshot(rd, cl)
+slingBranchGraph(pto)
   
 }

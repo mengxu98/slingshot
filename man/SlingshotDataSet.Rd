@@ -4,6 +4,7 @@
 \alias{SlingshotDataSet}
 \alias{SlingshotDataSet,SingleCellExperiment-method}
 \alias{SlingshotDataSet,SlingshotDataSet-method}
+\alias{SlingshotDataSet,PseudotimeOrdering-method}
 \title{Extract Slingshot output}
 \usage{
 SlingshotDataSet(data, ...)
@@ -11,6 +12,8 @@ SlingshotDataSet(data, ...)
 \S4method{SlingshotDataSet}{SingleCellExperiment}(data)
 
 \S4method{SlingshotDataSet}{SlingshotDataSet}(data)
+
+\S4method{SlingshotDataSet}{PseudotimeOrdering}(data)
 }
 \arguments{
 \item{data}{an object containing \code{slingshot} output.}
@@ -24,7 +27,9 @@ A \code{SlingshotDataSet} object containing the output of
 \description{
 This is a convenience function to extract a
   \code{SlingshotDataSet} from an object containing \code{\link{slingshot}}
-  output.
+  output. However, we now recommend using a
+  \code{\link[TrajectoryUtils]{PseudotimeOrdering}} object, in most cases.
+  The \code{SlingshotDataSet} is, however, still used for plotting purposes.
 }
 \examples{
 data("slingshotExample")
@@ -38,4 +43,8 @@ sce <- SingleCellExperiment(assays = list(counts = u),
 sce <- slingshot(sce, clusterLabels = 'clus', reducedDim = 'PCA')
 SlingshotDataSet(sce)
 
+}
+\seealso{
+\code{\link[TrajectoryUtils]{PseudotimeOrdering}},
+  \code{\link{as.SlingshotDataSet}}
 }

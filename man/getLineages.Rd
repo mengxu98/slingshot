@@ -6,6 +6,7 @@
 \alias{getLineages,matrix,character-method}
 \alias{getLineages,matrix,ANY-method}
 \alias{getLineages,SlingshotDataSet,ANY-method}
+\alias{getLineages,PseudotimeOrdering,ANY-method}
 \alias{getLineages,data.frame,ANY-method}
 \alias{getLineages,matrix,numeric-method}
 \alias{getLineages,matrix,factor-method}
@@ -20,173 +21,121 @@ getLineages(data, clusterLabels, ...)
   reducedDim = NULL,
   start.clus = NULL,
   end.clus = NULL,
-  dist.fun = NULL,
-  omega = NULL,
-  omega_scale = 3
+  dist.method = "slingshot",
+  use.median = FALSE,
+  omega = FALSE,
+  omega_scale = 1.5,
+  times = NULL,
+  ...
 )
 
-\S4method{getLineages}{matrix,character}(
-  data,
-  clusterLabels,
-  reducedDim = NULL,
-  start.clus = NULL,
-  end.clus = NULL,
-  dist.fun = NULL,
-  omega = NULL,
-  omega_scale = 3
-)
+\S4method{getLineages}{matrix,character}(data, clusterLabels, ...)
 
-\S4method{getLineages}{matrix,ANY}(
-  data,
-  clusterLabels,
-  reducedDim = NULL,
-  start.clus = NULL,
-  end.clus = NULL,
-  dist.fun = NULL,
-  omega = NULL,
-  omega_scale = 3
-)
+\S4method{getLineages}{matrix,ANY}(data, clusterLabels, ...)
 
-\S4method{getLineages}{SlingshotDataSet,ANY}(
-  data,
-  clusterLabels,
-  reducedDim = NULL,
-  start.clus = NULL,
-  end.clus = NULL,
-  dist.fun = NULL,
-  omega = NULL,
-  omega_scale = 3
-)
+\S4method{getLineages}{SlingshotDataSet,ANY}(data, clusterLabels, ...)
 
-\S4method{getLineages}{data.frame,ANY}(
-  data,
-  clusterLabels,
-  reducedDim = NULL,
-  start.clus = NULL,
-  end.clus = NULL,
-  dist.fun = NULL,
-  omega = NULL,
-  omega_scale = 3
-)
+\S4method{getLineages}{PseudotimeOrdering,ANY}(data, clusterLabels, ...)
 
-\S4method{getLineages}{matrix,numeric}(
-  data,
-  clusterLabels,
-  reducedDim = NULL,
-  start.clus = NULL,
-  end.clus = NULL,
-  dist.fun = NULL,
-  omega = NULL,
-  omega_scale = 3
-)
+\S4method{getLineages}{data.frame,ANY}(data, clusterLabels, ...)
 
-\S4method{getLineages}{matrix,factor}(
-  data,
-  clusterLabels,
-  reducedDim = NULL,
-  start.clus = NULL,
-  end.clus = NULL,
-  dist.fun = NULL,
-  omega = NULL,
-  omega_scale = 3
-)
+\S4method{getLineages}{matrix,numeric}(data, clusterLabels, ...)
 
-\S4method{getLineages}{SingleCellExperiment,ANY}(
-  data,
-  clusterLabels,
-  reducedDim = NULL,
-  start.clus = NULL,
-  end.clus = NULL,
-  dist.fun = NULL,
-  omega = NULL,
-  omega_scale = 3
-)
+\S4method{getLineages}{matrix,factor}(data, clusterLabels, ...)
+
+\S4method{getLineages}{SingleCellExperiment,ANY}(data, clusterLabels, reducedDim = NULL, ...)
 }
 \arguments{
 \item{data}{a data object containing the matrix of coordinates to be used for
 lineage inference. Supported types include \code{matrix},
-\code{\link{SingleCellExperiment}}, and \code{\link{SlingshotDataSet}}.}
+\code{\link{SingleCellExperiment}}, \code{\link{SlingshotDataSet}}, and
+\code{\link[TrajectoryUtils]{PseudotimeOrdering}}.}
 
-\item{clusterLabels}{character, a vector of length \code{n} denoting cluster
-labels, optionally including \code{-1}'s for "unclustered." If
-\code{reducedDim} is a \code{SlingshotDataSet}, cluster labels will be
-taken from it.}
+\item{clusterLabels}{each cell's cluster assignment. This can be a single
+vector of labels, or a \code{#cells} by \code{#clusters} matrix
+representing weighted cluster assignment. Either representation may
+optionally include a \code{"-1"} group meaning "unclustered."}
 
 \item{...}{Additional arguments to specify how lineages are constructed from
 clusters.}
 
-\item{reducedDim}{(optional) identifier to be used if \code{reducedDim(data)}
-contains multiple elements. Otherwise, the first element will be used by
-default.}
+\item{reducedDim}{(optional) the dimensionality reduction to be used. Can be
+a matrix or a character identifying which element of
+\code{reducedDim(data)} is to be used. If multiple dimensionality
+reductions are present and this argument is not provided, the first element
+will be used by default.}
 
-\item{start.clus}{(optional) character, indicates the cluster(s) *from* which
-lineages will be drawn.}
+\item{start.clus}{(optional) character, indicates the starting cluster(s)
+from which lineages will be drawn.}
 
-\item{end.clus}{(optional) character, indicates the cluster(s) which will be
-forced leaf nodes in their trees.}
+\item{end.clus}{(optional) character, indicates which cluster(s) will be
+forced to be leaf nodes in the graph.}
 
-\item{dist.fun}{(optional) function, method for calculating distances between
-clusters. Must take two matrices as input, corresponding to points in
-reduced-dimensional space. If the minimum cluster size is larger than the
-number dimensions, the default is to use the joint covariance matrix to
-find squared distance between cluster centers. If not, the default is to
-use the diagonal of the joint covariance matrix.}
+\item{dist.method}{(optional) character, specifies the method for calculating
+distances between clusters. Default is \code{"slingshot"}, see
+\code{\link[TrajectoryUtils]{createClusterMST}} for details.}
 
-\item{omega}{(optional) numeric, this granularity parameter determines the
-distance between every real cluster and the artificial cluster,
-\code{.OMEGA}. In practice, this makes \code{omega} the maximum allowable
-distance between two connected clusters. By default, \code{omega = Inf}. If
-\code{omega = TRUE}, the maximum edge length will be set to the median edge
-length of the unsupervised MST times a scaling factor (\code{omega_scale},
-default \code{= 3}). This value is provided as a potentially useful rule of
-thumb for datasets with outlying clusters or multiple, distinct
-trajectories, but it is not otherwise recommended.}
+\item{omega}{(optional) numeric or logical, this granularity parameter
+determines the distance between every real cluster and the artificial
+cluster, \code{.OMEGA}. In practice, this makes \code{omega} the maximum
+allowable distance between two connected clusters. By default, \code{omega
+= Inf}. If \code{omega = TRUE}, the maximum edge length will be set to the
+median edge length of the unsupervised MST times a scaling factor
+(\code{omega_scale}, default \code{= 1.5}). This value is provided as a
+potentially useful rule of thumb for datasets with outlying clusters or
+multiple, distinct trajectories. See \code{outgroup} in
+\code{\link[TrajectoryUtils]{createClusterMST}}.}
 
 \item{omega_scale}{(optional) numeric, scaling factor to use when \code{omega
 = TRUE}. The maximum edge length will be set to the median edge length of
-the unsupervised MST times \code{omega_scale} (default \code{= 3}).}
+the unsupervised MST times \code{omega_scale} (default \code{= 3}). See
+\code{outscale} in \code{\link[TrajectoryUtils]{createClusterMST}}.}
 }
 \value{
-An object of class \code{\link{SlingshotDataSet}} containing the
-  arguments provided to \code{getLineages} as well as the following new
-  elements: \itemize{ \item{\code{lineages}}{ a list of \code{L} items, where
-  \code{L} is the number of lineages identified. Each lineage is represented
-  by a character vector with the names of the clusters included in that
-  lineage, in order.} \item{\code{connectivity}}{ the inferred cluster
-  connectivity matrix.}
-  \item{\code{slingParams$start.given},\code{slingParams$end.given}} {
-  logical values indicating whether the starting and ending clusters were
-  specified a priori.} \item{\code{slingParams$dist}}{ the pairwise
-  cluster distance matrix.}}
+An object of class \code{\link{PseudotimeOrdering}}. Although the
+  final pseudotimes have not yet been calculated, the assay slot of this
+  object contains two elements: \code{pseudotime}, a matrix of \code{NA}
+  values; and \code{weights}, a preliminary matrix of lineage assignment
+  weights. The \code{reducedDim} and \code{clusterLabels} matrices will be
+  stored in the \code{\link[TrajectoryUtils]{cellData}}. Additionally, the
+  \code{metadata} slot will contain an \code{\link[igraph]{igraph}} object
+  named \code{mst}, a list of parameter values named \code{slingParams}, and
+  a list of lineages (ordered sets of clusters) named \code{lineages}.
 }
 \description{
-Given a reduced-dimension data matrix \code{n} by \code{p} and a
-  vector of cluster identities (potentially including -1's for
-  "unclustered"), this function infers a forest structure on the clusters and
-  returns paths through the forest that can be interpreted as lineages.
+This function constructs the minimum spanning tree(s) on
+  clusters of cells, the first step in Slingshot's trajectory inference
+  procedure. Paths through the MST from an origin cluster to leaf node
+  clusters are interpreted as lineages.
 }
 \details{
-The \code{connectivity} matrix is learned by fitting a (possibly
-  constrained) minimum-spanning tree on the clusters and the artificial
+Given a reduced-dimension data matrix \code{n} by \code{p} and a set
+  of cluster identities (potentially including a \code{"-1"} group for
+  "unclustered"), this function infers a tree (or forest) structure on the
+  clusters. This work is now mostly handled by the more general function,
+  \code{\link[TrajectoryUtils]{createClusterMST}}.
+
+The graph of this structure is learned by fitting a (possibly
+  constrained) minimum-spanning tree on the clusters, plus the artificial
   cluster, \code{.OMEGA}, which is a fixed distance away from every real
   cluster. This effectively limits the maximum branch length in the MST to
   the chosen distance, meaning that the output may contain multiple trees.
 
-Once the \code{connectivity} is known, lineages are identified in
+Once the graph is known, lineages are identified in
   any tree with at least two clusters. For a given tree, if there is an
   annotated starting cluster, every possible path out of a starting cluster
   and ending in a leaf that isn't another starting cluster will be returned.
-  If no starting cluster is annotated, every leaf will be considered as a
-  potential starting cluster and whichever configuration produces the longest
-  average lineage length (in terms of number of clusters included) will be
-  returned.
+  If no starting cluster is annotated, one will be chosen by a heuristic
+  method, but this is not recommended.
 }
 \examples{
 data("slingshotExample")
 rd <- slingshotExample$rd
 cl <- slingshotExample$cl
-sds <- getLineages(rd, cl, start.clus = '1')
+pto <- getLineages(rd, cl, start.clus = '1')
 
+# plotting
+sds <- as.SlingshotDataSet(pto)
 plot(rd, col = cl, asp = 1)
 lines(sds, type = 'l', lwd = 3)
 

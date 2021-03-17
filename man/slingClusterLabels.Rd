@@ -2,11 +2,14 @@
 % Please edit documentation in R/AllGenerics.R, R/AllHelperFunctions.R
 \name{slingClusterLabels}
 \alias{slingClusterLabels}
+\alias{slingClusterLabels,PseudotimeOrdering-method}
 \alias{slingClusterLabels,SlingshotDataSet-method}
 \alias{slingClusterLabels,SingleCellExperiment-method}
 \title{Extract cluster labels used by Slingshot}
 \usage{
 slingClusterLabels(x)
+
+\S4method{slingClusterLabels}{PseudotimeOrdering}(x)
 
 \S4method{slingClusterLabels}{SlingshotDataSet}(x)
 
@@ -16,24 +19,16 @@ slingClusterLabels(x)
 \item{x}{an object containing \code{\link{slingshot}} output.}
 }
 \value{
-a vector of cluster labels or a matrix of cluster assignment weights.
+Typically returns a matrix of cluster assignment weights
+  (\code{#cells} by \code{#clusters}). Rarely, a vector of cluster labels.
 }
 \description{
 Extract the cluster labels used by \code{\link{slingshot}}.
 }
-\section{Methods (by class)}{
-\itemize{
-\item \code{SlingshotDataSet}: returns the cluster labels stored in a
-\code{\link{SlingshotDataSet}} object.
-
-\item \code{SingleCellExperiment}: returns the cluster labels used by
-\code{\link{slingshot}} in a \code{\link{SingleCellExperiment}} object.
-}}
-
 \examples{
 data("slingshotExample")
 rd <- slingshotExample$rd
 cl <- slingshotExample$cl
-sds <- getLineages(rd, cl)
-slingClusterLabels(sds)
+pto <- slingshot(rd, cl, start.clus = '1')
+slingClusterLabels(pto)
 }

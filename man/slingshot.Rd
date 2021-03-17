@@ -11,7 +11,7 @@
 \alias{slingshot,matrix,ANY-method}
 \alias{slingshot,ClusterExperiment,ANY-method}
 \alias{slingshot,SingleCellExperiment,ANY-method}
-\title{Perform lineage inference with Slingshot}
+\title{Perform trajectory inference with Slingshot}
 \usage{
 slingshot(data, clusterLabels, ...)
 
@@ -21,10 +21,9 @@ slingshot(data, clusterLabels, ...)
   reducedDim = NULL,
   start.clus = NULL,
   end.clus = NULL,
-  dist.fun = NULL,
-  omega = NULL,
-  omega_scale = 3,
-  lineages = list(),
+  dist.method = "slingshot",
+  omega = FALSE,
+  omega_scale = 1.5,
   shrink = TRUE,
   extend = "y",
   reweight = TRUE,
@@ -45,10 +44,9 @@ slingshot(data, clusterLabels, ...)
   reducedDim = NULL,
   start.clus = NULL,
   end.clus = NULL,
-  dist.fun = NULL,
-  omega = NULL,
-  omega_scale = 3,
-  lineages = list(),
+  dist.method = "slingshot",
+  omega = FALSE,
+  omega_scale = 1.5,
   shrink = TRUE,
   extend = "y",
   reweight = TRUE,
@@ -63,125 +61,15 @@ slingshot(data, clusterLabels, ...)
   ...
 )
 
-\S4method{slingshot}{SlingshotDataSet,ANY}(
-  data,
-  clusterLabels,
-  reducedDim = NULL,
-  start.clus = NULL,
-  end.clus = NULL,
-  dist.fun = NULL,
-  omega = NULL,
-  omega_scale = 3,
-  lineages = list(),
-  shrink = TRUE,
-  extend = "y",
-  reweight = TRUE,
-  reassign = TRUE,
-  thresh = 0.001,
-  maxit = 15,
-  stretch = 2,
-  approx_points = FALSE,
-  smoother = "smooth.spline",
-  shrink.method = "cosine",
-  allow.breaks = TRUE,
-  ...
-)
+\S4method{slingshot}{SlingshotDataSet,ANY}(data, clusterLabels, ...)
 
-\S4method{slingshot}{data.frame,ANY}(
-  data,
-  clusterLabels,
-  reducedDim = NULL,
-  start.clus = NULL,
-  end.clus = NULL,
-  dist.fun = NULL,
-  omega = NULL,
-  omega_scale = 3,
-  lineages = list(),
-  shrink = TRUE,
-  extend = "y",
-  reweight = TRUE,
-  reassign = TRUE,
-  thresh = 0.001,
-  maxit = 15,
-  stretch = 2,
-  approx_points = FALSE,
-  smoother = "smooth.spline",
-  shrink.method = "cosine",
-  allow.breaks = TRUE,
-  ...
-)
+\S4method{slingshot}{data.frame,ANY}(data, clusterLabels, ...)
 
-\S4method{slingshot}{matrix,numeric}(
-  data,
-  clusterLabels,
-  reducedDim = NULL,
-  start.clus = NULL,
-  end.clus = NULL,
-  dist.fun = NULL,
-  omega = NULL,
-  omega_scale = 3,
-  lineages = list(),
-  shrink = TRUE,
-  extend = "y",
-  reweight = TRUE,
-  reassign = TRUE,
-  thresh = 0.001,
-  maxit = 15,
-  stretch = 2,
-  approx_points = FALSE,
-  smoother = "smooth.spline",
-  shrink.method = "cosine",
-  allow.breaks = TRUE,
-  ...
-)
+\S4method{slingshot}{matrix,numeric}(data, clusterLabels, ...)
 
-\S4method{slingshot}{matrix,factor}(
-  data,
-  clusterLabels,
-  reducedDim = NULL,
-  start.clus = NULL,
-  end.clus = NULL,
-  dist.fun = NULL,
-  omega = NULL,
-  omega_scale = 3,
-  lineages = list(),
-  shrink = TRUE,
-  extend = "y",
-  reweight = TRUE,
-  reassign = TRUE,
-  thresh = 0.001,
-  maxit = 15,
-  stretch = 2,
-  approx_points = FALSE,
-  smoother = "smooth.spline",
-  shrink.method = "cosine",
-  allow.breaks = TRUE,
-  ...
-)
+\S4method{slingshot}{matrix,factor}(data, clusterLabels, ...)
 
-\S4method{slingshot}{matrix,ANY}(
-  data,
-  clusterLabels,
-  reducedDim = NULL,
-  start.clus = NULL,
-  end.clus = NULL,
-  dist.fun = NULL,
-  omega = NULL,
-  omega_scale = 3,
-  lineages = list(),
-  shrink = TRUE,
-  extend = "y",
-  reweight = TRUE,
-  reassign = TRUE,
-  thresh = 0.001,
-  maxit = 15,
-  stretch = 2,
-  approx_points = FALSE,
-  smoother = "smooth.spline",
-  shrink.method = "cosine",
-  allow.breaks = TRUE,
-  ...
-)
+\S4method{slingshot}{matrix,ANY}(data, clusterLabels, ...)
 
 \S4method{slingshot}{ClusterExperiment,ANY}(
   data,
@@ -189,10 +77,9 @@ slingshot(data, clusterLabels, ...)
   reducedDim = NULL,
   start.clus = NULL,
   end.clus = NULL,
-  dist.fun = NULL,
-  omega = NULL,
-  omega_scale = 3,
-  lineages = list(),
+  dist.method = "slingshot",
+  omega = FALSE,
+  omega_scale = 1.5,
   shrink = TRUE,
   extend = "y",
   reweight = TRUE,
@@ -213,10 +100,9 @@ slingshot(data, clusterLabels, ...)
   reducedDim = NULL,
   start.clus = NULL,
   end.clus = NULL,
-  dist.fun = NULL,
-  omega = NULL,
-  omega_scale = 3,
-  lineages = list(),
+  dist.method = "slingshot",
+  omega = FALSE,
+  omega_scale = 1.5,
   shrink = TRUE,
   extend = "y",
   reweight = TRUE,
@@ -234,32 +120,32 @@ slingshot(data, clusterLabels, ...)
 \arguments{
 \item{data}{a data object containing the matrix of coordinates to be used for
 lineage inference. Supported types include \code{matrix},
-\code{\link{SingleCellExperiment}}, and \code{\link{SlingshotDataSet}}.}
+\code{\link{SingleCellExperiment}}, \code{\link{SlingshotDataSet}}, and
+\code{\link[TrajectoryUtils]{PseudotimeOrdering}}.}
 
-\item{clusterLabels}{character, a vector of length \code{n} denoting cluster
-labels, optionally including \code{-1}'s for "unclustered." If
-\code{reducedDim} is a \code{SlingshotDataSet}, cluster labels will be
-taken from it.}
+\item{clusterLabels}{each cell's cluster assignment. This can be a single
+vector of labels, or a \code{#cells} by \code{#clusters} matrix
+representing weighted cluster assignment. Either representation may
+optionally include a \code{"-1"} group meaning "unclustered."}
 
 \item{...}{Additional parameters to pass to scatter plot smoothing function,
 \code{smoother}.}
 
-\item{reducedDim}{(optional) identifier to be used if \code{reducedDim(data)}
-contains multiple elements. Otherwise, the first element will be used by
-default.}
+\item{reducedDim}{(optional) the dimensionality reduction to be used. Can be
+a matrix or a character identifying which element of
+\code{reducedDim(data)} is to be used. If multiple dimensionality
+reductions are present and this argument is not provided, the first element
+will be used by default.}
 
-\item{start.clus}{(optional) character, indicates the cluster(s) of origin.
-Lineages will be represented by paths coming out of this cluster.}
+\item{start.clus}{(optional) character, indicates the starting cluster(s)
+from which lineages will be drawn.}
 
-\item{end.clus}{(optional) character, indicates the cluster(s) which will be
-forced leaf nodes. This introduces a constraint on the MST algorithm.}
+\item{end.clus}{(optional) character, indicates which cluster(s) will be
+forced to be leaf nodes in the graph.}
 
-\item{dist.fun}{(optional) function, method for calculating distances between
-clusters. Must take two matrices as input, corresponding to subsets of
-\code{reducedDim}. If the minimum cluster size is larger than the number
-dimensions, the default is to use the joint covariance matrix to find
-squared distance between cluster centers. If not, the default is to use the
-diagonal of the joint covariance matrix.}
+\item{dist.method}{(optional) character, specifies the method for calculating
+distances between clusters. Default is \code{"slingshot"}, see
+\code{\link[TrajectoryUtils]{createClusterMST}} for details.}
 
 \item{omega}{(optional) numeric, this granularity parameter determines the
 distance between every real cluster and the artificial cluster,
@@ -269,34 +155,33 @@ distance between two connected clusters. By default, \code{omega = Inf}. If
 length of the unsupervised MST times a scaling factor (\code{omega_scale},
 default \code{= 3}). This value is provided as a potentially useful rule of
 thumb for datasets with outlying clusters or multiple, distinct
-trajectories, but it is not otherwise recommended.}
+trajectories. See \code{outgroup} in
+\code{\link[TrajectoryUtils]{createClusterMST}}.}
 
 \item{omega_scale}{(optional) numeric, scaling factor to use when \code{omega
 = TRUE}. The maximum edge length will be set to the median edge length of
-the unsupervised MST times \code{omega_scale} (default \code{= 3}).}
-
-\item{lineages}{list generated by \code{\link{getLineages}}, denotes lineages
-as ordered sets of clusters and contains the \code{K x K} connectivity
-matrix constructed on the clusters by \code{\link{getLineages}}.}
+the unsupervised MST times \code{omega_scale} (default \code{= 1.5}). See
+\code{outscale} in \code{\link[TrajectoryUtils]{createClusterMST}}.}
 
 \item{shrink}{logical or numeric between 0 and 1, determines whether and how
-much to shrink branching lineages toward their average prior to the split.}
+much to shrink branching lineages toward their average prior to the split
+(default \code{= TRUE}).}
 
 \item{extend}{character, how to handle root and leaf clusters of lineages
 when constructing the initial, piece-wise linear curve. Accepted values are
 \code{'y'} (default), \code{'n'}, and \code{'pc1'}. See 'Details' for more.}
 
 \item{reweight}{logical, whether to allow cells shared between lineages to be
-reweighted during curve-fitting. If \code{TRUE}, cells shared between
-lineages will be iteratively reweighted based on the quantiles of their
-projection distances to each curve. See 'Details' for more.}
+reweighted during curve fitting. If \code{TRUE} (default), cells shared
+between lineages will be iteratively reweighted based on the quantiles of
+their projection distances to each curve. See 'Details' for more.}
 
 \item{reassign}{logical, whether to reassign cells to lineages at each
-iteration. If \code{TRUE}, cells will be added to a lineage when their
-projection distance to the curve is less than the median distance for all
-cells currently assigned to the lineage. Additionally, shared cells will be
-removed from a lineage if their projection distance to the curve is above
-the 90th percentile and their weight along the curve is less than
+iteration. If \code{TRUE} (default), cells will be added to a lineage when
+their projection distance to the curve is less than the median distance for
+all cells currently assigned to the lineage. Additionally, shared cells
+will be removed from a lineage if their projection distance to the curve is
+above the 90th percentile and their weight along the curve is less than
 \code{0.1}.}
 
 \item{thresh}{numeric, determines the convergence criterion. Percent change
@@ -304,20 +189,21 @@ in the total distance from cells to their projections along curves must be
 less than \code{thresh}. Default is \code{0.001}, similar to
 \code{\link[princurve]{principal_curve}}.}
 
-\item{maxit}{numeric, maximum number of iterations, see
+\item{maxit}{numeric, maximum number of iterations (default \code{= 15}), see
 \code{\link[princurve]{principal_curve}}.}
 
 \item{stretch}{numeric factor by which curves can be extrapolated beyond
 endpoints. Default is \code{2}, see
 \code{\link[princurve]{principal_curve}}.}
 
-\item{approx_points}{logical or numeric, whether curves should be
-approximated by a fixed number of points. If \code{FALSE}, no approximation
-will be performed and curves will contain as many points as the input data.
-If numeric, curves will be approximated by this number of points;
-preferably about 100 (see \code{\link[princurve]{principal_curve}}).}
+\item{approx_points}{numeric, whether curves should be approximated by a
+fixed number of points. If \code{FALSE} (or 0), no approximation will be
+performed and curves will contain as many points as the input data. If
+numeric, curves will be approximated by this number of points (default
+\code{= 150} or \code{#cells}, whichever is smaller). See 'Details' and
+\code{\link[princurve]{principal_curve}} for more.}
 
-\item{smoother, }{choice of scatter plot smoother. Same as
+\item{smoother}{choice of scatter plot smoother. Same as
 \code{\link[princurve]{principal_curve}}, but \code{"lowess"} option is
 replaced with \code{"loess"} for additional flexibility.}
 
@@ -330,57 +216,60 @@ as well as \code{"tricube"} and \code{"density"}. See 'Details' for more.}
 to the origin should be allowed to have different starting points.}
 }
 \value{
-An object of class \code{\link{SlingshotDataSet}} containing the
-  arguments provided to \code{slingshot} as well as the following output:
-  \itemize{ \item{\code{lineages}}{ a list of \code{L} items, where \code{L}
-  is the number of lineages identified. Each lineage is represented by a
-  character vector with the names of the clusters included in that lineage,
-  in order.} \item{\code{connectivity}}{ the inferred cluster connectivity
-  matrix.} \item{\code{slingParams}}{Additional parameters used for lineage
-  inference or fitting simultaneous principal curves. This may include the
-  elements \code{start.given} and \code{end.given}, logical values indicating
-  whether the starting and ending clusters were specified a priori.
-  Additionally, this will always include \code{dist}, the pairwise cluster
-  distance matrix.} \item{curves}{A list of
-  \code{\link[princurve]{principal_curve}} objects.}}
+An object of class \code{\link{PseudotimeOrdering}} containing the
+  pseudotime estimates and lineage assignment weights in the \code{assays}.
+  The \code{reducedDim} and \code{clusterLabels} matrices will be stored in
+  the \code{\link[TrajectoryUtils]{cellData}}. Additionally, the
+  \code{metadata} slot will contain an \code{\link[igraph]{igraph}} object
+  named \code{mst}, a list of parameter values named \code{slingParams}, a
+  list of lineages (ordered sets of clusters) named \code{lineages}, and a
+  list of \code{\link[princurve]{principal_curve}} objects named
+  \code{curves}.
 }
 \description{
-Perform lineage inference with Slingshot
+Perform trajectory inference with Slingshot
 
-Given a reduced-dimensional data matrix \code{n} by \code{p} and
-  a vector of cluster labels (or matrix of soft cluster assignments,
-  potentially including a \code{-1} label for "unclustered"), this function
-  performs lineage inference using a cluster-based minimum spanning tree and
-  constructing simultaneous principal curves for branching paths through the
-  tree.
-
-This wrapper function performs lineage inference in two steps:
-  (1) identify lineage structure with a cluster-based minimum spanning tree
-  with the \code{\link{getLineages}} function and (2) construct smooth
-  representations of each lineage using simultaneous principal curves from
-  the function \code{\link{getCurves}}.
+Perform trajectory inference by (1) identifying lineage
+  structure with a cluster-based minimum spanning tree, and (2) constructing
+  smooth representations of each lineage using simultaneous principal curves.
+  This function wraps the \code{\link{getLineages}} and
+  \code{\link{getCurves}} functions and is the primary function of the
+  \code{slingshot} package.
 }
 \details{
-The \code{connectivity} matrix is learned by fitting a (possibly
-  constrained) minimum-spanning tree on the clusters and the artificial
+Given a reduced-dimensional data matrix \code{n} by \code{p} and a
+  vector of cluster labels (or matrix of soft cluster assignments,
+  potentially including a \code{-1} label for "unclustered"), this function
+  performs trajectory inference using a cluster-based minimum spanning tree
+  on the clusters and simultaneous principal curves for smooth, branching
+  paths.
+
+The graph of this structure is learned by fitting a (possibly
+  constrained) minimum-spanning tree on the clusters, plus the artificial
   cluster, \code{.OMEGA}, which is a fixed distance away from every real
   cluster. This effectively limits the maximum branch length in the MST to
   the chosen distance, meaning that the output may contain multiple trees.
 
-Once the \code{connectivity} is known, lineages are identified in
+Once the graph is known, lineages are identified in
   any tree with at least two clusters. For a given tree, if there is an
   annotated starting cluster, every possible path out of a starting cluster
   and ending in a leaf that isn't another starting cluster will be returned.
-  If no starting cluster is annotated, every leaf will be considered as a
-  potential starting cluster and whichever configuration produces the longest
-  average lineage length (in terms of number of clusters included) will be
-  returned.
+  If no starting cluster is annotated, one will be chosen by a heuristic
+  method, but this is not recommended.
 
 When there is only a single lineage, the curve-fitting algorithm is
   nearly identical to that of \code{\link[princurve]{principal_curve}}. When
-  there are multiple lineages and \code{shrink == TRUE}, an additional step
+  there are multiple lineages and \code{shrink > 0}, an additional step
   is added to the iterative procedure, forcing curves to be similar in the
   neighborhood of shared points (ie., before they branch).
+
+The \code{approx_points} argument, which sets the number of points
+  to be used for each curve, can have a large effect on computation time. Due
+  to this consideration, we set the default value to \code{150} whenever the
+  input dataset contains more than that many cells. This setting should help
+  with exploratory analysis while having little to no impact on the final
+  curves. To disable this behavior and construct curves with the maximum
+  number of points, set \code{approx_points = FALSE}.
 
 The \code{extend} argument determines how to construct the
   piece-wise linear curve used to initiate the recursive algorithm. The
@@ -391,41 +280,47 @@ The \code{extend} argument determines how to construct the
   projection of the furthest point. Setting \code{extend = 'pc1'} is similar
   to \code{'y'}, but uses the first principal component of the cluster to
   determine the direction of the curve beyond the cluster center. These
-  options typically have little to no impact on the final curve, but can
+  options typically have limited impact on the final curve, but can
   occasionally help with stability issues.
 
-When \code{shink == TRUE}, we compute a shrinkage curve,
+When \code{shink = TRUE}, we compute a percent shrinkage curve,
   \eqn{w_l(t)}, for each lineage, a non-increasing function of pseudotime
   that determines how much that lineage should be shrunk toward a shared
-  average curve. We set \eqn{w_l(0) = 1}, so that the curves will perfectly
-  overlap the average curve at pseudotime \code{0}. The weighting curve
-  decreases from \code{1} to \code{0} over the non-outlying pseudotime values
-  of shared cells (where outliers are defined by the \code{1.5*IQR} rule).
-  The exact shape of the curve in this region is controlled by
-  \code{shrink.method}, and can follow the shape of any standard kernel
-  function's cumulative density curve (or more precisely, survival curve,
-  since we require a decreasing function). Different choices of
-  \code{shrink.method} seem to have little impact on the final curves, in
-  most cases.
+  average curve. We set \eqn{w_l(0) = 1} (complete shrinkage), so that the
+  curves will always perfectly overlap the average curve at pseudotime
+  \code{0}. The weighting curve decreases from \code{1} to \code{0} over the
+  non-outlying pseudotime values of shared cells (where outliers are defined
+  by the \code{1.5*IQR} rule). The exact shape of the curve in this region is
+  controlled by \code{shrink.method}, and can follow the shape of any
+  standard kernel function's cumulative density curve (or more precisely,
+  survival curve, since we require a decreasing function). Different choices
+  of \code{shrink.method} to have no discernable impact on the final curves,
+  in most cases.
 
 When \code{reweight = TRUE}, weights for shared cells are based on
-  the quantiles of their projection distances onto each curve. The distances
-  are ranked and converted into quantiles between \code{0} and \code{1},
-  which are then transformed by \code{1 - q^2}. Each cell's weight along a
-  given lineage is the ratio of this value to the maximum value for this cell
-  across all lineages.
+  the quantiles of their projection distances onto each curve. The
+  distances are ranked and converted into quantiles between \code{0} and
+  \code{1}, which are then transformed by \code{1 - q^2}. Each cell's weight
+  along a given lineage is the ratio of this value to the maximum value for
+  this cell across all lineages.
 }
 \examples{
 data("slingshotExample")
 rd <- slingshotExample$rd
 cl <- slingshotExample$cl
-sds <- slingshot(rd, cl, start.clus = '1')
+pto <- slingshot(rd, cl, start.clus = '1')
 
+# plotting
+sds <- as.SlingshotDataSet(pto)
 plot(rd, col = cl, asp = 1)
-lines(sds, lwd = 3)
+lines(sds, type = 'c', lwd = 3)
 
 }
 \references{
 Hastie, T., and Stuetzle, W. (1989). "Principal Curves."
-  \emph{Journal of the American Statistical Association}, 84:502--516.
+  \emph{Journal of the American Statistical Association}, 84:502-516.
+
+Street, K., et al. (2018). "Slingshot: cell lineage and
+  pseudotime inference for single-cell transcriptomics." \emph{BMC Genomics},
+  19:477.
 }

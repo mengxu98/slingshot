@@ -4,57 +4,56 @@
 #' @description Map new observations onto simultaneous principal curves fitted
 #'   by \code{slingshot}.
 #'
-#' @param object a \code{\link{SlingshotDataSet}} containing simultaneous
-#'   principal curves to use for prediction.
+#' @param object a \code{\link[TrajectoryUtils]{PseudotimeOrdering}} or
+#'   \code{\link{SlingshotDataSet}} containing simultaneous principal curves to
+#'   use for prediction.
 #' @param newdata a matrix or data frame of new points in the same
 #'   reduced-dimensional space as the original input to \code{slingshot} (or
 #'   \code{getLineages}).
 #'
 #' @details This function is a method for the generic function \code{predict}
-#'   with \code{signature(object = "SlingshotDataSet")}. If no \code{newdata}
-#'   argument is provided, it will return the original results, given by
-#'   \code{object}.
+#'   with inputs being either a \code{PseudotimeOrdering} or
+#'   \code{SlingshotDataSet}. If no \code{newdata} argument is provided, it will
+#'   return the original results, given by \code{object}.
 #'
-#' @return A \code{SlingshotDataSet} object based on the input \code{newdata}.
-#'   New cells are treated as "unclustered" and the \code{lineages} and
-#'   \code{adjacency} slots are intentionally left blank, to distinguish these
-#'   results from the original \code{slingshot} output. The \code{curves} slot
-#'   represents the projections of each new cell onto the existing curves. As
-#'   with standard \code{slingshot} output, the lineage-specific pseudotimes and
-#'   assignment weights can be accessed via the functions
-#'   \code{\link{slingPseudotime}} and \code{\link{slingCurveWeights}}.
+#' @return An object of the same type as \code{object}, based on the input
+#'   \code{newdata}. New cells are treated as "unclustered", but other metadata
+#'   is preserved. The \code{curves} slot represents the projections of each new
+#'   cell onto the existing curves. As with standard \code{slingshot} output,
+#'   the lineage-specific pseudotimes and assignment weights can be accessed via
+#'   the functions \code{\link{slingPseudotime}} and
+#'   \code{\link{slingCurveWeights}}.
 #'
-#' @seealso \code{\link{slingshot}}, \code{\link{SlingshotDataSet}}
+#' @seealso \code{\link{slingshot}}
 #'
 #' @examples
 #' data("slingshotExample")
 #' rd <- slingshotExample$rd
 #' cl <- slingshotExample$cl
-#' sds <- slingshot(rd, cl, start.clus = '1')
+#' pto <- slingshot(rd, cl, start.clus = '1')
 #'
 #' x <- cbind(runif(100, min = -5, max = 10), runif(100, min = -4, max = 4))
-#' predict(sds, x)
+#' predict(pto, x)
 #'
 #' @export
-#'
 setMethod(f = "predict",
-    signature = signature(object = "SlingshotDataSet"),
+    signature = signature(object = "PseudotimeOrdering"),
     definition = function(object, newdata = NULL){
         # setup
-        sds <- object
+        pto <- object
         if(is.null(newdata)){
-            return(sds)
+            return(pto)
         }else{
             x <- as.matrix(newdata)
         }
-        n0 <- nrow(reducedDim(sds))
-        curves <- slingCurves(sds)
+        n0 <- nrow(slingReducedDim(pto))
+        curves <- slingCurves(pto)
         L <- length(curves)
 
         # checks
-        if(ncol(x) != ncol(reducedDim(sds))){
+        if(ncol(x) != ncol(slingReducedDim(pto))){
             stop('New data does not match original number of dimensions.\n',
-                'Original: ',ncol(reducedDim(sds)),' columns\n',
+                'Original: ',ncol(slingReducedDim(pto)),' columns\n',
                 'New data: ',ncol(x),' columns')
         }
         if(nrow(x)==0){
@@ -73,10 +72,10 @@ setMethod(f = "predict",
             rownames(x) <- paste('newCell', seq_len(nrow(x)), sep = '-')
         }
         if(is.null(colnames(x))){
-            colnames(x) <- colnames(reducedDim(sds))
+            colnames(x) <- colnames(slingReducedDim(pto))
         }
-        if(any(colnames(x) != colnames(reducedDim(sds)))){
-            colnames(x) <- colnames(reducedDim(sds))
+        if(any(colnames(x) != colnames(slingReducedDim(pto)))){
+            colnames(x) <- colnames(slingReducedDim(pto))
         }
         if(any(rownames(x)=='')){
             miss.ind <- which(rownames(x) == '')
@@ -135,15 +134,34 @@ setMethod(f = "predict",
             crv.proj[[l]]$w <- W.proj[,l]
         }
 
+        # new cells are all "unclustered"
         cl.mat <- matrix(0, nrow = nrow(x),
-                         ncol = ncol(slingClusterLabels(sds)))
-        colnames(cl.mat) <- colnames(slingClusterLabels(sds))
+                         ncol = ncol(slingClusterLabels(pto)))
+        colnames(cl.mat) <- colnames(slingClusterLabels(pto))
         rownames(cl.mat) <- rownames(x)
 
-        out <- newSlingshotDataSet(reducedDim = x,
-            clusterLabels = cl.mat,
-            curves = crv.proj,
-            slingParams = slingParams(sds))
-
+        pst <- vapply(crv.proj, function(pc) {
+            t <- pc$lambda
+            t[pc$w == 0] <- NA
+            return(t)
+        }, rep(0,nrow(x)))
+        
+        out <- PseudotimeOrdering(list(pseudotime = pst, weights = W.proj),
+                                  metadata = metadata(pto))
+        metadata(out)$curves <- crv.proj
+        cellData(out)$reducedDim <- x
+        cellData(out)$clusterLabels <- cl.mat
+        
         return(out)
     })
+
+#' @export
+setMethod(f = "predict",
+          signature = signature(object = "SlingshotDataSet"),
+          definition = function(object, newdata = NULL){
+              pto <- as.PseudotimeOrdering(object)
+              pred <- predict(pto, newdata)
+              sds <- as.SlingshotDataSet(pred)
+              return(sds)
+          })
+

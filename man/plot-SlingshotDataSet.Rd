@@ -72,11 +72,12 @@ When \code{type} is not specified, the function will first check the
 data("slingshotExample")
 rd <- slingshotExample$rd
 cl <- slingshotExample$cl
-sds <- slingshot(rd, cl, start.clus = "1")
-plot(sds, type = 'b')
+pto <- slingshot(rd, cl, start.clus = "1")
+plot(SlingshotDataSet(pto), type = 'b')
 
 # add to existing plot
-plot(rd, col = 'grey50')
+sds <- as.SlingshotDataSet(pto)
+plot(rd, col = 'grey50', asp = 1)
 lines(sds, lwd = 3)
 
 }

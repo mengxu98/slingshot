@@ -2,14 +2,14 @@
 % Please edit documentation in R/AllGenerics.R, R/embedCurves.R
 \name{embedCurves}
 \alias{embedCurves}
-\alias{embedCurves,SlingshotDataSet,matrix-method}
+\alias{embedCurves,PseudotimeOrdering,matrix-method}
 \alias{embedCurves,SingleCellExperiment,matrix-method}
 \alias{embedCurves,SingleCellExperiment,character-method}
 \title{Embed trajectory in new space}
 \usage{
 embedCurves(x, newDimRed, ...)
 
-\S4method{embedCurves}{SlingshotDataSet,matrix}(
+\S4method{embedCurves}{PseudotimeOrdering,matrix}(
   x,
   newDimRed,
   shrink = NULL,
@@ -46,7 +46,7 @@ embedCurves(x, newDimRed, ...)
 \item{x}{an object containing \code{\link{slingshot}} output.}
 
 \item{newDimRed}{a matrix representing the new coordinate space in which to
-embed the \code{slingshot} curves.}
+embed the curves.}
 
 \item{...}{Additional parameters to pass to scatter plot smoothing function,
 \code{smoother}.}
@@ -74,13 +74,14 @@ as for \code{kernel} in \code{\link{density}} (default is \code{"cosine"}),
 as well as \code{"tricube"} and \code{"density"}. See 'Details' for more.}
 }
 \value{
-a \code{\link{SlingshotDataSet}} containing curves in the new space.
+a \code{\link{PseudotimeOrdering}} object containing curves in the
+  new space.
 }
 \description{
 This function takes the output of \code{\link{slingshot}} (or
   \code{\link{getCurves}}) and attempts to embed the curves in a different
   coordinate space than the one in which they were constructed. This should
-  be considered as a visualization tool, only.
+  be considered a visualization tool, only.
 }
 \details{
 Many of the same parameters are used here as in \code{getCurves}.
@@ -99,12 +100,12 @@ Note that non-linear dimensionality reduction techniques (such as
 data("slingshotExample")
 rd <- slingshotExample$rd
 cl <- slingshotExample$cl
-sds <- slingshot(rd, cl)
+pto <- slingshot(rd, cl, start.clus = '1')
 rd2 <- cbind(rd[,2] + rnorm(nrow(rd)), -rd[,1] + rnorm(nrow(rd)))
-sds.new <- embedCurves(sds, rd2)
-sds.new
+pto.new <- embedCurves(pto, rd2)
+pto.new
 
 plot(rd2, col = cl, asp = 1)
-lines(sds.new, lwd = 3)
+lines(pto.new, lwd = 3)
 
 }

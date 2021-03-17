@@ -55,30 +55,30 @@ objects produced by \code{\link{getCurves}}.}
 \item{slingParams}{list. Additional parameters used by Slingshot. These may
 specify how the minimum spanning tree on clusters was constructed:
 \itemize{
-\item{\code{start.clus}}{character. The label of the root cluster.}
-\item{\code{end.clus}}{character. Vector of cluster labels indicating the
+\item{\code{start.clus}}{ character. The label of the root cluster.}
+\item{\code{end.clus}}{ character. Vector of cluster labels indicating the
 terminal clusters.}
-\item{\code{start.given}}{logical. A logical value
+\item{\code{start.given}}{ logical. A logical value
 indicating whether the initial state was pre-specified.}
-\item{\code{end.given}}{logical. A vector of logical values indicating
+\item{\code{end.given}}{ logical. A vector of logical values indicating
 whether each terminal state was pre-specified}
-\item{\code{dist}}{matrix. A
+\item{\code{dist}}{ matrix. A
 numeric matrix of pairwise cluster distances.} }
 They may also specify how simultaneous principal curves were constructed:
 \itemize{
-\item{\code{shrink}}{logical or numeric between 0 and 1. Determines whether
-and how much to shrink branching lineages toward their shared average
-curve.}
-\item{\code{extend}}{character. Specifies the method for handling
+\item{\code{shrink}}{ logical or numeric between 0 and 1. Determines
+whether and how much to shrink branching lineages toward their shared
+average curve.}
+\item{\code{extend}}{ character. Specifies the method for handling
 root and leaf clusters of lineages when constructing the initial,
 piece-wise linear curve. Accepted values are 'y' (default), 'n', and 'pc1'.
 See \code{\link{getCurves}} for details.}
-\item{\code{reweight}}{logical.
+\item{\code{reweight}}{ logical.
 Indicates whether to allow cells shared
 between lineages to be reweighted during curve-fitting. If \code{TRUE},
 cells shared between lineages will be iteratively reweighted based on the
 quantiles of their projection distances to each curve.}
-\item{\code{reassign}}{logical.
+\item{\code{reassign}}{ logical.
 Indicates whether to reassign cells to
 lineages at each iteration. If \code{TRUE}, cells will be added to a
 lineage when their projection distance to the curve is less than the median
@@ -86,7 +86,7 @@ distance for all cells currently assigned to the lineage. Additionally,
 shared cells will be removed from a lineage if their projection distance to
 the curve is above the 90th percentile and their weight along the curve is
 less than \code{0.1}.}
-\item{\code{shrink.method}}{character.
+\item{\code{shrink.method}}{ character.
 Denotes how to determine the amount of shrinkage for a branching lineage.
 Accepted values are the same as for \code{kernel} in  the \code{density}
 function (default is \code{"cosine"}), as well as \code{"tricube"} and
@@ -100,26 +100,15 @@ A \code{SlingshotDataSet} object with all specified values.
 \description{
 Constructs a \code{SlingshotDataSet} object. Additional helper
   methods for manipulating \code{SlingshotDataSet} objects are  also
-  described below.
+  described below. We now recommend using
+  \code{\link[TrajectoryUtils]{PseudotimeOrdering}} objects, instead.
 }
-\section{Functions}{
-\itemize{
-\item \code{newSlingshotDataSet,data.frame,ANY-method}: returns a \code{SlingshotDataSet} object.
-
-\item \code{newSlingshotDataSet,matrix,numeric-method}: returns a \code{SlingshotDataSet} object.
-
-\item \code{newSlingshotDataSet,matrix,factor-method}: returns a \code{SlingshotDataSet} object.
-
-\item \code{newSlingshotDataSet,matrix,ANY-method}: returns a \code{SlingshotDataSet} object.
-
-\item \code{newSlingshotDataSet,matrix,character-method}: returns a \code{SlingshotDataSet} object.
-
-\item \code{newSlingshotDataSet,matrix,matrix-method}: returns a \code{SlingshotDataSet} object.
-}}
-
 \examples{
 rd <- matrix(data=rnorm(100), ncol=2)
 cl <- sample(letters[seq_len(5)], 50, replace = TRUE)
 sds <- newSlingshotDataSet(rd, cl)
 
+}
+\seealso{
+\code{\link[TrajectoryUtils]{PseudotimeOrdering}}
 }

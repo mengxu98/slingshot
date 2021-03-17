@@ -2,39 +2,33 @@
 % Please edit documentation in R/AllGenerics.R, R/AllHelperFunctions.R
 \name{slingParams}
 \alias{slingParams}
-\alias{slingParams,SlingshotDataSet-method}
+\alias{slingParams,PseudotimeOrdering-method}
 \alias{slingParams,SingleCellExperiment-method}
+\alias{slingParams,SlingshotDataSet-method}
 \title{Methods for parameters used by Slingshot}
 \usage{
 slingParams(x)
 
-\S4method{slingParams}{SlingshotDataSet}(x)
+\S4method{slingParams}{PseudotimeOrdering}(x)
 
 \S4method{slingParams}{SingleCellExperiment}(x)
+
+\S4method{slingParams}{SlingshotDataSet}(x)
 }
 \arguments{
 \item{x}{an object containing \code{\link{slingshot}} output.}
 }
 \value{
-the list of additional parameters used by Slingshot.
+The list of additional parameters used by Slingshot.
 }
 \description{
 Extracts additional control parameters used by Slingshot in
 lineage inference and fitting simultaneous principal curves.
 }
-\section{Methods (by class)}{
-\itemize{
-\item \code{SlingshotDataSet}: returns the list of additional parameters used
-by Slingshot from a \code{\link{SlingshotDataSet}} object.
-
-\item \code{SingleCellExperiment}: returns the list of additional parameters used
-by Slingshot from a \code{\link{SingleCellExperiment}} object.
-}}
-
 \examples{
 data("slingshotExample")
 rd <- slingshotExample$rd
 cl <- slingshotExample$cl
-sds <- slingshot(rd, cl, start.clus = '5')
-slingParams(sds)
+pto <- slingshot(rd, cl, start.clus = '1')
+slingParams(pto)
 }

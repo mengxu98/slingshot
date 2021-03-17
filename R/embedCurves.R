@@ -3,11 +3,11 @@
 #' @description This function takes the output of \code{\link{slingshot}} (or
 #'   \code{\link{getCurves}}) and attempts to embed the curves in a different
 #'   coordinate space than the one in which they were constructed. This should
-#'   be considered as a visualization tool, only.
+#'   be considered a visualization tool, only.
 #'
 #' @param x an object containing \code{\link{slingshot}} output.
 #' @param newDimRed a matrix representing the new coordinate space in which to
-#'   embed the \code{slingshot} curves.
+#'   embed the curves.
 #' @param shrink logical or numeric between 0 and 1, determines whether and how
 #'   much to shrink branching lineages toward their average prior to the split.
 #' @param stretch numeric factor by which curves can be extrapolated beyond
@@ -40,62 +40,61 @@
 #'   tSNE and UMAP) may produce discontinuities not observed in other spaces.
 #'   Use caution when embedding curves in these spaces.
 #'
-#' @return a \code{\link{SlingshotDataSet}} containing curves in the new space.
+#' @return a \code{\link{PseudotimeOrdering}} object containing curves in the
+#'   new space.
 #'
 #' @examples
 #' data("slingshotExample")
 #' rd <- slingshotExample$rd
 #' cl <- slingshotExample$cl
-#' sds <- slingshot(rd, cl)
+#' pto <- slingshot(rd, cl, start.clus = '1')
 #' rd2 <- cbind(rd[,2] + rnorm(nrow(rd)), -rd[,1] + rnorm(nrow(rd)))
-#' sds.new <- embedCurves(sds, rd2)
-#' sds.new
+#' pto.new <- embedCurves(pto, rd2)
+#' pto.new
 #'
 #' plot(rd2, col = cl, asp = 1)
-#' lines(sds.new, lwd = 3)
+#' lines(pto.new, lwd = 3)
 #'
 #' @importFrom princurve project_to_curve
 #' @export
 setMethod(f = "embedCurves",
-          signature = signature(x = "SlingshotDataSet",
+          signature = signature(x = "PseudotimeOrdering",
                                 newDimRed = "matrix"),
           definition = function(x, newDimRed,
-                                shrink = NULL,
-                                stretch = NULL,
-                                approx_points = NULL,
-                                smoother = NULL,
+                                shrink = NULL, stretch = NULL,
+                                approx_points = NULL, smoother = NULL,
                                 shrink.method = NULL, ...){
               # SETUP for checks
-              sds <- x
-              X <- reducedDim(sds)
+              pto <- x
+              X <- slingReducedDim(pto)
               newX <- newDimRed
-
+              
               # if new arguments are not provided, use existing arguments
               if(is.null(shrink)){
-                  shrink <- slingParams(sds)$shrink
+                  shrink <- slingParams(pto)$shrink
               }
               # some were not previously included in slingParams output, so we
               # assume the default values were used
               if(is.null(stretch)){
-                  stretch <- ifelse(is.null(slingParams(sds)$stretch), 2,
-                                    slingParams(sds)$stretch)
+                  stretch <- ifelse(is.null(slingParams(pto)$stretch), 2,
+                                    slingParams(pto)$stretch)
               }
               if(is.null(approx_points)){
                   approx_points <- ifelse(
-                      is.null(slingParams(sds)$approx_points),
-                      FALSE, slingParams(sds)$approx_points)
+                      is.null(slingParams(pto)$approx_points),
+                      FALSE, slingParams(pto)$approx_points)
               }
               if(is.null(smoother)){
                   smoother <- ifelse(
-                      is.null(slingParams(sds)$smoother),
-                      'smooth.spline', slingParams(sds)$smoother)
+                      is.null(slingParams(pto)$smoother),
+                      'smooth.spline', slingParams(pto)$smoother)
               }
               if(is.null(shrink.method)){
-                  shrink.method <- slingParams(sds)$shrink.method
+                  shrink.method <- slingParams(pto)$shrink.method
               }
-
+              
               # CHECKS
-              if(length(slingCurves(sds)) == 0){
+              if(length(slingCurves(pto)) == 0){
                   stop("No slingshot curves found in original space.")
               }
               if(shrink < 0 | shrink > 1){
@@ -126,14 +125,14 @@ setMethod(f = "embedCurves",
                   miss.ind <- which(colnames(newX) == '')
                   colnames(newX)[miss.ind] <- paste('Dim',miss.ind,sep='-')
               }
-
+              
               # SETUP
               p.new <- ncol(newX)
-              lineages <- slingLineages(sds)
+              lineages <- slingLineages(pto)
               L <- length(grep("Lineage", names(lineages))) #number of lineages
-              clusters <- colnames(slingClusterLabels(sds))
+              clusters <- colnames(slingClusterLabels(pto))
               d <- dim(X); n <- d[1]
-
+              
               C <- as.matrix(vapply(lineages[seq_len(L)], function(lin) {
                   vapply(clusters, function(clID) {
                       as.numeric(clID %in% lin)
@@ -151,7 +150,7 @@ setMethod(f = "embedCurves",
                   segmnts <- cbind(segmnts[, !idx, drop = FALSE],new.col)
                   colnames(segmnts)[ncol(segmnts)] <- paste('average',i,sep='')
               }
-
+              
               # DEFINE SMOOTHER FUNCTION
               smootherFcn <- switch(smoother, loess = function(lambda, xj,
                                                                w = NULL, ...){
@@ -169,9 +168,9 @@ setMethod(f = "embedCurves",
                   })
                   predict(fit, x = lambda)$y
               })
-
-              pcurves <- slingCurves(sds)
-
+              
+              pcurves <- slingCurves(pto)
+              
               # for each curve,
               #   construct a new curve by predicting each (new) dimension as a
               #   function of pseudotime.
@@ -179,7 +178,7 @@ setMethod(f = "embedCurves",
                   pcurve <- pcurves[[l]]
                   ordL <- order(pcurve$lambda)
                   s <- matrix(NA, nrow = n, ncol = p.new)
-
+                  
                   if(approx_points > 0){
                       xout_lambda <- seq(min(pcurve$lambda), max(pcurve$lambda),
                                          length.out = approx_points)
@@ -212,11 +211,11 @@ setMethod(f = "embedCurves",
                   new.pcurve$w <- pcurve$w
                   pcurves[[l]] <- new.pcurve
               }
-
+              
               # shrink together lineages near shared cells
               if(shrink > 0){
                   if(max(rowSums(C)) > 1){
-
+                      
                       segmnts <- unique(C[rowSums(C)>1,,drop=FALSE])
                       segmnts <- segmnts[order(rowSums(segmnts),
                                                decreasing = FALSE),
@@ -224,7 +223,7 @@ setMethod(f = "embedCurves",
                       seg.mix <- segmnts
                       avg.lines <- list()
                       pct.shrink <- list()
-
+                      
                       # determine average curves and amount of shrinkage
                       for(i in seq_along(avg.order)){
                           ns <- avg.order[[i]]
@@ -303,29 +302,29 @@ setMethod(f = "embedCurves",
               newCurves <- lapply(seq_len(L), function(l){
                   crv <- list(s = pcurves[[l]]$s,
                               ord = pcurves[[l]]$ord,
-                              lambda = slingCurves(sds)[[l]]$lambda,
-                              dist_ind = slingCurves(sds)[[l]]$dist_ind,
-                              dist = slingCurves(sds)[[l]]$dist,
-                              w = slingCurves(sds)[[l]]$w)
+                              lambda = slingCurves(pto)[[l]]$lambda,
+                              dist_ind = slingCurves(pto)[[l]]$dist_ind,
+                              dist = slingCurves(pto)[[l]]$dist,
+                              w = slingCurves(pto)[[l]]$w)
                   class(crv) <- "principal_curve"
                   return(crv)
               })
               
-              params <- slingParams(sds)
+              params <- slingParams(pto)
               params$shrink <- shrink
               params$stretch <- stretch
               params$approx_points <- approx_points
               params$smoother <- smoother
               params$shrink.method <- shrink.method
               params$embedding <- TRUE
-              sds.out <- newSlingshotDataSet(reducedDim = newX,
-                                        clusterLabels = slingClusterLabels(sds),
-                                        lineages = slingLineages(sds),
-                                        adjacency = slingAdjacency(sds),
-                                        curves = newCurves,
-                                        slingParams = params)
-              validObject(sds.out)
-              return(sds.out)
+              
+              out <- pto
+              metadata(out)$curves <- newCurves
+              metadata(out)$slingParams <- params
+              cellData(out)$reducedDim <- newX
+              
+              validObject(out)
+              return(out)
           })
 
 
@@ -335,22 +334,16 @@ setMethod(f = "embedCurves",
           signature = signature(x = "SingleCellExperiment",
                                 newDimRed = "matrix"),
           definition = function(x, newDimRed,
-                                shrink = NULL,
-                                stretch = NULL,
-                                approx_points = NULL,
-                                smoother = NULL,
+                                shrink = NULL, stretch = NULL,
+                                approx_points = NULL, smoother = NULL,
                                 shrink.method = NULL, ...){
-              # check for existing slingshot results
-              if(is.null(x@int_metadata$slingshot)){
-                  stop('No previous slingshot results found.')
-              }
-              return(embedCurves(x = SlingshotDataSet(x), 
-                                 newDimRed = newDimRed,
-                                 shrink = shrink,
-                                 stretch = stretch,
-                                 approx_points = approx_points,
-                                 smoother = smoother,
-                                 shrink.method = shrink.method, ...))
+              embedCurves(x = as.PseudotimeOrdering(x), 
+                          newDimRed = newDimRed,
+                          shrink = shrink,
+                          stretch = stretch,
+                          approx_points = approx_points,
+                          smoother = smoother,
+                          shrink.method = shrink.method, ...)          
           })
 
 #' @rdname embedCurves
@@ -360,21 +353,15 @@ setMethod(f = "embedCurves",
           signature = signature(x = "SingleCellExperiment",
                                 newDimRed = "character"),
           definition = function(x, newDimRed,
-                                shrink = NULL,
-                                stretch = NULL,
-                                approx_points = NULL,
-                                smoother = NULL,
+                                shrink = NULL, stretch = NULL,
+                                approx_points = NULL, smoother = NULL,
                                 shrink.method = NULL, ...){
-              # check for existing slingshot results
-              if(is.null(x@int_metadata$slingshot)){
-                  stop('No previous slingshot results found.')
-              }
-              return(embedCurves(x = SlingshotDataSet(x), 
-                                 newDimRed = reducedDim(x, newDimRed),
-                                 shrink = shrink,
-                                 stretch = stretch,
-                                 approx_points = approx_points,
-                                 smoother = smoother,
-                                 shrink.method = shrink.method, ...))
+              embedCurves(x = as.PseudotimeOrdering(x), 
+                          newDimRed = reducedDim(x, newDimRed),
+                          shrink = shrink,
+                          stretch = stretch,
+                          approx_points = approx_points,
+                          smoother = smoother,
+                          shrink.method = shrink.method, ...)
           })
 

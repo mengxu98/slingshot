@@ -1,11 +1,18 @@
 #' @title Class \code{SlingshotDataSet}
 #' @aliases SlingshotDataSet-class
 #'   
+#' @description This was the original class for storing \code{slingshot}
+#'   results, but we now generally reommend using the
+#'   \code{\link{PseudotimeOrdering}} class, instead. Most \code{slingshot}
+#'   functions will still work with \code{SlingshotDataSet} objects, but will
+#'   return \code{PseudotimeOrdering} objects, by default. To update old
+#'   \code{SlingshotDataSet} objects, we have provided the
+#'   \code{\link{as.PseudotimeOrdering}} conversion function. The only functions
+#'   that require \code{SlingshotDataSet} objects are the plotting functions.
+#'   
 #' @description The \code{SlingshotDataSet} class holds data relevant for 
 #'   performing lineage inference with the \code{slingshot} package, primarily a
 #'   reduced dimensional representation of the data and a set of cluster labels.
-#'   All \code{slingshot} methods can take an object of the class 
-#'   \code{SlingshotDataSet} as input and will output the same.
 #'   
 #' @slot reducedDim matrix. An \code{n} by \code{p} numeric matrix or data frame
 #'   giving the coordinates of the cells in a reduced dimensionality space.
@@ -21,30 +28,30 @@
 #' @slot slingParams list. Additional parameters used by Slingshot. These may 
 #'   specify how the minimum spanning tree on clusters was constructed: 
 #'   \itemize{ 
-#'   \item{\code{start.clus}}{character. The label of the root cluster.} 
-#'   \item{\code{end.clus}}{character. Vector of cluster labels indicating the 
+#'   \item{\code{start.clus}}{ character. The label of the root cluster.} 
+#'   \item{\code{end.clus}}{ character. Vector of cluster labels indicating the 
 #'   terminal clusters.}
-#'   \item{\code{start.given}}{logical. A logical value 
+#'   \item{\code{start.given}}{ logical. A logical value 
 #'   indicating whether the initial state was pre-specified.} 
-#'   \item{\code{end.given}}{logical. A vector of logical values indicating 
+#'   \item{\code{end.given}}{ logical. A vector of logical values indicating 
 #'   whether each terminal state was pre-specified}
-#'   \item{\code{dist}}{matrix. A
+#'   \item{\code{dist}}{ matrix. A
 #'   numeric matrix of pairwise cluster distances.} }
 #'   They may also specify how simultaneous principal curves were constructed:
 #'   \itemize{ 
-#'   \item{\code{shrink}}{logical or numeric between 0 and 1. Determines whether
-#'   and how much to shrink branching lineages toward their shared average 
-#'   curve.} 
-#'   \item{\code{extend}}{character. Specifies the method for handling 
+#'   \item{\code{shrink}}{ logical or numeric between 0 and 1. Determines
+#'   whether and how much to shrink branching lineages toward their shared
+#'   average curve.}
+#'   \item{\code{extend}}{ character. Specifies the method for handling 
 #'   root and leaf clusters of lineages when constructing the initial, 
 #'   piece-wise linear curve. Accepted values are 'y' (default), 'n', and 'pc1'.
 #'   See \code{\link{getCurves}} for details.} 
-#'   \item{\code{reweight}}{logical. 
+#'   \item{\code{reweight}}{ logical. 
 #'   Indicates whether to allow cells shared
 #'   between lineages to be reweighted during curve-fitting. If \code{TRUE},
 #'   cells shared between lineages will be iteratively reweighted based on the
 #'   quantiles of their projection distances to each curve.} 
-#'   \item{\code{reassign}}{logical. 
+#'   \item{\code{reassign}}{ logical. 
 #'   Indicates whether to reassign cells to lineages at each
 #'   iteration. If \code{TRUE}, cells will be added to a lineage when their
 #'   projection distance to the curve is less than the median distance for all
@@ -52,7 +59,7 @@
 #'   removed from a lineage if their projection distance to the curve is above
 #'   the 90th percentile and their weight along the curve is less than
 #'   \code{0.1}.} 
-#'   \item{\code{shrink.method}}{character. 
+#'   \item{\code{shrink.method}}{ character. 
 #'   Denotes how to determine the amount of shrinkage for a branching lineage. 
 #'   Accepted values are the same as for \code{kernel} in  the \code{density} 
 #'   function (default is \code{"cosine"}), as well as \code{"tricube"} and 
@@ -63,15 +70,16 @@
 #' @return The accessor functions \code{reducedDim}, \code{clusterLabels}, 
 #'   \code{lineages}, \code{adjacency}, \code{curves},
 #'   and \code{slingParams} return the corresponding elements of a 
-#'   \code{SlingshotDataSet}. The functions \code{pseudotime} and 
-#'   \code{curveWeights} extract useful output elements of a 
+#'   \code{SlingshotDataSet}. The functions \code{slingPseudotime} and 
+#'   \code{slingCurveWeights} extract useful output elements of a 
 #'   \code{SlingshotDataSet}, provided that curves have already been fit with 
 #'   either \code{slingshot} or \code{getCurves}.
+#'   
+#' @seealso \code{\link{PseudotimeOrdering}}
 #'   
 #' @import princurve
 #' @import methods
 #' @export
-#' 
 setClass(
     Class = "SlingshotDataSet",
     slots = list(
@@ -126,10 +134,10 @@ setValidity("SlingshotDataSet", function(object) {
             return(paste0("lineages must be a list of character vectors ",
                           "composed of cluster names."))
         }
-        if(!is.numeric(slingAdjacency(object))) {
+        if(!is.numeric(slingMST(object))) {
             return("adjacency matrix must be numeric or logical.")
         }
-        if(any(dim(slingAdjacency(object)) != K)){
+        if(any(dim(slingMST(object)) != K)){
             return(paste("adjacency matrix must be square with number of",
                          "dimensions equal to number of clusters"))
         }

@@ -2,14 +2,15 @@
 % Please edit documentation in R/AllGenerics.R, R/getCurves.R
 \name{getCurves}
 \alias{getCurves}
-\alias{getCurves,SlingshotDataSet-method}
+\alias{getCurves,PseudotimeOrdering-method}
 \alias{getCurves,SingleCellExperiment-method}
-\title{Construct Smooth Lineage Curves}
+\alias{getCurves,SlingshotDataSet-method}
+\title{Construct Simultaneous Principal Curves}
 \usage{
-getCurves(sds, ...)
+getCurves(data, ...)
 
-\S4method{getCurves}{SlingshotDataSet}(
-  sds,
+\S4method{getCurves}{PseudotimeOrdering}(
+  data,
   shrink = TRUE,
   extend = "y",
   reweight = TRUE,
@@ -17,55 +18,46 @@ getCurves(sds, ...)
   thresh = 0.001,
   maxit = 15,
   stretch = 2,
-  approx_points = FALSE,
+  approx_points = NULL,
   smoother = "smooth.spline",
   shrink.method = "cosine",
   allow.breaks = TRUE,
   ...
 )
 
-\S4method{getCurves}{SingleCellExperiment}(
-  sds,
-  shrink = TRUE,
-  extend = "y",
-  reweight = TRUE,
-  reassign = TRUE,
-  thresh = 0.001,
-  maxit = 15,
-  stretch = 2,
-  approx_points = FALSE,
-  smoother = "smooth.spline",
-  shrink.method = "cosine",
-  allow.breaks = TRUE,
-  ...
-)
+\S4method{getCurves}{SingleCellExperiment}(data, ...)
+
+\S4method{getCurves}{SlingshotDataSet}(data, ...)
 }
 \arguments{
-\item{sds}{The \code{SlingshotDataSet} for which to construct simultaneous
-principal curves. This should already have lineages identified by
-\code{\link{getLineages}}.}
+\item{data}{a data object containing lineage information provided by
+\code{\link{getLineages}}, to be used for constructing simultaneous
+principal curves. Supported types include
+\code{\link{SingleCellExperiment}}, \code{\link{SlingshotDataSet}}, and
+\code{\link[TrajectoryUtils]{PseudotimeOrdering}} (recommended).}
 
 \item{...}{Additional parameters to pass to scatter plot smoothing function,
 \code{smoother}.}
 
 \item{shrink}{logical or numeric between 0 and 1, determines whether and how
-much to shrink branching lineages toward their average prior to the split.}
+much to shrink branching lineages toward their average prior to the split
+(default \code{= TRUE}).}
 
 \item{extend}{character, how to handle root and leaf clusters of lineages
 when constructing the initial, piece-wise linear curve. Accepted values are
 \code{'y'} (default), \code{'n'}, and \code{'pc1'}. See 'Details' for more.}
 
 \item{reweight}{logical, whether to allow cells shared between lineages to be
-reweighted during curve-fitting. If \code{TRUE}, cells shared between
-lineages will be iteratively reweighted based on the quantiles of their
-projection distances to each curve. See 'Details' for more.}
+reweighted during curve fitting. If \code{TRUE} (default), cells shared
+between lineages will be iteratively reweighted based on the quantiles of
+their projection distances to each curve. See 'Details' for more.}
 
 \item{reassign}{logical, whether to reassign cells to lineages at each
-iteration. If \code{TRUE}, cells will be added to a lineage when their
-projection distance to the curve is less than the median distance for all
-cells currently assigned to the lineage. Additionally, shared cells will be
-removed from a lineage if their projection distance to the curve is above
-the 90th percentile and their weight along the curve is less than
+iteration. If \code{TRUE} (default), cells will be added to a lineage when
+their projection distance to the curve is less than the median distance for
+all cells currently assigned to the lineage. Additionally, shared cells
+will be removed from a lineage if their projection distance to the curve is
+above the 90th percentile and their weight along the curve is less than
 \code{0.1}.}
 
 \item{thresh}{numeric, determines the convergence criterion. Percent change
@@ -73,7 +65,7 @@ in the total distance from cells to their projections along curves must be
 less than \code{thresh}. Default is \code{0.001}, similar to
 \code{\link[princurve]{principal_curve}}.}
 
-\item{maxit}{numeric, maximum number of iterations, see
+\item{maxit}{numeric, maximum number of iterations (default \code{= 15}), see
 \code{\link[princurve]{principal_curve}}.}
 
 \item{stretch}{numeric factor by which curves can be extrapolated beyond
@@ -83,10 +75,11 @@ endpoints. Default is \code{2}, see
 \item{approx_points}{numeric, whether curves should be approximated by a
 fixed number of points. If \code{FALSE} (or 0), no approximation will be
 performed and curves will contain as many points as the input data. If
-numeric, curves will be approximated by this number of points; preferably
-about 100 (see \code{\link[princurve]{principal_curve}}).}
+numeric, curves will be approximated by this number of points (default
+\code{= 150} or \code{#cells}, whichever is smaller). See 'Details' and
+\code{\link[princurve]{principal_curve}} for more.}
 
-\item{smoother, }{choice of scatter plot smoother. Same as
+\item{smoother}{choice of scatter plot smoother. Same as
 \code{\link[princurve]{principal_curve}}, but \code{"lowess"} option is
 replaced with \code{"loess"} for additional flexibility.}
 
@@ -99,28 +92,43 @@ as well as \code{"tricube"} and \code{"density"}. See 'Details' for more.}
 to the origin should be allowed to have different starting points.}
 }
 \value{
-An updated \code{\link{SlingshotDataSet}} object containing the
-  oringinal input, arguments provided to \code{getCurves} as well as the
-  following new elements: \itemize{ \item{\code{curves}} {A list of
+An updated \code{\link{PseudotimeOrdering}} object containing the
+  pseudotime estimates and lineage assignment weights in the \code{assays}.
+  It will also include the original information provided by
+  \code{getLineages}, as well as the following new elements in the
+  \code{metadata}: \itemize{ \item{\code{curves}} {A list of
   \code{\link[princurve]{principal_curve}} objects.}
   \item{\code{slingParams}} {Additional parameters used for fitting
   simultaneous principal curves.}}
 }
 \description{
-This function takes a reduced data matrix \code{n} by \code{p},
-  a vector of cluster identities (optionally including \code{-1}'s for
-  "unclustered"), and a set of lineages consisting of paths through a forest
-  constructed on the clusters. It constructs smooth curves for each lineage
-  and returns the points along these curves corresponding to the orthogonal
-  projections of each data point, along with corresponding arclength
-  (\code{pseudotime} or \code{lambda}) values.
+This function constructs simultaneous principal curves, the
+  second step in Slingshot's trajectory inference procedure. It takes a
+  (specifically formatted) \code{\link[TrajectoryUtils]{PseudotimeOrdering}}
+  object, as is returned by the first step, \code{\link{getLineages}}. The
+  output is another \code{PseudotimeOrdering} object, containing the
+  simultaneous principal curves, pseudotime estimates, and lineage assignment
+  weights.
 }
 \details{
+This function constructs simultaneous principal curves (one per
+  lineage). Cells are mapped to curves by orthogonal projection and
+  pseudotime is estimated by the arclength along the curve (also called
+  \code{lambda}, in the \code{\link[princurve]{principal_curve}} objects).
+
 When there is only a single lineage, the curve-fitting algorithm is
   nearly identical to that of \code{\link[princurve]{principal_curve}}. When
   there are multiple lineages and \code{shrink > 0}, an additional step
   is added to the iterative procedure, forcing curves to be similar in the
   neighborhood of shared points (ie., before they branch).
+
+The \code{approx_points} argument, which sets the number of points
+  to be used for each curve, can have a large effect on computation time. Due
+  to this consideration, we set the default value to \code{150} whenever the
+  input dataset contains more than that many cells. This setting should help
+  with exploratory analysis while having little to no impact on the final
+  curves. To disable this behavior and construct curves with the maximum
+  number of points, set \code{approx_points = FALSE}.
 
 The \code{extend} argument determines how to construct the
   piece-wise linear curve used to initiate the recursive algorithm. The
@@ -131,22 +139,22 @@ The \code{extend} argument determines how to construct the
   projection of the furthest point. Setting \code{extend = 'pc1'} is similar
   to \code{'y'}, but uses the first principal component of the cluster to
   determine the direction of the curve beyond the cluster center. These
-  options typically have little to no impact on the final curve, but can
+  options typically have limited impact on the final curve, but can
   occasionally help with stability issues.
 
-When \code{shink = TRUE}, we compute a shrinkage curve,
+When \code{shink = TRUE}, we compute a percent shrinkage curve,
   \eqn{w_l(t)}, for each lineage, a non-increasing function of pseudotime
   that determines how much that lineage should be shrunk toward a shared
-  average curve. We set \eqn{w_l(0) = 1}, so that the curves will perfectly
-  overlap the average curve at pseudotime \code{0}. The weighting curve
-  decreases from \code{1} to \code{0} over the non-outlying pseudotime values
-  of shared cells (where outliers are defined by the \code{1.5*IQR} rule).
-  The exact shape of the curve in this region is controlled by
-  \code{shrink.method}, and can follow the shape of any standard kernel
-  function's cumulative density curve (or more precisely, survival curve,
-  since we require a decreasing function). Different choices of
-  \code{shrink.method} seem to have little impact on the final curves, in
-  most cases.
+  average curve. We set \eqn{w_l(0) = 1} (complete shrinkage), so that the
+  curves will always perfectly overlap the average curve at pseudotime
+  \code{0}. The weighting curve decreases from \code{1} to \code{0} over the
+  non-outlying pseudotime values of shared cells (where outliers are defined
+  by the \code{1.5*IQR} rule). The exact shape of the curve in this region is
+  controlled by \code{shrink.method}, and can follow the shape of any
+  standard kernel function's cumulative density curve (or more precisely,
+  survival curve, since we require a decreasing function). Different choices
+  of \code{shrink.method} to have no discernable impact on the final curves,
+  in most cases.
 
 When \code{reweight = TRUE}, weights for shared cells are based on
   the quantiles of their projection distances onto each curve. The
@@ -159,9 +167,11 @@ When \code{reweight = TRUE}, weights for shared cells are based on
 data("slingshotExample")
 rd <- slingshotExample$rd
 cl <- slingshotExample$cl
-sds <- getLineages(rd, cl, start.clus = '1')
-sds <- getCurves(sds)
+pto <- getLineages(rd, cl, start.clus = '1')
+pto <- getCurves(pto)
 
+# plotting
+sds <- as.SlingshotDataSet(pto)
 plot(rd, col = cl, asp = 1)
 lines(sds, type = 'c', lwd = 3)
 

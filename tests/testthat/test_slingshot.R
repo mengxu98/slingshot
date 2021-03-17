@@ -13,68 +13,69 @@ test_that("getLineages works for different input types", {
 
     # matrix / integer
     mi <- getLineages(reducedDim, clusterLabels)
-    expect_is(mi, "SlingshotDataSet")
-    expect_equal(dim(slingAdjacency(mi)), c(5,5))
+    expect_is(mi, "PseudotimeOrdering")
+    expect_equal(length(unique(unlist(slingLineages(mi)))), 5)
     # 1-column matrix / integer
     m1i <- getLineages(reducedDim[,1,drop = FALSE], clusterLabels)
-    expect_is(mi, "SlingshotDataSet")
-    expect_equal(dim(slingAdjacency(mi)), c(5,5))
+    expect_is(m1i, "PseudotimeOrdering")
+    expect_equal(length(unique(unlist(slingLineages(m1i)))), 5)
     # matrix / character
     mc <- getLineages(reducedDim, as.character(clusterLabels))
-    expect_is(mc, "SlingshotDataSet")
-    expect_equal(dim(slingAdjacency(mc)), c(5,5))
+    expect_is(mc, "PseudotimeOrdering")
+    expect_equal(length(unique(unlist(slingLineages(mc)))), 5)
     # matrix / factor
     mf <- getLineages(reducedDim, as.factor(clusterLabels))
-    expect_is(mf, "SlingshotDataSet")
-    expect_equal(dim(slingAdjacency(mf)), c(5,5))
+    expect_is(mf, "PseudotimeOrdering")
+    expect_equal(length(unique(unlist(slingLineages(mf)))), 5)
     # matrix / matrix
     cl.imb <- cbind(clusterLabels, sample(5,50, replace = TRUE))
     mm <- getLineages(reducedDim, cl.imb)
-    expect_is(mm, "SlingshotDataSet")
-    expect_equal(dim(slingAdjacency(mm)), c(2,2))
+    expect_is(mm, "PseudotimeOrdering")
+    expect_equal(length(unique(unlist(slingLineages(mm)))), 2)
 
 
 
     df <- data.frame(reducedDim)
     # data frame / integer
     dfi <- getLineages(df, clusterLabels)
-    expect_is(dfi, "SlingshotDataSet")
-    expect_equal(dim(slingAdjacency(dfi)), c(5,5))
+    expect_is(dfi, "PseudotimeOrdering")
+    expect_equal(length(unique(unlist(slingLineages(dfi)))), 5)
     # data frame / character
     dfc <- getLineages(df, as.character(clusterLabels))
-    expect_is(dfc, "SlingshotDataSet")
-    expect_equal(dim(slingAdjacency(dfc)), c(5,5))
+    expect_is(dfc, "PseudotimeOrdering")
+    expect_equal(length(unique(unlist(slingLineages(dfc)))), 5)
     # data frame / factor
     dff <- getLineages(df, as.factor(clusterLabels))
-    expect_is(dff, "SlingshotDataSet")
-    expect_equal(dim(slingAdjacency(dff)), c(5,5))
+    expect_is(dff, "PseudotimeOrdering")
+    expect_equal(length(unique(unlist(slingLineages(dff)))), 5)
 
-    sds <- newSlingshotDataSet(reducedDim, clusterLabels)
     # SlingshotDataSet
+    sds <- newSlingshotDataSet(reducedDim, clusterLabels)
     s <- getLineages(sds)
-    expect_is(s, "SlingshotDataSet")
-    expect_equal(dim(slingAdjacency(s)), c(5,5))
+    expect_is(s, "PseudotimeOrdering")
+    expect_equal(length(unique(unlist(slingLineages(dff)))), 5)
+    expect_equal(dim(slingMST(as.SlingshotDataSet(s))), c(5,5))
 
     # one cluster
     clus1 <- rep(1,50)
     c1 <- getLineages(reducedDim, clus1)
-    expect_is(c1, "SlingshotDataSet")
-    expect_equal(dim(slingAdjacency(c1)), c(1,1))
+    expect_is(c1, "PseudotimeOrdering")
+    expect_equal(length(unique(unlist(slingLineages(c1)))), 1)
 
     # no clusters (default = make one cluster)
     c0 <- getLineages(reducedDim)
-    expect_is(c1, "SlingshotDataSet")
-    expect_equal(dim(slingAdjacency(c1)), c(1,1))
+    expect_is(c0, "PseudotimeOrdering")
+    expect_equal(length(unique(unlist(slingLineages(c0)))), 1)
     
     # unclustered
     clmiss <- clusterLabels
     clmiss[1] <- -1
     unclus <- getLineages(reducedDim, clmiss)
-    expect_equal(dim(slingAdjacency(unclus)), c(5,5))
+    expect_equal(length(unique(unlist(slingLineages(unclus)))), 5)
     expect_true(all(slingClusterLabels(unclus)[1,] == rep(0,5)))
     clmiss[1] <- NA
     unclus <- getLineages(reducedDim, clmiss)
-    expect_equal(dim(slingAdjacency(unclus)), c(5,5))
+    expect_equal(length(unique(unlist(slingLineages(unclus)))), 5)
     expect_true(all(slingClusterLabels(unclus)[1,] == rep(0,5)))
     
     # with SingleCellExperiment objects
@@ -87,23 +88,23 @@ test_that("getLineages works for different input types", {
                                    tSNE = matrix(rnorm(140*2),ncol=2))
     # implicit reducedDim
     c0 <- getLineages(sce)
-    expect_equal(dim(slingAdjacency(c0)), c(1,1))
+    expect_equal(length(unique(unlist(slingLineages(c0)))), 1)
     # reducedDim provided by name
     c0 <- getLineages(sce, reducedDim='tSNE')
-    expect_equal(dim(slingAdjacency(c0)), c(1,1))
+    expect_equal(length(unique(unlist(slingLineages(c0)))), 1)
     # reducedDim provided as matrix
     c0 <- getLineages(sce, reducedDim = matrix(rnorm(140*2),ncol=2))
-    expect_equal(dim(slingAdjacency(c0)), c(1,1))
+    expect_equal(length(unique(unlist(slingLineages(c0)))), 1)
     # cluster labels provided separately
     c0 <- getLineages(sce, clusterLabels = cl)
-    expect_equal(dim(slingAdjacency(c0)), c(5,5))
-    expect_true('slingClusters' %in% names(colData(c0)))
+    expect_equal(length(unique(unlist(slingLineages(c0)))), 5)
+    expect_true('slingshot' %in% names(colData(c0)))
     # accessor functions
     SlingshotDataSet(c0)
     expect_equal(length(slingLineages(c0)),2)
     expect_equal(length(slingCurves(c0)),0)
     expect_true(all(c('start.clus','end.clus','start.given','end.given',
-                      'dist') %in% names(slingParams(c0)) ))
+                      'omega','omega_scale') %in% names(slingParams(c0)) ))
 
     # invalid inputs
     expect_error(getLineages(reducedDim[,-(seq_len(ncol(reducedDim)))],
@@ -142,12 +143,12 @@ test_that("getLineages works as expected", {
     sdsO <- getLineages(rd, cl, omega = 10)
     expect_identical(slingLineages(sdsO), slingLineages(sds0))
     # separate the clusters after the branching point
-    sdsO <- getLineages(rd, cl, omega = 7)
+    sdsO <- getLineages(rd, cl, omega = 2.7)
     expect_identical(slingLineages(sdsO)$Lineage1, as.character(1:3))
     expect_true(all(as.character(4:5) %in% c(slingLineages(sdsO)$Lineage2,
                                              slingLineages(sdsO)$Lineage3)))
     # every cluster is its own lineage
-    sdsO <- getLineages(rd, cl, omega = 5)
+    sdsO <- getLineages(rd, cl, omega = 2)
     expect_equal(length(slingLineages(sdsO)), 5)
     expect_true(all(as.character(1:5) %in% unlist(slingLineages(sdsO))))
     # with omega = TRUE
@@ -201,13 +202,13 @@ test_that("getCurves works as expected", {
     # one dimension
     m1i <- getLineages(rd[,1,drop = FALSE], cl)
     m1i <- getCurves(m1i)
-    expect_true(abs(abs(cor(reducedDim(m1i)[,1], slingPseudotime(m1i)[,1],
+    expect_true(abs(abs(cor(slingReducedDim(m1i)[,1], slingPseudotime(m1i)[,1],
                             use='complete.obs'))-1) < .001)
     m1i <- getCurves(m1i, extend = 'n')
-    expect_true(abs(abs(cor(reducedDim(m1i)[,1], slingPseudotime(m1i)[,1],
+    expect_true(abs(abs(cor(slingReducedDim(m1i)[,1], slingPseudotime(m1i)[,1],
                             use='complete.obs'))-1) < .001)
     m1i <- getCurves(m1i, extend = 'pc1')
-    expect_true(abs(abs(cor(reducedDim(m1i)[,1], slingPseudotime(m1i)[,1],
+    expect_true(abs(abs(cor(slingReducedDim(m1i)[,1], slingPseudotime(m1i)[,1],
                             use='complete.obs'))-1) < .001)
 
     # one cluster
@@ -227,49 +228,49 @@ test_that("slingshot works for different input types", {
 
     # matrix / integer
     mi <- slingshot(reducedDim, clusterLabels)
-    expect_is(mi, "SlingshotDataSet")
-    expect_equal(dim(slingAdjacency(mi)), c(5,5))
+    expect_is(mi, "PseudotimeOrdering")
+    expect_equal(length(unique(unlist(slingLineages(mi)))), 5)
     # 1-column matrix / integer
     m1i <- slingshot(reducedDim[,1,drop = FALSE], clusterLabels)
-    expect_is(m1i, "SlingshotDataSet")
-    expect_equal(dim(slingAdjacency(m1i)), c(5,5))
+    expect_is(m1i, "PseudotimeOrdering")
+    expect_equal(length(unique(unlist(slingLineages(m1i)))), 5)
     # matrix / character
     mc <- slingshot(reducedDim, as.character(clusterLabels))
-    expect_is(mc, "SlingshotDataSet")
-    expect_equal(dim(slingAdjacency(mc)), c(5,5))
+    expect_is(mc, "PseudotimeOrdering")
+    expect_equal(length(unique(unlist(slingLineages(mc)))), 5)
     # matrix / factor
     mf <- slingshot(reducedDim, as.factor(clusterLabels))
-    expect_is(mf, "SlingshotDataSet")
-    expect_equal(dim(slingAdjacency(mf)), c(5,5))
+    expect_is(mf, "PseudotimeOrdering")
+    expect_equal(length(unique(unlist(slingLineages(mf)))), 5)
     # matrix / matrix
     cl.imb <- cbind(clusterLabels, sample(3,50, replace = TRUE))
     mm <- slingshot(reducedDim, cl.imb)
-    expect_is(mm, "SlingshotDataSet")
-    expect_equal(dim(slingAdjacency(mm)), c(2,2))
+    expect_is(mm, "PseudotimeOrdering")
+    expect_equal(length(unique(unlist(slingLineages(mm)))), 2)
 
 
     df <- data.frame(reducedDim)
     # data frame / integer
     dfi <- slingshot(df, clusterLabels)
-    expect_is(dfi, "SlingshotDataSet")
-    expect_equal(dim(slingAdjacency(dfi)), c(5,5))
+    expect_is(dfi, "PseudotimeOrdering")
+    expect_equal(length(unique(unlist(slingLineages(dfi)))), 5)
     # data frame / character
     dfc <- slingshot(df, as.character(clusterLabels))
-    expect_is(dfc, "SlingshotDataSet")
-    expect_equal(dim(slingAdjacency(dfc)), c(5,5))
+    expect_is(dfc, "PseudotimeOrdering")
+    expect_equal(length(unique(unlist(slingLineages(dfc)))), 5)
     # data frame / factor
     dff <- slingshot(df, as.factor(clusterLabels))
-    expect_is(dff, "SlingshotDataSet")
-    expect_equal(dim(slingAdjacency(dff)), c(5,5))
+    expect_is(dff, "PseudotimeOrdering")
+    expect_equal(length(unique(unlist(slingLineages(dff)))), 5)
 
     sds <- newSlingshotDataSet(reducedDim, clusterLabels)
     # SlingshotDataSet
     s <- slingshot(sds)
-    expect_is(s, "SlingshotDataSet")
-    expect_equal(dim(slingAdjacency(s)), c(5,5))
+    expect_is(s, "PseudotimeOrdering")
+    expect_equal(length(unique(unlist(slingLineages(s)))), 5)
 
     # diagonal distance measure
-    slingshot(rd, cl, dist.fun = .dist_clusters_diag)
+    slingshot(rd, cl, dist.method = "scaled.diag")
     # different shrinkage methods
     slingshot(rd, cl, shrink.method = 'tricube')
     slingshot(rd, cl, shrink.method = 'density')
@@ -277,13 +278,13 @@ test_that("slingshot works for different input types", {
     # one cluster
     clus1 <- rep(1,50)
     c1 <- slingshot(reducedDim, clus1)
-    expect_is(c1, "SlingshotDataSet")
-    expect_equal(dim(slingAdjacency(c1)), c(1,1))
+    expect_is(c1, "PseudotimeOrdering")
+    expect_equal(length(unique(unlist(slingLineages(c1)))), 1)
 
     # no clusters (default = make one cluster)
     c0 <- slingshot(reducedDim)
-    expect_is(c1, "SlingshotDataSet")
-    expect_equal(dim(slingAdjacency(c1)), c(1,1))
+    expect_is(c1, "PseudotimeOrdering")
+    expect_equal(length(unique(unlist(slingLineages(c1)))), 1)
 
     # using approx_points produces similar curves
     v1 <- slingshot(rd, cl)
@@ -317,23 +318,23 @@ test_that("slingshot works for different input types", {
                                    tSNE = matrix(rnorm(140*2),ncol=2))
     # implicit reducedDim
     c0 <- slingshot(sce)
-    expect_equal(dim(slingAdjacency(c0)), c(1,1))
+    expect_equal(length(unique(unlist(slingLineages(c0)))), 1)
     # reducedDim provided by name
     c0 <- slingshot(sce, reducedDim='tSNE')
-    expect_equal(dim(slingAdjacency(c0)), c(1,1))
+    expect_equal(length(unique(unlist(slingLineages(c0)))), 1)
     # reducedDim provided as matrix
     c0 <- slingshot(sce, reducedDim = matrix(rnorm(140*2),ncol=2))
-    expect_equal(dim(slingAdjacency(c0)), c(1,1))
+    expect_equal(length(unique(unlist(slingLineages(c0)))), 1)
     # cluster labels provided separately
     c0 <- slingshot(sce, clusterLabels = cl)
-    expect_equal(dim(slingAdjacency(c0)), c(5,5))
-    expect_true('slingClusters' %in% names(colData(c0)))
+    expect_equal(length(unique(unlist(slingLineages(c0)))), 5)
+    expect_true('slingshot' %in% names(colData(c0)))
     # accessor functions
     SlingshotDataSet(c0)
     expect_equal(length(slingLineages(c0)),2)
     expect_equal(length(slingCurves(c0)),2)
     expect_true(all(c('start.clus','end.clus','start.given','end.given',
-                      'dist','shrink','extend','reweight','reassign',
+                      'shrink','extend','reweight','reassign',
                       'shrink.method') %in% names(slingParams(c0)) ))
     expect_equal(dim(slingPseudotime(c0)), c(140,2))
     expect_equal(dim(slingCurveWeights(c0)), c(140,2))
@@ -363,11 +364,13 @@ test_that("slingshot works with ClusterExperiment objects", {
     expect_is(ce.sling, "ClusterExperiment")
     ce.sling <- slingshot(ce, sample(2,140, replace=TRUE))
     expect_is(ce.sling, "ClusterExperiment")
+    expect_true('slingshot' %in% names(colData(ce.sling)))
 })
 
 test_that("2D Plotting functions don't give errors", {
-    sds <- slingshot(rd,cl, start.clus = '1', end.clus = c('4','5'))
-
+    pto <- slingshot(rd,cl, start.clus = '1', end.clus = c('4','5'))
+    sds <- as.SlingshotDataSet(pto)
+    
     u <- matrix(rpois(140*50, 5), nrow=50)
     sce <- SingleCellExperiment(assays=list(counts=u))
     reducedDims(sce) <- SimpleList(PCA = rd)
@@ -383,14 +386,6 @@ test_that("2D Plotting functions don't give errors", {
     lines(sds, type = "lineages", show.constraints = TRUE, linInd = c(1,3))
     pairs(sds, lower.panel = TRUE)
     pairs(sds, lower.panel = TRUE, type = "lineages", show.constraints = TRUE)
-
-    gene.i <- rchisq(140,1)
-    plotGenePseudotime(sds, gene.i)
-    counts <- matrix(rchisq(280,1), nrow=2)
-    rownames(counts) <- c('gene1','gene2')
-    plotGenePseudotime(sds, 'gene2', counts)
-
-    plotGenePseudotime(sce, 2)
 })
 
 test_that("3D Plotting functions don't give errors", {
@@ -398,13 +393,15 @@ test_that("3D Plotting functions don't give errors", {
         skip('rgl package not available.')
     }
     rd3 <- cbind(rd, rnorm(140))
-    sds3 <- slingshot(rd3, cl)
-    rgl::plot3d(sds3)
-    rgl::plot3d(sds3, type = 'lineages')
-    rgl::plot3d(sds3, linInd = 1)
-    rgl::plot3d(sds3, type = 'lineages', linInd = 2:3)
-    expect_error(rgl::plot3d(sds3, linInd = 3:5),
+    sds3 <- as.SlingshotDataSet(slingshot(rd3, cl))
+    plot3d.SlingshotDataSet(sds3)
+    plot3d.SlingshotDataSet(sds3, type = 'lineages')
+    plot3d.SlingshotDataSet(sds3, linInd = 1)
+    plot3d.SlingshotDataSet(sds3, type = 'lineages', linInd = 2:3)
+    expect_error(plot3d.SlingshotDataSet(sds3, linInd = 3:5),
                  'None of the provided lineage indices')
+    rgl::plot3d(slingReducedDim(sds3))
+    plot3d.SlingshotDataSet(sds3, add = TRUE)
 })
 
 test_that("predict works as expected", {
@@ -416,7 +413,7 @@ test_that("predict works as expected", {
                    runif(100, min = -4, max = 4))
     pred <- predict(sds, x.mat)
     expect_true(all(slingClusterLabels(pred)==0))
-    expect_equal(length(slingLineages(pred)), 0)
+    expect_equal(length(slingLineages(pred)), 2)
     expect_equal(length(slingCurves(pred)), 2)
 
     x.df <- as.data.frame(x.mat)
@@ -442,12 +439,16 @@ test_that("Helper functions work as expected", {
     rd <- slingshotExample$rd
     cl <- slingshotExample$cl
     sds <- slingshot(rd,cl, start.clus = '1', end.clus = c('4','5'))
+    sds <- SlingshotDataSet(sds)
     show(sds)
 
+    expect_equal(dim(reducedDim(sds)), c(140,2))
+    expect_equal(dim(slingReducedDim(sds)), c(140,2))
+    expect_equal(dim(slingClusterLabels(sds)), c(140,5))
     expect_equal(length(slingLineages(sds)),2)
     expect_equal(length(slingCurves(sds)),2)
     expect_true(all(c('start.clus','end.clus','start.given','end.given',
-                      'dist','shrink','extend','reweight','reassign',
+                      'shrink','extend','reweight','reassign',
                       'shrink.method') %in% names(slingParams(sds)) ))
     expect_equal(dim(slingPseudotime(sds)), c(140,2))
     expect_equal(sum(is.na(slingPseudotime(sds, na = FALSE))), 0)
@@ -455,10 +456,7 @@ test_that("Helper functions work as expected", {
     expect_true(all(
         abs(rowSums(slingCurveWeights(sds, as.probs = TRUE))-1) < .001))
 
-    expect_equal(dim(reducedDim(sds[1:50])), c(50,2))
-
     # newSlingshotDataSet
-
     # matrix / factor
     mf <- newSlingshotDataSet(rd, factor(cl))
     expect_is(mf, "SlingshotDataSet")
@@ -521,13 +519,15 @@ test_that("embedCurves works as expected", {
     reducedDims(sce) <- SimpleList(PCA = rd,
                                    tSNE = tsne)
     # before running slingshot
-    expect_error(embedCurves(sce, tsne), 'No previous slingshot results')
-    expect_error(embedCurves(sce, 'tSNE'), 'No previous slingshot results')
+    expect_error(embedCurves(sce, tsne), 'No slingshot results found')
+    expect_error(embedCurves(sce, 'tSNE'), 'No slingshot results found')
     # after
     sce <- slingshot(sce, cl, 'PCA')
     emb <- embedCurves(sce, tsne)
     emb <- embedCurves(sce, 'tSNE')
-
+    
+    expect_is(emb, 'PseudotimeOrdering')
+    expect_equal(length(slingCurves(emb)), 2)
 })
 
 test_that("branchID functions work as expected", {

@@ -11,7 +11,7 @@ slingBranchID(x, ...)
 }
 \arguments{
 \item{x}{an object containing \code{slingshot} output, generally either a
-\code{\link{SlingshotDataSet}} or \code{\link{SingleCellExperiment}}.}
+\code{\link{PseudotimeOrdering}} or \code{\link{SingleCellExperiment}}.}
 
 \item{...}{additional arguments passed to object-specific methods.}
 
@@ -24,15 +24,16 @@ a factor variable that assigns each cell to a particular lineage or
   set of lineages.
 }
 \description{
-Extracts lineage assignments from \code{slingshot} results. This
-  produces a categorical variable indicating which lineage (or combination of
-  lineages) each cell is assigned to.
+Summarizes the lineage assignment weights from \code{slingshot}
+  results as a single vector. This is represented by a categorical variable
+  indicating which lineage (or combination of lineages) each cell is assigned
+  to.
 }
 \examples{
 data("slingshotExample")
 rd <- slingshotExample$rd
 cl <- slingshotExample$cl
-sds <- slingshot(rd, cl)
-slingBranchID(sds)
+pto <- slingshot(rd, cl)
+slingBranchID(pto)
 
 }

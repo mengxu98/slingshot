@@ -2,39 +2,33 @@
 % Please edit documentation in R/AllGenerics.R, R/AllHelperFunctions.R
 \name{slingLineages}
 \alias{slingLineages}
-\alias{slingLineages,SlingshotDataSet-method}
+\alias{slingLineages,PseudotimeOrdering-method}
 \alias{slingLineages,SingleCellExperiment-method}
+\alias{slingLineages,SlingshotDataSet-method}
 \title{Extract the Slingshot lineages}
 \usage{
 slingLineages(x)
 
-\S4method{slingLineages}{SlingshotDataSet}(x)
+\S4method{slingLineages}{PseudotimeOrdering}(x)
 
 \S4method{slingLineages}{SingleCellExperiment}(x)
+
+\S4method{slingLineages}{SlingshotDataSet}(x)
 }
 \arguments{
 \item{x}{an object containing \code{\link{slingshot}} output.}
 }
 \value{
-the list of lineages, represented by ordered sets of clusters.
+A list of lineages, represented by ordered sets of clusters.
 }
 \description{
 Extract lineages (represented by ordered sets of clusters)
   identified by \code{\link{slingshot}}.
 }
-\section{Methods (by class)}{
-\itemize{
-\item \code{SlingshotDataSet}: returns the list of lineages, represented by
-ordered sets of clusters from a \code{\link{SlingshotDataSet}} object.
-
-\item \code{SingleCellExperiment}: returns the list of lineages, represented by
-ordered sets of clusters from a \code{\link{SingleCellExperiment}} object.
-}}
-
 \examples{
 data("slingshotExample")
 rd <- slingshotExample$rd
 cl <- slingshotExample$cl
-sds <- getLineages(rd, cl)
-slingLineages(sds)
+pto <- slingshot(rd, cl, start.clus = '1')
+slingLineages(pto)
 }

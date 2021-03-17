@@ -3,23 +3,29 @@
 \name{slingPseudotime}
 \alias{slingPseudotime}
 \alias{slingCurveWeights}
-\alias{slingPseudotime,SlingshotDataSet-method}
+\alias{slingPseudotime,PseudotimeOrdering-method}
 \alias{slingPseudotime,SingleCellExperiment-method}
-\alias{slingCurveWeights,SlingshotDataSet-method}
+\alias{slingPseudotime,SlingshotDataSet-method}
+\alias{slingCurveWeights,PseudotimeOrdering-method}
 \alias{slingCurveWeights,SingleCellExperiment-method}
+\alias{slingCurveWeights,SlingshotDataSet-method}
 \title{Get Slingshot pseudotime values}
 \usage{
 slingPseudotime(x, ...)
 
 slingCurveWeights(x, ...)
 
-\S4method{slingPseudotime}{SlingshotDataSet}(x, na = TRUE)
+\S4method{slingPseudotime}{PseudotimeOrdering}(x, na = TRUE)
 
 \S4method{slingPseudotime}{SingleCellExperiment}(x, na = TRUE)
 
-\S4method{slingCurveWeights}{SlingshotDataSet}(x, as.probs = FALSE)
+\S4method{slingPseudotime}{SlingshotDataSet}(x, na = TRUE)
+
+\S4method{slingCurveWeights}{PseudotimeOrdering}(x, as.probs = FALSE)
 
 \S4method{slingCurveWeights}{SingleCellExperiment}(x)
+
+\S4method{slingCurveWeights}{SlingshotDataSet}(x, as.probs = FALSE)
 }
 \arguments{
 \item{x}{an object containing \code{\link{slingshot}} output.}
@@ -35,43 +41,24 @@ weights used to construct the curves, appropriate for downstream analysis
 of individual lineages (ie. a cell shared between two lineages can have two
 weights of \code{1}). If \code{TRUE}, output will be scaled to represent
 probabilistic assignment of cells to lineages (ie. a cell shared between
-two lineages will have two weights that sum to \code{1}).}
+two lineages will have two weights of \code{0.5}).}
 }
 \value{
-an \code{n} by \code{L} matrix representing each cell's pseudotime
-  along each lineage.
+\code{slingPseudotime}: an \code{n} by \code{L} matrix representing
+  each cell's pseudotime along each lineage.
 
-an \code{n} by \code{L} matrix of cell weights along
-  each lineage.
+\code{slingCurveWeights}: an \code{n} by \code{L} matrix of cell
+  weights along each lineage.
 }
 \description{
 Extract the matrix of pseudotime values or cells' weights along
   each lineage.
 }
-\section{Methods (by class)}{
-\itemize{
-\item \code{SlingshotDataSet}: returns the matrix of pseudotime values from a
-\code{\link{SlingshotDataSet}} object.
-
-\item \code{SingleCellExperiment}: returns the matrix of pseudotime values from a
-\code{\link{SingleCellExperiment}} object.
-
-\item \code{SlingshotDataSet}: returns the matrix of cell weights along each
-lineage from a \code{\link{SlingshotDataSet}} object.
-
-\item \code{SingleCellExperiment}: returns the matrix of cell weights along each
-lineage from a \code{\link{SingleCellExperiment}} object.
-}}
-
 \examples{
 data("slingshotExample")
 rd <- slingshotExample$rd
 cl <- slingshotExample$cl
-sds <- slingshot(rd, cl)
-slingPseudotime(sds)
-data("slingshotExample")
-rd <- slingshotExample$rd
-cl <- slingshotExample$cl
-sds <- slingshot(rd, cl)
-slingCurveWeights(sds)
+pto <- slingshot(rd, cl, start.clus = '1')
+slingPseudotime(pto)
+slingCurveWeights(pto)
 }

@@ -51,33 +51,34 @@ respectively.}
 \item{lwd}{numeric, the line width, see \code{\link{par}}.}
 
 \item{...}{additional parameters for \code{plot} or \code{axis}, see
-\code{\link{pairs}}.}
+\code{\link[graphics]{pairs}}.}
 
-\item{labels}{character, the names of the variables, see \code{\link{pairs}}.}
+\item{labels}{character, the names of the variables, see
+\code{\link[graphics]{pairs}}.}
 
-\item{horInd}{see \code{\link{pairs}}.}
+\item{horInd}{see \code{\link[graphics]{pairs}}.}
 
-\item{verInd}{see \code{\link{pairs}}.}
+\item{verInd}{see \code{\link[graphics]{pairs}}.}
 
-\item{lower.panel}{see \code{\link{pairs}}.}
+\item{lower.panel}{see \code{\link[graphics]{pairs}}.}
 
-\item{upper.panel}{see \code{\link{pairs}}.}
+\item{upper.panel}{see \code{\link[graphics]{pairs}}.}
 
-\item{diag.panel}{see \code{\link{pairs}}.}
+\item{diag.panel}{see \code{\link[graphics]{pairs}}.}
 
-\item{text.panel}{see \code{\link{pairs}}.}
+\item{text.panel}{see \code{\link[graphics]{pairs}}.}
 
-\item{label.pos}{see \code{\link{pairs}}.}
+\item{label.pos}{see \code{\link[graphics]{pairs}}.}
 
-\item{line.main}{see \code{\link{pairs}}.}
+\item{line.main}{see \code{\link[graphics]{pairs}}.}
 
-\item{cex.labels}{see \code{\link{pairs}}.}
+\item{cex.labels}{see \code{\link[graphics]{pairs}}.}
 
-\item{font.labels}{see \code{\link{pairs}}.}
+\item{font.labels}{see \code{\link[graphics]{pairs}}.}
 
-\item{row1attop}{see \code{\link{pairs}}.}
+\item{row1attop}{see \code{\link[graphics]{pairs}}.}
 
-\item{gap}{see \code{\link{pairs}}.}
+\item{gap}{see \code{\link[graphics]{pairs}}.}
 }
 \value{
 returns \code{NULL}.
@@ -99,7 +100,7 @@ When \code{type} is not specified, the function will first check the
 data("slingshotExample")
 rd <- slingshotExample$rd
 cl <- slingshotExample$cl
-sds <- slingshot(rd, cl, start.clus = "1")
-pairs(sds, type = 'curves')
+pto <- slingshot(rd, cl, start.clus = "1")
+pairs(SlingshotDataSet(pto))
 
 }

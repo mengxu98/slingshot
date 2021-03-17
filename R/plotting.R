@@ -38,15 +38,15 @@
 #' data("slingshotExample")
 #' rd <- slingshotExample$rd
 #' cl <- slingshotExample$cl
-#' sds <- slingshot(rd, cl, start.clus = "1")
-#' plot(sds, type = 'b')
+#' pto <- slingshot(rd, cl, start.clus = "1")
+#' plot(SlingshotDataSet(pto), type = 'b')
 #'
 #' # add to existing plot
-#' plot(rd, col = 'grey50')
+#' sds <- as.SlingshotDataSet(pto)
+#' plot(rd, col = 'grey50', asp = 1)
 #' lines(sds, lwd = 3)
 #'
 #' @import graphics
-#' @import grDevices
 #' @export
 setMethod(
     f = "plot",
@@ -116,7 +116,7 @@ setMethod(
         if(lineages){
             X <- reducedDim(x)
             clusterLabels <- slingClusterLabels(x)
-            connectivity <- slingAdjacency(x)
+            connectivity <- slingMST(x)
             clusters <- rownames(connectivity)
             nclus <- nrow(connectivity)
             centers <- t(vapply(clusters,function(clID){
@@ -204,95 +204,6 @@ setMethod(
     }
 )
 
-## Individual gene plots
-#' @rdname plotGenePseudotime
-#' @title Plot Gene Expression over Pseudotime
-#'
-#' @param gene the gene to be plotted. If \code{exprs} is provided, this may be
-#'   either the gene name or its row index in \code{exprs}. Otherwise, this is
-#'   assumed to be a vector of scaled expression values.
-#' @param exprs the genes-by-samples matrix of scaled expression values (log
-#'   counts or normalized log counts).
-#' @param loess logical, whether to include a loess fit in each plot (default is
-#' \code{TRUE}).
-#' @param loessCI logical, whether to include a confidence band around the loess
-#' curve (default is \code{TRUE}).
-#' @param ... additional parameters to be passed to \code{\link{plot}}.
-#'
-#' @return returns \code{NULL}.
-#'
-#' @examples
-#' data("slingshotExample")
-#' rd <- slingshotExample$rd
-#' cl <- slingshotExample$cl
-#' sds <- slingshot(rd, cl, start.clus = "1")
-#' ex <- matrix(c(rchisq(100,1),rchisq(20,3),rchisq(20,6)),nrow=1)
-#' rownames(ex) <- 'Gene-1'
-#' plotGenePseudotime(sds, 'Gene-1', ex)
-#'
-#' @export
-setMethod(
-    f = "plotGenePseudotime",
-    signature = signature(data = "SlingshotDataSet"),
-    definition = function(data, gene, exprs,
-        loess = TRUE, loessCI = TRUE, ...) {
-        if(length(gene) > 1 & is.numeric(gene)){
-            y <- gene
-            genename <- deparse(substitute(gene))
-        }
-        if(length(gene) == 1){
-            y <- exprs[gene, ,drop=FALSE][1,]
-            genename <- gene
-        }
-        pst <- slingPseudotime(data)
-        w <- slingCurveWeights(data)
-        L <- length(slingLineages(data))
-
-        par(mfrow = c(L,1))
-        for(l in seq_len(L)){
-            plot(pst[,l], y, xlab = 'Pseudotime', ylab = 'Expression',
-                main=paste(genename, ', Lineage ',l, sep=''), ...)
-            if(loess | loessCI){
-                l <- loess(y ~ pst[,l], weights = w[,l])
-            }
-            if(loessCI){
-                pl <- predict(l, se=TRUE)
-                polygon(c(l$x[order(l$x)],rev(l$x[order(l$x)])),
-                    c((pl$fit+qt(0.975,pl$df)*pl$se)[order(l$x)],
-                        rev((pl$fit-qt(0.975,pl$df)*pl$se)[order(l$x)])),
-                    border = NA, col = rgb(0,0,0,.3))
-            }
-            if(loess){
-                lines(l$x[order(l$x)], l$fitted[order(l$x)], lwd=2)
-            }
-        }
-        par(mfrow = c(1,1))
-        invisible(NULL)
-    }
-)
-
-#' @rdname plotGenePseudotime
-#' @importFrom SummarizedExperiment assays
-#' @export
-setMethod(
-    f = "plotGenePseudotime",
-    signature = signature(data = "SingleCellExperiment"),
-    definition = function(data, gene, exprs,
-        loess = TRUE, loessCI = TRUE, ...) {
-        if(missing(exprs)){
-            EX <- assays(data)[[1]]
-        }else{
-            if(length(exprs)==1){
-                EX <- assays(data)[[exprs]]
-            }else{
-                EX <- exprs
-            }
-        }
-        plotGenePseudotime(SlingshotDataSet(data), gene, exprs = EX,
-            loess = loess, loessCI = loessCI, ...)
-    }
-)
-
 
 #' @name plot3d-SlingshotDataSet
 #' @title Plot Slingshot output in 3D
@@ -327,18 +238,19 @@ setMethod(
 #' @return returns \code{NULL}.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(rgl)
 #' data("slingshotExample")
 #' rd <- slingshotExample$rd
 #' cl <- slingshotExample$cl
 #' rd <- cbind(rd, rnorm(nrow(rd)))
-#' sds <- slingshot(rd, cl, start.clus = "1")
+#' pto <- slingshot(rd, cl, start.clus = "1")
+#' sds <- SlingshotDataSet(pto)
 #' plot3d(sds, type = 'b')
 #'
 #' # add to existing plot
 #' plot3d(rd, col = 'grey50', aspect = 'iso')
-#' plot3d(sds, lwd = 3, add = TRUE)
+#' plot3d.SlingshotDataSet(sds, lwd = 3, add = TRUE)
 #' }
 # #' @importFrom rgl plot3d
 #' @export
@@ -411,7 +323,7 @@ plot3d.SlingshotDataSet <- function(x,
     if(lineages){
         X <- reducedDim(x)
         clusterLabels <- slingClusterLabels(x)
-        connectivity <- slingAdjacency(x)
+        connectivity <- slingMST(x)
         clusters <- rownames(connectivity)
         nclus <- nrow(connectivity)
         centers <- t(vapply(clusters,function(clID){
@@ -494,20 +406,21 @@ plot3d.SlingshotDataSet <- function(x,
 #'   \code{\link{par}}.
 #' @param lwd numeric, the line width, see \code{\link{par}}.
 #' @param ... additional parameters for \code{plot} or \code{axis}, see
-#'   \code{\link{pairs}}.
-#' @param labels character, the names of the variables, see \code{\link{pairs}}.
-#' @param horInd see \code{\link{pairs}}.
-#' @param verInd see \code{\link{pairs}}.
-#' @param lower.panel see \code{\link{pairs}}.
-#' @param upper.panel see \code{\link{pairs}}.
-#' @param diag.panel see \code{\link{pairs}}.
-#' @param text.panel see \code{\link{pairs}}.
-#' @param label.pos see \code{\link{pairs}}.
-#' @param line.main see \code{\link{pairs}}.
-#' @param cex.labels see \code{\link{pairs}}.
-#' @param font.labels see \code{\link{pairs}}.
-#' @param row1attop see \code{\link{pairs}}.
-#' @param gap see \code{\link{pairs}}.
+#'   \code{\link[graphics]{pairs}}.
+#' @param labels character, the names of the variables, see
+#'   \code{\link[graphics]{pairs}}.
+#' @param horInd see \code{\link[graphics]{pairs}}.
+#' @param verInd see \code{\link[graphics]{pairs}}.
+#' @param lower.panel see \code{\link[graphics]{pairs}}.
+#' @param upper.panel see \code{\link[graphics]{pairs}}.
+#' @param diag.panel see \code{\link[graphics]{pairs}}.
+#' @param text.panel see \code{\link[graphics]{pairs}}.
+#' @param label.pos see \code{\link[graphics]{pairs}}.
+#' @param line.main see \code{\link[graphics]{pairs}}.
+#' @param cex.labels see \code{\link[graphics]{pairs}}.
+#' @param font.labels see \code{\link[graphics]{pairs}}.
+#' @param row1attop see \code{\link[graphics]{pairs}}.
+#' @param gap see \code{\link[graphics]{pairs}}.
 #'
 #' @details If \code{type == 'lineages'}, straight line connectors between
 #'   cluster centers will be plotted. If \code{type == 'curves'}, simultaneous
@@ -523,8 +436,8 @@ plot3d.SlingshotDataSet <- function(x,
 #' data("slingshotExample")
 #' rd <- slingshotExample$rd
 #' cl <- slingshotExample$cl
-#' sds <- slingshot(rd, cl, start.clus = "1")
-#' pairs(sds, type = 'curves')
+#' pto <- slingshot(rd, cl, start.clus = "1")
+#' pairs(SlingshotDataSet(pto))
 #'
 #' @export
 pairs.SlingshotDataSet <-
@@ -585,7 +498,7 @@ pairs.SlingshotDataSet <-
             stop('No curves detected.')
         }
         if(lineages){
-            forest <- slingAdjacency(sds)
+            forest <- slingMST(sds)
             clusters <- rownames(forest)
             nclus <- nrow(forest)
             centers <- t(vapply(clusters,function(clID){
@@ -769,21 +682,7 @@ pairs.SlingshotDataSet <-
                                 for(ii in seq_len(nclus-1)){
                                     for(jj in seq(ii+1,nclus)){
                                         if(forest[ii,jj]==1){
-                                            if(clusters[ii] %in%
-                                               linC$start.clus |
-                                               clusters[jj] %in%
-                                               linC$start.clus){
-                                                seg.col <- 'green3'
-                                            }else if(clusters[ii] %in%
-                                                     linC$end.clus[
-                                                         linC$end.given] |
-                                                     clusters[jj] %in%
-                                                     linC$end.clus[
-                                                         linC$end.given]){
-                                                seg.col <- 'red2'
-                                            }else{
-                                                seg.col <- 1
-                                            }
+                                            seg.col <- 1
                                             lines(centers[c(ii,jj),j],
                                                   centers[c(ii,jj),i],
                                                   lwd = lwd, col = seg.col,...)
@@ -792,6 +691,23 @@ pairs.SlingshotDataSet <-
                                 }
                                 points(centers[,j],centers[,i], pch = pch,
                                        cex = 2*cex)
+                                if(show.constraints){
+                                    if(any(linC$start.given)){
+                                        st.ind <- clusters %in%
+                                            linC$start.clus[linC$start.given]
+                                        points(centers[st.ind,j],
+                                               centers[st.ind,i], cex = cex,
+                                               col = 'green3',
+                                               pch = pch)
+                                    }
+                                    if(any(linC$end.given)){
+                                        en.ind <- clusters %in%
+                                            linC$end.clus[linC$end.given]
+                                        points(centers[en.ind,j],
+                                               centers[en.ind,i], cex = cex,
+                                               col = 'red2', pch = pch)
+                                    }
+                                }
                             }
                             if(curves){
                                 for(c in slingCurves(sds)){

@@ -1,10 +1,11 @@
 #' @rdname slingBranchID
 #'
-#' @description Extracts lineage assignments from \code{slingshot} results. This
-#'   produces a categorical variable indicating which lineage (or combination of
-#'   lineages) each cell is assigned to.
+#' @description Summarizes the lineage assignment weights from \code{slingshot}
+#'   results as a single vector. This is represented by a categorical variable
+#'   indicating which lineage (or combination of lineages) each cell is assigned
+#'   to.
 #' @param x an object containing \code{slingshot} output, generally either a
-#'   \code{\link{SlingshotDataSet}} or \code{\link{SingleCellExperiment}}.
+#'   \code{\link{PseudotimeOrdering}} or \code{\link{SingleCellExperiment}}.
 #' @param thresh weight threshold for assigning cells to lineages. A cell's
 #'   weight on a certain lineage must be at least this value (default =
 #'   \code{1/L}, for \code{L} lineages).
@@ -15,8 +16,8 @@
 #' data("slingshotExample")
 #' rd <- slingshotExample$rd
 #' cl <- slingshotExample$cl
-#' sds <- slingshot(rd, cl)
-#' slingBranchID(sds)
+#' pto <- slingshot(rd, cl)
+#' slingBranchID(pto)
 #' 
 #' @export
 setMethod(f = "slingBranchID",
@@ -39,15 +40,15 @@ setMethod(f = "slingBranchID",
 #' @rdname slingBranchGraph
 #'
 #' @description Builds a graph describing the relationships between the
-#'   different branch assignments
+#'   different branch assignments.
 #' @param x an object containing \code{slingshot} output, generally either a
-#'   \code{\link{SlingshotDataSet}} or \code{\link{SingleCellExperiment}}.
+#'   \code{\link{PseudotimeOrdering}} or \code{\link{SingleCellExperiment}}.
 #' @param thresh weight threshold for assigning cells to lineages. A cell's
 #'   weight on a certain lineage must be greater than this value (default =
 #'   \code{1/L}, for \code{L} lineages).
 #' @param max_node_size the \code{size} of the largest node in the graph, for
-#'   plotting (all others will be drawn proportionally). See
-#'   \code{\link{igraph.plotting}} for more details.
+#'   plotting (all others will be drawn proportionally). Default is \code{100}.
+#'   See \code{\link[igraph]{igraph.plotting}} for more details.
 #' @return an \code{igraph} object representing the relationships between
 #'   lineages.
 #'   
@@ -55,11 +56,10 @@ setMethod(f = "slingBranchID",
 #' data("slingshotExample")
 #' rd <- slingshotExample$rd
 #' cl <- slingshotExample$cl
-#' sds <- slingshot(rd, cl)
-#' slingBranchGraph(sds)
+#' pto <- slingshot(rd, cl)
+#' slingBranchGraph(pto)
 #'   
-#' @importFrom igraph graph_from_literal graph_from_edgelist
-#'   graph_from_adjacency_matrix vertex_attr vertex_attr<-
+#' @import igraph
 #' @export
 setMethod(f = "slingBranchGraph",
           signature = signature(x = "ANY"),
@@ -70,16 +70,16 @@ setMethod(f = "slingBranchGraph",
               nlins <- vapply(which.lin, length, 0)
               maxL <- max(nlins)
               if(maxL == 1){ # only one lineage
-                  g <- graph_from_literal(1)
+                  g <- igraph::graph_from_literal(1)
                   vertex_attr(g, 'cells') <- length(brID)
                   vertex_attr(g, 'size') <- max_node_size
                   return(g)
               }
               if(length(nodes)==1){ # only one node, possibly multiple lineages
                   m <- matrix(0, dimnames = list(nodes[1], nodes[1]))
-                  g <- graph_from_adjacency_matrix(m)
-                  vertex_attr(g, 'cells') <- length(brID)
-                  vertex_attr(g, 'size') <- max_node_size
+                  g <- igraph::graph_from_adjacency_matrix(m)
+                  igraph::vertex_attr(g, 'cells') <- length(brID)
+                  igraph::vertex_attr(g, 'size') <- max_node_size
                   return(g)
               }
               
@@ -106,10 +106,11 @@ setMethod(f = "slingBranchGraph",
                   }
               }
               g <- igraph::graph_from_edgelist(el)
-              vertex_attr(g, 'cells') <- table(brID)[
+              igraph::vertex_attr(g, 'cells') <- table(brID)[
                   igraph::vertex_attr(g)$name]
-              vertex_attr(g, 'size') <- max_node_size * vertex_attr(g)$cells / 
-                  max(vertex_attr(g)$cells)
+              igraph::vertex_attr(g, 'size') <- max_node_size * 
+                  igraph::vertex_attr(g)$cells / 
+                  max(igraph::vertex_attr(g)$cells)
               return(g)
           })
 

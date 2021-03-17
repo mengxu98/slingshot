@@ -2,40 +2,34 @@
 % Please edit documentation in R/AllGenerics.R, R/AllHelperFunctions.R
 \name{slingCurves}
 \alias{slingCurves}
-\alias{slingCurves,SlingshotDataSet-method}
+\alias{slingCurves,PseudotimeOrdering-method}
 \alias{slingCurves,SingleCellExperiment-method}
+\alias{slingCurves,SlingshotDataSet-method}
 \title{Extract simultaneous principal curves}
 \usage{
 slingCurves(x)
 
-\S4method{slingCurves}{SlingshotDataSet}(x)
+\S4method{slingCurves}{PseudotimeOrdering}(x)
 
 \S4method{slingCurves}{SingleCellExperiment}(x)
+
+\S4method{slingCurves}{SlingshotDataSet}(x)
 }
 \arguments{
 \item{x}{an object containing \code{\link{slingshot}} output.}
 }
 \value{
-the list of smooth lineage curves, each of which is a
+A list of smooth lineage curves, each of which is a
   \code{\link[princurve]{principal_curve}} object.
 }
 \description{
 Extract the simultaneous principal curves from an object
   containing \code{\link{slingshot}} output.
 }
-\section{Methods (by class)}{
-\itemize{
-\item \code{SlingshotDataSet}: returns the list of smooth lineage curves from a
-\code{\link{SlingshotDataSet}} object.
-
-\item \code{SingleCellExperiment}: returns the list of smooth lineage curves from a
-\code{\link{SingleCellExperiment}} object.
-}}
-
 \examples{
 data("slingshotExample")
 rd <- slingshotExample$rd
 cl <- slingshotExample$cl
-sds <- slingshot(rd, cl)
-slingCurves(sds)
+pto <- slingshot(rd, cl, start.clus = '1')
+slingCurves(pto)
 }
