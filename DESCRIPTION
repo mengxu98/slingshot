@@ -39,7 +39,6 @@ Suggests:
     BiocGenerics,
     BiocStyle,
     clusterExperiment,
-    DelayedMatrixStats,
     knitr,
     mclust,
     RColorBrewer,
