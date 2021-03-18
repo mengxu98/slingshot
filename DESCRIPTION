@@ -26,15 +26,15 @@ License: Artistic-2.0
 Depends:
     R (>= 4.0),
     princurve (>= 2.0.4),
-    stats
+    stats,
+    TrajectoryUtils
 Imports:
     graphics,
     igraph,
     methods,
     S4Vectors,
     SingleCellExperiment,
-    SummarizedExperiment,
-    TrajectoryUtils
+    SummarizedExperiment
 Suggests:
     BiocGenerics,
     BiocStyle,
