@@ -62,7 +62,7 @@ jobs:
       TZ: UTC
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      R_COMPILE_AND_INSTALL_PACKAGES: 'always'
+      R_COMPILE_AND_INSTALL_PACKAGES: "always"
 
     steps:
 
