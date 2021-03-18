@@ -11,15 +11,29 @@ vignette: >
 
 <!--
 %\VignetteEngine{knitr::rmarkdown}
-%\VignetteIndexEntry{Differential Topology}
+%\VignetteIndexEntry{Differential Topology: Comparing Conditions along a Trajectory}
 -->
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-require(slingshot)
-require(RColorBrewer)
+library(SingleCellExperiment, quietly = TRUE)
+library(slingshot, quietly = TRUE)
+library(RColorBrewer)
+graphics:::par(pch = 16, las = 1)
 set.seed(1)
 ```
+
+# Deprecation Notice
+
+This vignette represents some of our very early thinking on these topics, which
+has since developed significantly. For more up-to-date recommendations, we
+strongly encourage you to check out our workflow
+[here](https://kstreet13.github.io/bioc2020trajectories/articles/workshopTrajectories.html),
+or either of our presentations from [BioC
+2020](https://www.youtube.com/watch?v=Fbd08bIv4yk) and
+[EuroBioc2020](https://www.youtube.com/watch?v=4NwIbsJ9lMI). We also recommend
+checking out our upcoming package, `condiments`, which implements these concepts
+and more!
 
 # Problem Statement
 
@@ -51,41 +65,41 @@ This dataset consists of a branching trajectory with two conditions (`A` and `B`
 We will start by performing trajectory inference on the full dataset. In principle, any method could be used here, but we will use `slingshot` (cf. [PopGenGoogling](https://twitter.com/popgengoogling/status/1065022894659592192)).
 
 ```{r}
-sds <- slingshot(rd, cl)
+pto <- slingshot(rd, cl)
 ```
 
 ```{r, echo=FALSE}
 plot(rd, asp = 1, pch = 16, col = brewer.pal(3,'Set1')[condition], las=1)
-lines(sds, lwd=3)
+lines(SlingshotDataSet(pto), lwd=3)
 legend('topleft','(x,y)',legend = c('A','B'), title = 'Condition', pch=16, col = brewer.pal(3,'Set1')[1:2])
 ```
 
 Each cell has now been assigned to one or two lineages (with an associated weight indicating the certainty of each assignment) and pseudotime values have been calculated.
 
 ```{r, fig.height=4, fig.width=8, echo = FALSE}
-n <- nrow(rd); L <- ncol(slingPseudotime(sds))
+n <- nrow(rd); L <- ncol(slingPseudotime(pto))
 noise <- runif(n, -.1,.1)
-plot(as.numeric(slingPseudotime(sds)), rep(1:L, each=n)+noise,pch=16, col = brewer.pal(9,'Set1')[condition], axes=FALSE, xlab='Pseudotime', ylab='Lineage', las=1)
+plot(as.numeric(slingPseudotime(pto)), rep(1:L, each=n)+noise,pch=16, col = brewer.pal(9,'Set1')[condition], axes=FALSE, xlab='Pseudotime', ylab='Lineage', las=1)
 axis(1); axis(2, at=1:L, las=1)
 ```
 
 ## Approach 1: Distributional Differences
 
 ```{r, echo=FALSE}
-# tA1 <- slingPseudotime(sds, na=FALSE)[condition=='A',1]
-# wA1 <- slingCurveWeights(sds)[condition=='A',1]; wA1 <- wA1/sum(wA1)
+# tA1 <- slingPseudotime(pto, na=FALSE)[condition=='A',1]
+# wA1 <- slingCurveWeights(pto)[condition=='A',1]; wA1 <- wA1/sum(wA1)
 # dA1 <- density(tA1, weights = wA1)
-# tB1 <- slingPseudotime(sds, na=FALSE)[condition=='B',1]
-# wB1 <- slingCurveWeights(sds)[condition=='B',1]; wB1 <- wB1/sum(wB1)
+# tB1 <- slingPseudotime(pto, na=FALSE)[condition=='B',1]
+# wB1 <- slingCurveWeights(pto)[condition=='B',1]; wB1 <- wB1/sum(wB1)
 # dB1 <- density(tB1, weights = wB1)
-# tA2 <- slingPseudotime(sds, na=FALSE)[condition=='A',2]
-# wA2 <- slingCurveWeights(sds)[condition=='A',2]; wA2 <- wA2/sum(wA2)
+# tA2 <- slingPseudotime(pto, na=FALSE)[condition=='A',2]
+# wA2 <- slingCurveWeights(pto)[condition=='A',2]; wA2 <- wA2/sum(wA2)
 # dA2 <- density(tA2, weights = wA2)
-# tB2 <- slingPseudotime(sds, na=FALSE)[condition=='B',2]
-# wB2 <- slingCurveWeights(sds)[condition=='B',2]; wB2 <- wB2/sum(wB2)
+# tB2 <- slingPseudotime(pto, na=FALSE)[condition=='B',2]
+# wB2 <- slingCurveWeights(pto)[condition=='B',2]; wB2 <- wB2/sum(wB2)
 # dB2 <- density(tB2, weights = wB2)
 # 
-# plot(range(slingPseudotime(sds),na.rm=TRUE), c(1,2+7*max(c(dA2$y,dB2$y))), col='white', xlab='Pseudotime', ylab='Lineage', axes = FALSE, las=1)
+# plot(range(slingPseudotime(pto),na.rm=TRUE), c(1,2+7*max(c(dA2$y,dB2$y))), col='white', xlab='Pseudotime', ylab='Lineage', axes = FALSE, las=1)
 # axis(1); axis(2, at=1:2)
 # polygon(c(min(dA1$x),dA1$x,max(dA1$x)), 1+7*c(0,dA1$y,0), col=rgb(1,0,0,.5))
 # polygon(c(min(dB1$x),dB1$x,max(dB1$x)), 1+7*c(0,dB1$y,0), col=rgb(0,0,1,.5))
@@ -93,8 +107,8 @@ axis(1); axis(2, at=1:L, las=1)
 # polygon(c(min(dB2$x),dB2$x,max(dB2$x)), 2+7*c(0,dB2$y,0), col=rgb(0,0,1,.5))
 
 layout(matrix(1:2,nrow=1))
-boxplot(slingPseudotime(sds)[,1] ~ condition, col = brewer.pal(3,'Set1')[1:2], main = 'Lineage 1', xlab='Condition', ylab='Pseudotime', las=1, pch = 16)
-boxplot(slingPseudotime(sds)[,2] ~ condition, col = brewer.pal(3,'Set1')[1:2], main = 'Lineage 2', xlab='Condition', ylab='Pseudotime', las=1, pch = 16)
+boxplot(slingPseudotime(pto)[,1] ~ condition, col = brewer.pal(3,'Set1')[1:2], main = 'Lineage 1', xlab='Condition', ylab='Pseudotime', las=1, pch = 16)
+boxplot(slingPseudotime(pto)[,2] ~ condition, col = brewer.pal(3,'Set1')[1:2], main = 'Lineage 2', xlab='Condition', ylab='Pseudotime', las=1, pch = 16)
 layout(1)
 ```
 
@@ -107,8 +121,8 @@ A T-test would work for this, but we'll use a slightly more robust permutation t
 
 ```{r, eval=FALSE}
 # Permutation test
-t1 <- slingPseudotime(sds, na=FALSE)[,1]
-w1 <- slingCurveWeights(sds)[,1]
+t1 <- slingPseudotime(pto, na=FALSE)[,1]
+w1 <- slingCurveWeights(pto)[,1]
 d1 <- weighted.mean(t1[condition=='A'], w1[condition=='A']) - 
     weighted.mean(t1[condition=='B'], w1[condition=='B'])
 dist1 <- replicate(1e4, {
@@ -118,8 +132,8 @@ dist1 <- replicate(1e4, {
 })
 ```
 ```{r, echo=FALSE, fig.height=4, fig.width=9}
-t1 <- slingPseudotime(sds, na=FALSE)[,1]
-w1 <- slingCurveWeights(sds)[,1]
+t1 <- slingPseudotime(pto, na=FALSE)[,1]
+w1 <- slingCurveWeights(pto)[,1]
 d1 <- weighted.mean(t1[condition=='A'], w1[condition=='A']) - 
     weighted.mean(t1[condition=='B'], w1[condition=='B'])
 dist1 <- replicate(1e4, {
@@ -127,8 +141,8 @@ dist1 <- replicate(1e4, {
     weighted.mean(t1[condition.i=='A'], w1[condition.i=='A']) - 
         weighted.mean(t1[condition.i=='B'], w1[condition.i=='B'])
 })
-t2 <- slingPseudotime(sds, na=FALSE)[,2]
-w2 <- slingCurveWeights(sds)[,2]
+t2 <- slingPseudotime(pto, na=FALSE)[,2]
+w2 <- slingCurveWeights(pto)[,2]
 d2 <- weighted.mean(t2[condition=='A'], w2[condition=='A']) - 
     weighted.mean(t2[condition=='B'], w2[condition=='B'])
 dist2 <- replicate(1e4, {
@@ -160,8 +174,8 @@ Another, more general approach we could take to test for a difference in distrib
 
 ```{r}
 # Kolmogorov-Smirnov test
-ks.test(slingPseudotime(sds)[condition=='A',1], slingPseudotime(sds)[condition=='B',1])
-ks.test(slingPseudotime(sds)[condition=='A',2], slingPseudotime(sds)[condition=='B',2])
+ks.test(slingPseudotime(pto)[condition=='A',1], slingPseudotime(pto)[condition=='B',1])
+ks.test(slingPseudotime(pto)[condition=='A',2], slingPseudotime(pto)[condition=='B',2])
 ```
 
 Again, we see a significant difference in the second lineage, but not in the first. Note that unlike the difference of weighted means we used above, this test largely ignores the weights which assign cells to lineages, using any cell with a lineage weight greater than 0 (those with weights of zero are assigned pseudotime values of `NA`). Theoretically, one could use weights with the Kolmogorov-Smirnov test, as the test statistic is based on the maximum difference between cumulative distribution functions, but we were unable to find an implementation of this in base `R` or the `stats` package. For more stringent cutoffs, the user could specify a minimum lineage weight, say of 0.5. Due to this test's ability to detect a wide variety of differences, we would recommend it over the previous procedure for general purpose use.
@@ -188,8 +202,8 @@ Its disadvantages, however, are:
 As a first approach, one might check whether the probability of having a cell from a particular condition changes across pseudotime in any lineage. For two conditions, this may proceed using binomial logistic regression, which might be extended to multinomial logistic regression for multiple conditions. To loosen the restrictive binomial assumption, we allow for a more flexible variance structure by using a quasibinomial model.
 
 ```{r}
-pt <- slingPseudotime(sds, na=FALSE)
-cw <- slingCurveWeights(sds)
+pt <- slingPseudotime(pto, na=FALSE)
+cw <- slingCurveWeights(pto)
 assignment <- apply(cw, 1, which.max)
 ptAs <- c() #assigned pseudotime
 for(ii in 1:nrow(pt)) ptAs[ii] <- pt[ii,assignment[ii]] 

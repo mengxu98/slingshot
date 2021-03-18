@@ -1,5 +1,5 @@
 ---
-title: "Slingshot: Lineage Inference for Single-Cell Data"
+title: "Slingshot: Trajectory Inference for Single-Cell Data"
 author: "Kelly Street"
 date: "`r Sys.Date()`"
 bibliography: bibFile.bib
@@ -12,7 +12,7 @@ vignette: >
 
 <!--
 %\VignetteEngine{knitr::rmarkdown}
-%\VignetteIndexEntry{Slingshot}
+%\VignetteIndexEntry{Slingshot: Trajectory Inference for Single-Cell Data}
 -->
 
 ```{r options, results="hide", include=FALSE, cache=FALSE, message=FALSE}
@@ -88,7 +88,7 @@ counts <- apply(means,2,function(cell_means){
 })
 rownames(counts) <- paste0('G',1:750)
 colnames(counts) <- paste0('c',1:300)
-sim <- SingleCellExperiment(assays = List(counts = counts))
+sce <- SingleCellExperiment(assays = List(counts = counts))
 ```
 
 The second dataset (the "bifurcating" dataset) consists of a matrix of
@@ -125,10 +125,10 @@ reads.
 ```{r genefilt}
 # filter genes down to potential cell-type markers
 # at least M (15) reads in at least N (15) cells
-geneFilter <- apply(assays(sim)$counts,1,function(x){
+geneFilter <- apply(assays(sce)$counts,1,function(x){
     sum(x >= 3) >= 10
 })
-sim <- sim[geneFilter, ]
+sce <- sce[geneFilter, ]
 ```
 
 
@@ -158,7 +158,7 @@ FQnorm <- function(counts){
     rownames(norm) <- rownames(counts)
     return(norm)
 }
-assays(sim)$norm <- FQnorm(assays(sim)$counts)
+assays(sce)$norm <- FQnorm(assays(sce)$counts)
 ```
 
 ## Dimensionality Reduction
@@ -183,7 +183,7 @@ equal variance across genes. When plotting, we make sure to set the aspect
 ratio, so as not to distort the perceived distances.
 
 ```{r pca, cache=TRUE}
-pca <- prcomp(t(log1p(assays(sim)$norm)), scale. = FALSE)
+pca <- prcomp(t(log1p(assays(sce)$norm)), scale. = FALSE)
 rd1 <- pca$x[,1:2]
 
 plot(rd1, col = rgb(0,0,0,.5), pch=16, asp = 1)
@@ -191,7 +191,7 @@ plot(rd1, col = rgb(0,0,0,.5), pch=16, asp = 1)
 
 ```{r umap, cache=TRUE}
 library(uwot)
-rd2 <- umap(t(log1p(assays(sim)$norm)))
+rd2 <- umap(t(log1p(assays(sce)$norm)))
 colnames(rd2) <- c('UMAP1', 'UMAP2')
 
 plot(rd2, col = rgb(0,0,0,.5), pch=16, asp = 1)
@@ -200,7 +200,7 @@ plot(rd2, col = rgb(0,0,0,.5), pch=16, asp = 1)
 We will add both dimensionality reductions to the `SingleCellExperiment` object,
 but continue our analysis focusing on the PCA results.
 ```{r add_RDs, cache=TRUE}
-reducedDims(sim) <- SimpleList(PCA = rd1, UMAP = rd2)
+reducedDims(sce) <- SimpleList(PCA = rd1, UMAP = rd2)
 ```
 
 
@@ -231,7 +231,7 @@ criterion (BIC).
 ```{r clustering_mclust}
 library(mclust, quietly = TRUE)
 cl1 <- Mclust(rd1)$classification
-colData(sim)$GMM <- cl1
+colData(sce)$GMM <- cl1
 
 library(RColorBrewer)
 plot(rd1, col = brewer.pal(9,"Set1")[cl1], pch=16, asp = 1)
@@ -245,7 +245,7 @@ small clusters, we may begin to see spurious branching events.
 
 ```{r clustering}
 cl2 <- kmeans(rd1, centers = 4)$cluster
-colData(sim)$kmeans <- cl2
+colData(sce)$kmeans <- cl2
 
 plot(rd1, col = brewer.pal(9,"Set1")[cl2], pch=16, asp = 1)
 ```
@@ -273,7 +273,7 @@ To run `slingshot` with the dimensionality reduction produced by PCA and cluster
 labels identified by Gaussian mixutre modeling, we would do the following:
 
 ```{r sling_sce}
-sim <- slingshot(sim, clusterLabels = 'GMM', reducedDim = 'PCA')
+sce <- slingshot(sce, clusterLabels = 'GMM', reducedDim = 'PCA')
 ```
 
 As noted above, if no clustering results are provided, it is assumed that all
@@ -282,38 +282,42 @@ dimensionality reduction is provided, `slingshot` will use the first element of
 the list returned by `reducedDims`.
 
 The output is a `SingleCellExperiment` object with `slingshot` results
-incorporated. Most of the output is added to the metadata in the form of a list
-and is accessible via `metadata(sce)$slingshot`. Additionally, all inferred
-pseudotime variables (one per lineage) are added to the `colData`. To extract
-all `slingshot` results in a single object, we can use the `SlingshotDataSet`
-function. This can be useful for visualization, as several plotting methods for
-`SlingshotDataSet` objects are included with the package. Below, we visuzalize
-the inferred lineage for the single-trajectory data with points colored by
-pseudotime.
+incorporated. All of the results are stored in a `PseudotimeOrdering` object,
+which is added to the `colData` of the original object and can be accessed via
+`colData(sce)$slingshot`. Additionally, all inferred pseudotime variables (one
+per lineage) are added to the `colData`, individually. To extract all
+`slingshot` results in a single object, we can use either the
+`as.PseudotimeOrdering` or `as.SlingshotDataSet` functions, depending on the
+form in which we want it. `PseudotimeOrdering` objects are an extension of
+`SummarizedExperiment` objects, which are flexible containers that will be
+useful for most purposes. `SlingshotDataSet` objects are primarily used for
+visualization, as several plotting methods are included with the package. Below,
+we visuzalize the inferred lineage for the single-trajectory data with points
+colored by pseudotime.
 
 ```{r plot_curve_1}
-summary(sim$slingPseudotime_1)
+summary(sce$slingPseudotime_1)
 
 colors <- colorRampPalette(brewer.pal(11,'Spectral')[-6])(100)
-plotcol <- colors[cut(sim$slingPseudotime_1, breaks=100)]
+plotcol <- colors[cut(sce$slingPseudotime_1, breaks=100)]
 
-plot(reducedDims(sim)$PCA, col = plotcol, pch=16, asp = 1)
-lines(SlingshotDataSet(sim), lwd=2, col='black')
+plot(reducedDims(sce)$PCA, col = plotcol, pch=16, asp = 1)
+lines(SlingshotDataSet(sce), lwd=2, col='black')
 ```
 
 We can also see how the lineage structure was intially estimated by the
 cluster-based minimum spanning tree by using the `type` argument.
 
 ```{r plot_curve_2}
-plot(reducedDims(sim)$PCA, col = brewer.pal(9,'Set1')[sim$GMM], pch=16, asp = 1)
-lines(SlingshotDataSet(sim), lwd=2, type = 'lineages', col = 'black')
+plot(reducedDims(sce)$PCA, col = brewer.pal(9,'Set1')[sce$GMM], pch=16, asp = 1)
+lines(SlingshotDataSet(sce), lwd=2, type = 'lineages', col = 'black')
 ```
 
 # Downstream Analysis
 
-## Identifying temporally expressed genes
+## Identifying temporally dynamic genes
 
-After running `slingshot`, an interesting next step may be to find genes that
+After running `slingshot`, we are often interested in finding genes that
 change their expression over the course of development. We will demonstrate this
 type of analysis using the `tradeSeq` package [@van2020trajectory].
 
@@ -327,10 +331,10 @@ significant associations between expression and pseudotime using the
 library(tradeSeq)
 
 # fit negative binomial GAM
-sim <- fitGAM(sim)
+sce <- fitGAM(sce)
 
 # test for dynamic expression
-ATres <- associationTest(sim)
+ATres <- associationTest(sce)
 ```
 
 We can then pick out the top genes based on p-values and visualize their 
@@ -338,9 +342,9 @@ expression over developmental time with a heatmap. Here we use the top 250 most 
 
 ```{r heatmaps, eval=FALSE}
 topgenes <- rownames(ATres[order(ATres$pvalue), ])[1:250]
-pst.ord <- order(sim$slingPseudotime_1, na.last = NA)
-heatdata <- assays(sim)$counts[topgenes, pst.ord]
-heatclus <- sim$GMM[pst.ord]
+pst.ord <- order(sce$slingPseudotime_1, na.last = NA)
+heatdata <- assays(sce)$counts[topgenes, pst.ord]
+heatclus <- sce$GMM[pst.ord]
 
 heatmap(log1p(heatdata), Colv = NA,
         ColSideColors = brewer.pal(9,"Set1")[heatclus])
@@ -351,9 +355,9 @@ topgenes <- paste0('G',501:750)
 # tradeSeq has too many dependencies (174 at the time of this writing), but I 
 # promise I actually ran it and got this result. This is a *very* clean example 
 # dataset
-pst.ord <- order(sim$slingPseudotime_1, na.last = NA)
-heatdata <- assays(sim)$counts[topgenes, pst.ord]
-heatclus <- sim$GMM[pst.ord]
+pst.ord <- order(sce$slingPseudotime_1, na.last = NA)
+heatdata <- assays(sce)$counts[topgenes, pst.ord]
+heatclus <- sce$GMM[pst.ord]
 heatmap(log1p(heatdata), Colv = NA,
         ColSideColors = brewer.pal(9,"Set1")[heatclus])
 ```
@@ -374,8 +378,8 @@ The `getLineages` function takes as input an `n` $\times$ `p` matrix and a vecto
 clustering results of length `n`. It maps connections between adjacent clusters 
 using a minimum spanning tree (MST) and identifies paths through these 
 connections that represent lineages. The output of this function is a 
-`SlingshotDataSet` containing the inputs as well as the inferred MST
-(represented by an adjacency matrix) and lineages (ordered vectors of cluster
+`PseudotimeOrdering` containing the inputs as well as the inferred MST
+(represented by an `igraph` object) and lineages (ordered vectors of cluster
 names).
 
 This analysis can be performed in an entirely unsupervised manner or in a 
@@ -395,7 +399,7 @@ but it will impact how branching curves are constructed.
 lin1 <- getLineages(rd, cl, start.clus = '1')
 lin1
 plot(rd, col = brewer.pal(9,"Set1")[cl], asp = 1, pch = 16)
-lines(lin1, lwd = 3, col = 'black')
+lines(SlingshotDataSet(lin1), lwd = 3, col = 'black')
 ```
 
 At this step, `slingshot` also allows for the specification of known endpoints.
@@ -408,7 +412,7 @@ as shown in the next example where we specify Cluster 3 as an endpoint.
 lin2 <- getLineages(rd, cl, start.clus= '1', end.clus = '3')
 
 plot(rd, col = brewer.pal(9,"Set1")[cl], asp = 1, pch = 16)
-lines(lin2, lwd = 3, col = 'black', show.constraints = TRUE)
+lines(SlingshotDataSet(lin2), lwd = 3, col = 'black', show.constraints = TRUE)
 ```
 
 This type of supervision can be useful for ensuring that results are consistent
@@ -418,20 +422,27 @@ cell fates from being categorized as transitory states.
 There are a few additional arguments we could have passed to `getLineages` for
 greater control:
 
-* `dist.fun` is a function for computing distances between clusters. The default
-is squared distance between cluster centers normalized by their joint covariance
-matrix. 
+* `dist.method` is a character specifying how the distances between clusters
+should be computed. The default value is `"slingshot"`, which uses the distance
+between cluster centers, normalized by their full, joint covariance matrix. In
+the presence of small clusters (fewer cells than the dimensionality of the
+data), this will automatically switch to using the diagonal joint covariance
+matrix. Other options include `simple` (Euclidean), `scaled.full`,
+`scaled.diag`, and `mnn` (mutual nearest neighbor-based distance). 
 * `omega` is a granularity parameter, allowing the user to set an upper limit on
-connection distances. This can be useful for identifying outlier clusters which
-are not a part of any lineage or for separating distinct trajectories. This is
-typically a numeric argument, but a value of `TRUE` will indicate that a
-heuristic of `3 * (median edge length of unsupervised MST)` should be used.
+connection distances. It represents the distance between every real cluster and
+an artificial `.OMEGA` cluster, which is removed after fitting the MST. This can
+be useful for identifying outlier clusters which are not a part of any lineage
+or for separating distinct trajectories. This may be a numeric argument or a
+logical value. A value of `TRUE` indicates that a heuristic of $1.5$ \times
+`(median edge length of unsupervised MST)` should be used, implying that the
+maximum allowable distance will be $3$ times that distance.
 
 After constructing the MST, `getLineages` identifies paths through the tree to
 designate as lineages. At this stage, a lineage will consist of an ordered set
 of cluster names, starting with the root cluster and ending with a leaf. The
-output of `getLineages` is a `SlingshotDataSet` which holds all of the inputs as
-well as a list of lineages and some additional information on how they were
+output of `getLineages` is a `PseudotimeOrdering` which holds all of the inputs
+as well as a list of lineages and some additional information on how they were
 constructed. This object is then used as the input to the `getCurves` function.
 
 ## Constructing smooth curves and ordering cells
@@ -460,17 +471,18 @@ algorithm and produces smooth branching lineages.
 crv1 <- getCurves(lin1)
 crv1
 plot(rd, col = brewer.pal(9,"Set1")[cl], asp = 1, pch = 16)
-lines(crv1, lwd = 3, col = 'black')
+lines(SlingshotDataSet(crv1), lwd = 3, col = 'black')
 ```
 
-The output of `getCurves` is an updated `slingshotDataSet` which now contains 
-the simultaneous principal curves and additional information on how they were 
-fit. The `pseudotime` function extracts a cells-by-lineages matrix of pseudotime
-values for each cell along each lineage, with `NA` values for cells that were
-not assigned to a particular lineage. The `curveWeights` function extracts a
-similar matrix of weights assigning each cell to one or more lineages.
+The output of `getCurves` is an updated `PseudotimeOrdering` which now contains
+the simultaneous principal curves and additional information on how they were
+fit. The `slingPseudotime` function extracts a cells-by-lineages matrix of
+pseudotime values for each cell along each lineage, with `NA` values for cells
+that were not assigned to a particular lineage. The `slingCurveWeights` function
+extracts a similar matrix of weights assigning each cell to one or more
+lineages.
 
-The curves objects can be accessed using the `curves` function, which will
+The curves objects can be accessed using the `slingCurves` function, which will
 return a list of `principal_curve` objects. These objects consist of the
 following slots:
 
@@ -494,32 +506,49 @@ positioned before a branching event. A matrix of these values is returned by the
 
 ## Running Slingshot on large datasets
 
-For large datasets, we recommend using the `approx_points` argument with
-`slingshot` (or similarly with `getCurves`). While the MST construction operates
+For large datasets, we highgly recommend using the `approx_points` argument with
+`slingshot` (or `getCurves`). This allows the user to specify the resolution of the curves (ie. the number of unique points). While the MST construction operates
 on clusters, the process of iteratively projecting all points onto one or more
-curves may become computationally impractical as the size of the dataset grows.
-By default, `slingshot` constructs curves consisting of $n$ points, where $n$ is
-the number of cells, meaning that the computational complexity of the projection
-step is proportional to $n^2$. In the presence of branching lineages, these
-"dense" curves also affect the complexity of curve averaging and shrinkage.
+curves may become computationally burdensome as the size of the dataset grows. For this reason, we set the default value for `approx_points` to either $150$ or the number of cells in the dataset, whichever is smaller. This should greatly ease the computational cost of exploratory analysis while having minimal impact on the resulting trajectories.
 
-Setting `approx_points` allows the user to specify the resolution (the number of
-unique points) of the curves, which can greatly speed up the computation time
-with minimal loss of accuracy. We recommend a value of 100-200. Note that
-restricting the number of unique points along the curve does not impose a
-similar limit on the number of unique pseudotime values, as demonstrated below
-(even with an unrealistically low value of 5 for `approx_points`, we still see a
-full color gradient from the pseudotime values):
+For maximally "dense" curves, set `approx_points = FALSE`, and the curves will have as many points as there are cells in the dataset. However, note that each projection step in the iterative curve-fitting process will now have a computational complexity proportional to $n^2$ (where $n$ is the number of cells). In the presence of branching lineages, these dense curves will also affect the complexity of curve averaging and shrinkage.
+
+We recommend a value of $100$-$200$, hence the default value of $150$. Note that
+restricting the number of unique points along the curve does *not* impose a
+similar limit on the number of unique pseudotime values, as demonstrated below. Even with an unrealistically low value of $5$ for `approx_points`, we still see a
+full color gradient from the pseudotime values:
 
 ```{r sling_approxpoints}
-sim5 <- slingshot(sim, clusterLabels = 'GMM', reducedDim = 'PCA',
+sce5 <- slingshot(sce, clusterLabels = 'GMM', reducedDim = 'PCA',
                    approx_points = 5)
 
 colors <- colorRampPalette(brewer.pal(11,'Spectral')[-6])(100)
-plotcol <- colors[cut(sim5$slingPseudotime_1, breaks=100)]
+plotcol <- colors[cut(sce5$slingPseudotime_1, breaks=100)]
 
-plot(reducedDims(sim5)$PCA, col = plotcol, pch=16, asp = 1)
-lines(SlingshotDataSet(sim5), lwd=2, col='black')
+plot(reducedDims(sce5)$PCA, col = plotcol, pch=16, asp = 1)
+lines(SlingshotDataSet(sce5), lwd=2, col='black')
+```
+
+## Multiple Trajectories
+
+In some cases, we are interested in identifying multiple, disjoint trajectories. Slingshot handles this problem in the initial MST construction by introducing an artificial cluster, called `omega`. This artificial cluster is separated from every real cluster by a fixed length, meaning that the maximum distance between any two real clusters is twice this length. Practically, this sets a limit on the maximum edge length allowable in the MST. Setting `omega = TRUE` will implement a rule of thumb whereby the maximum allowable edge length is equal to $3$ times the median edge length of the MST constructed without the artificial cluster (note: this is equivalent to saying that the default value for `omega_scale` is $1.5$).
+
+```{r sling_omega}
+    rd2 <- rbind(rd, cbind(rd[,2]-12, rd[,1]-6))
+    cl2 <- c(cl, cl + 10)
+    pto2 <- slingshot(rd2, cl2, omega = TRUE, start.clus = c(1,11))
+    
+    plot(rd2, pch=16, asp = 1,
+         col = c(brewer.pal(9,"Set1"), brewer.pal(8,"Set2"))[cl2])
+    lines(SlingshotDataSet(pto2), type = 'l', lwd=2, col='black')
+```
+
+After fitting the MST, `slingshot` proceeds to fit simultaneous principal curves as usual, with each trajectory being handled separately.
+
+```{r sling_multtraj}
+    plot(rd2, pch=16, asp = 1,
+         col = c(brewer.pal(9,"Set1"), brewer.pal(8,"Set2"))[cl2])
+    lines(SlingshotDataSet(pto2), lwd=2, col='black')
 ```
 
 

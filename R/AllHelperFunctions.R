@@ -318,7 +318,6 @@ setMethod(
         }else{
             pst <- vapply(slingCurves(x), function(pc) {
                 t <- pc$lambda
-                t[pc$w == 0] <- NA
                 return(t)
             }, rep(0,nrow(x)))
         }
