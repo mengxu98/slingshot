@@ -191,6 +191,7 @@ setMethod(
 )
 
 #' @rdname plot-SlingshotDataSet
+#' @import graphics
 #' @export
 setMethod(
     f = "lines",
