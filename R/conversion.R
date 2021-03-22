@@ -31,7 +31,8 @@ setMethod(
                                    clusterLabels = slingClusterLabels(pto),
                                    lineages = slingLineages(pto),
                                    adjacency = as.matrix(
-                                       as_adjacency_matrix(slingMST(pto))),
+                                       igraph::as_adjacency_matrix(
+                                           slingMST(pto))),
                                    curves = crvs,
                                    slingParams = slingParams(pto))
         return(sds)
@@ -134,7 +135,8 @@ setMethod(
         return(pto)
     })
 
-
+#' @rdname as.PseudotimeOrdering
+#' @export
 setMethod(
     f = "as.PseudotimeOrdering",
     signature = "SingleCellExperiment",
@@ -148,6 +150,8 @@ setMethod(
         stop('No slingshot results found.')
     })
 
+#' @rdname as.PseudotimeOrdering
+#' @export
 setMethod(
     f = "as.PseudotimeOrdering",
     signature = "PseudotimeOrdering",

@@ -30,7 +30,9 @@ Depends:
     TrajectoryUtils
 Imports:
     graphics,
+    grDevices,
     igraph,
+    matrixStats,
     methods,
     S4Vectors,
     SingleCellExperiment,
@@ -39,9 +41,9 @@ Suggests:
     BiocGenerics,
     BiocStyle,
     clusterExperiment,
-    grDevices,
     knitr,
     mclust,
+    mgcv,
     RColorBrewer,
     rgl,
     rmarkdown,

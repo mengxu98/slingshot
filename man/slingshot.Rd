@@ -22,8 +22,10 @@ slingshot(data, clusterLabels, ...)
   start.clus = NULL,
   end.clus = NULL,
   dist.method = "slingshot",
+  use.median = FALSE,
   omega = FALSE,
   omega_scale = 1.5,
+  times = NULL,
   shrink = TRUE,
   extend = "y",
   reweight = TRUE,
@@ -45,8 +47,10 @@ slingshot(data, clusterLabels, ...)
   start.clus = NULL,
   end.clus = NULL,
   dist.method = "slingshot",
+  use.median = FALSE,
   omega = FALSE,
   omega_scale = 1.5,
+  times = NULL,
   shrink = TRUE,
   extend = "y",
   reweight = TRUE,
@@ -78,8 +82,10 @@ slingshot(data, clusterLabels, ...)
   start.clus = NULL,
   end.clus = NULL,
   dist.method = "slingshot",
+  use.median = FALSE,
   omega = FALSE,
   omega_scale = 1.5,
+  times = NULL,
   shrink = TRUE,
   extend = "y",
   reweight = TRUE,
@@ -101,8 +107,10 @@ slingshot(data, clusterLabels, ...)
   start.clus = NULL,
   end.clus = NULL,
   dist.method = "slingshot",
+  use.median = FALSE,
   omega = FALSE,
   omega_scale = 1.5,
+  times = NULL,
   shrink = TRUE,
   extend = "y",
   reweight = TRUE,
@@ -147,6 +155,9 @@ forced to be leaf nodes in the graph.}
 distances between clusters. Default is \code{"slingshot"}, see
 \code{\link[TrajectoryUtils]{createClusterMST}} for details.}
 
+\item{use.median}{logical, whether to use the median (instead of mean) when
+calculating cluster centroid coordinates.}
+
 \item{omega}{(optional) numeric, this granularity parameter determines the
 distance between every real cluster and the artificial cluster,
 \code{.OMEGA}. In practice, this makes \code{omega} the maximum allowable
@@ -162,6 +173,10 @@ trajectories. See \code{outgroup} in
 = TRUE}. The maximum edge length will be set to the median edge length of
 the unsupervised MST times \code{omega_scale} (default \code{= 1.5}). See
 \code{outscale} in \code{\link[TrajectoryUtils]{createClusterMST}}.}
+
+\item{times}{numeric, vector of external times associated with either
+clusters or cells. See \code{\link[TrajectoryUtils]{defineMSTPaths}} for
+details.}
 
 \item{shrink}{logical or numeric between 0 and 1, determines whether and how
 much to shrink branching lineages toward their average prior to the split

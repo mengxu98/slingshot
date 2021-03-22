@@ -53,7 +53,7 @@
 #' pto.new
 #'
 #' plot(rd2, col = cl, asp = 1)
-#' lines(pto.new, lwd = 3)
+#' lines(SlingshotDataSet(pto.new), lwd = 3)
 #'
 #' @importFrom princurve project_to_curve
 #' @export

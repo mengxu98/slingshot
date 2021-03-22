@@ -67,7 +67,7 @@ cl <- slingshotExample$cl
 rd <- cbind(rd, rnorm(nrow(rd)))
 pto <- slingshot(rd, cl, start.clus = "1")
 sds <- SlingshotDataSet(pto)
-plot3d(sds, type = 'b')
+plot3d.SlingshotDataSet(sds, type = 'b')
 
 # add to existing plot
 plot3d(rd, col = 'grey50', aspect = 'iso')

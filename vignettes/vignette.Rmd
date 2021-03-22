@@ -191,7 +191,7 @@ plot(rd1, col = rgb(0,0,0,.5), pch=16, asp = 1)
 
 ```{r umap, cache=TRUE}
 library(uwot)
-rd2 <- umap(t(log1p(assays(sce)$norm)))
+rd2 <- uwot::umap(t(log1p(assays(sce)$norm)))
 colnames(rd2) <- c('UMAP1', 'UMAP2')
 
 plot(rd2, col = rgb(0,0,0,.5), pch=16, asp = 1)

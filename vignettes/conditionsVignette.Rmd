@@ -251,6 +251,7 @@ Advantages:
 ```{r}
 ### note that logistic regression is monotone hence only allows for increasing or decreasing proportion of cells for a particular condition.
 ### hence, for complex trajectories, you could consider smoothing the pseudotime, i.e.
+require(mgcv, quietly = TRUE)
 m1s <- mgcv::gam(cond1 ~ s(t1), family="quasibinomial")
 summary(m1s)
 ```
@@ -277,7 +278,6 @@ layout(1)
 The code below fits an additive model with smoothing terms for the pseudotimes along each lineage. The smoothers may be directly compared since we require the same penalization and basis functions (by setting `id = 1`). Based on the fitted model, inference would be exactly like we do in `tradeSeq`.
 
 ```{r}
-require(mgcv, quietly = TRUE)
 t1 <- pt[,1]
 t2 <- pt[,2]
 l1 <- as.numeric(assignment == 1)

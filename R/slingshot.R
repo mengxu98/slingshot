@@ -27,6 +27,8 @@
 #' @param dist.method (optional) character, specifies the method for calculating
 #'   distances between clusters. Default is \code{"slingshot"}, see
 #'   \code{\link[TrajectoryUtils]{createClusterMST}} for details.
+#' @param use.median logical, whether to use the median (instead of mean) when
+#'   calculating cluster centroid coordinates.
 #' @param omega (optional) numeric, this granularity parameter determines the
 #'   distance between every real cluster and the artificial cluster,
 #'   \code{.OMEGA}. In practice, this makes \code{omega} the maximum allowable
@@ -41,6 +43,9 @@
 #'   = TRUE}. The maximum edge length will be set to the median edge length of
 #'   the unsupervised MST times \code{omega_scale} (default \code{= 1.5}). See
 #'   \code{outscale} in \code{\link[TrajectoryUtils]{createClusterMST}}.
+#' @param times numeric, vector of external times associated with either
+#'   clusters or cells. See \code{\link[TrajectoryUtils]{defineMSTPaths}} for
+#'   details.
 #' @param shrink logical or numeric between 0 and 1, determines whether and how
 #'   much to shrink branching lineages toward their average prior to the split
 #'   (default \code{= TRUE}).
@@ -190,7 +195,9 @@ setMethod(f = "slingshot",
                                 reducedDim = NULL,
                                 start.clus = NULL, end.clus = NULL,
                                 dist.method = "slingshot",
+                                use.median = FALSE,
                                 omega = FALSE, omega_scale = 1.5,
+                                times = NULL,
                                 shrink = TRUE,
                                 extend = 'y',
                                 reweight = TRUE,
@@ -202,8 +209,9 @@ setMethod(f = "slingshot",
                                 allow.breaks = TRUE, ...){
               pto <- getLineages(data, clusterLabels, reducedDim = reducedDim,
                                  start.clus = start.clus, end.clus = end.clus,
-                                 dist.method = dist.method, omega = omega,
-                                 omega_scale = omega_scale)
+                                 dist.method = dist.method, 
+                                 use.median = use.median, omega = omega,
+                                 omega_scale = omega_scale, times = times)
               pto <- getCurves(pto,
                                shrink = shrink, extend = extend,
                                reweight = reweight, reassign = reassign,
@@ -225,7 +233,9 @@ setMethod(f = "slingshot",
                                 reducedDim = NULL,
                                 start.clus = NULL, end.clus = NULL,
                                 dist.method = "slingshot",
+                                use.median = FALSE,
                                 omega = FALSE, omega_scale = 1.5,
+                                times = NULL,
                                 shrink = TRUE,
                                 extend = 'y',
                                 reweight = TRUE,
@@ -237,8 +247,9 @@ setMethod(f = "slingshot",
                                 allow.breaks = TRUE, ...){
               pto <- getLineages(data, clusterLabels, reducedDim = reducedDim,
                                  start.clus = start.clus, end.clus = end.clus,
-                                 dist.method = dist.method, omega = omega,
-                                 omega_scale = omega_scale)
+                                 dist.method = dist.method, 
+                                 use.median = use.median, omega = omega,
+                                 omega_scale = omega_scale, times = times)
               pto <- getCurves(pto,
                                shrink = shrink, extend = extend,
                                reweight = reweight, reassign = reassign,
@@ -325,7 +336,9 @@ setMethod(f = "slingshot",
                                 reducedDim = NULL,
                                 start.clus = NULL, end.clus = NULL,
                                 dist.method = "slingshot",
+                                use.median = FALSE,
                                 omega = FALSE, omega_scale = 1.5,
+                                times = NULL,
                                 shrink = TRUE,
                                 extend = 'y',
                                 reweight = TRUE,
@@ -400,8 +413,9 @@ setMethod(f = "slingshot",
               pto <- slingshot(data = rd, clusterLabels = cl,
                                reducedDim = NULL,
                                start.clus = start.clus, end.clus = end.clus,
-                               dist.method = dist.method, omega = omega,
-                               omega_scale = omega_scale,
+                               dist.method = dist.method, 
+                               use.median = use.median, omega = omega,
+                               omega_scale = omega_scale, times = times,
                                shrink = shrink, extend = extend,
                                reweight = reweight, reassign = reassign,
                                thresh = thresh, maxit = maxit,
@@ -432,7 +446,9 @@ setMethod(f = "slingshot",
                                 reducedDim = NULL,
                                 start.clus = NULL, end.clus = NULL,
                                 dist.method = "slingshot",
+                                use.median = FALSE,
                                 omega = FALSE, omega_scale = 1.5,
+                                times = NULL,
                                 shrink = TRUE,
                                 extend = 'y',
                                 reweight = TRUE,
@@ -497,8 +513,9 @@ setMethod(f = "slingshot",
               pto <- slingshot(data = rd, clusterLabels = cl,
                                reducedDim = NULL,
                                start.clus = start.clus, end.clus = end.clus,
-                               dist.method = dist.method, omega = omega,
-                               omega_scale = omega_scale,
+                               dist.method = dist.method, 
+                               use.median = use.median, omega = omega,
+                               omega_scale = omega_scale, times = times,
                                shrink = shrink, extend = extend,
                                reweight = reweight, reassign = reassign,
                                thresh = thresh, maxit = maxit,

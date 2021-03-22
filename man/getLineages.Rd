@@ -75,6 +75,9 @@ forced to be leaf nodes in the graph.}
 distances between clusters. Default is \code{"slingshot"}, see
 \code{\link[TrajectoryUtils]{createClusterMST}} for details.}
 
+\item{use.median}{logical, whether to use the median (instead of mean) when
+calculating cluster centroid coordinates.}
+
 \item{omega}{(optional) numeric or logical, this granularity parameter
 determines the distance between every real cluster and the artificial
 cluster, \code{.OMEGA}. In practice, this makes \code{omega} the maximum
@@ -90,6 +93,10 @@ multiple, distinct trajectories. See \code{outgroup} in
 = TRUE}. The maximum edge length will be set to the median edge length of
 the unsupervised MST times \code{omega_scale} (default \code{= 3}). See
 \code{outscale} in \code{\link[TrajectoryUtils]{createClusterMST}}.}
+
+\item{times}{numeric, vector of external times associated with either
+clusters or cells. See \code{\link[TrajectoryUtils]{defineMSTPaths}} for
+details.}
 }
 \value{
 An object of class \code{\link{PseudotimeOrdering}}. Although the

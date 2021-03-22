@@ -136,6 +136,7 @@
 #' lines(sds, type = 'c', lwd = 3)
 #'
 #' @importFrom princurve project_to_curve
+#' @import matrixStats
 #' @export
 #'
 setMethod(f = "getCurves",

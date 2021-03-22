@@ -25,6 +25,8 @@
 #' @param dist.method (optional) character, specifies the method for calculating
 #'   distances between clusters. Default is \code{"slingshot"}, see
 #'   \code{\link[TrajectoryUtils]{createClusterMST}} for details.
+#' @param use.median logical, whether to use the median (instead of mean) when
+#'   calculating cluster centroid coordinates.
 #' @param omega (optional) numeric or logical, this granularity parameter
 #'   determines the distance between every real cluster and the artificial
 #'   cluster, \code{.OMEGA}. In practice, this makes \code{omega} the maximum
@@ -39,6 +41,9 @@
 #'   = TRUE}. The maximum edge length will be set to the median edge length of
 #'   the unsupervised MST times \code{omega_scale} (default \code{= 3}). See
 #'   \code{outscale} in \code{\link[TrajectoryUtils]{createClusterMST}}.
+#' @param times numeric, vector of external times associated with either
+#'   clusters or cells. See \code{\link[TrajectoryUtils]{defineMSTPaths}} for
+#'   details.
 #'
 #' @details Given a reduced-dimension data matrix \code{n} by \code{p} and a set
 #'   of cluster identities (potentially including a \code{"-1"} group for

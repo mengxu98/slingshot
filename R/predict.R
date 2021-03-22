@@ -155,6 +155,7 @@ setMethod(f = "predict",
         return(out)
     })
 
+#' @rdname predict.SlingshotDataSet
 #' @export
 setMethod(f = "predict",
           signature = signature(object = "SlingshotDataSet"),

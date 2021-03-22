@@ -2,11 +2,12 @@
 % Please edit documentation in R/plotting.R
 \name{plot-SlingshotDataSet}
 \alias{plot-SlingshotDataSet}
+\alias{plot.SlingshotDataSet}
 \alias{plot,SlingshotDataSet,ANY-method}
-\alias{lines,SlingshotDataSet-method}
+\alias{lines.SlingshotDataSet}
 \title{Plot Slingshot output}
 \usage{
-\S4method{plot}{SlingshotDataSet,ANY}(
+\method{plot}{SlingshotDataSet}(
   x,
   type = NULL,
   linInd = NULL,
@@ -20,7 +21,7 @@
   ...
 )
 
-\S4method{lines}{SlingshotDataSet}(x, type = NULL, dims = seq_len(2), ...)
+\method{lines}{SlingshotDataSet}(x, type = NULL, dims = seq_len(2), ...)
 }
 \arguments{
 \item{x}{a \code{SlingshotDataSet} with results to be plotted.}

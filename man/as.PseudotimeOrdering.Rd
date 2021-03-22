@@ -3,11 +3,17 @@
 \name{as.PseudotimeOrdering}
 \alias{as.PseudotimeOrdering}
 \alias{as.PseudotimeOrdering,SlingshotDataSet-method}
+\alias{as.PseudotimeOrdering,SingleCellExperiment-method}
+\alias{as.PseudotimeOrdering,PseudotimeOrdering-method}
 \title{Conversion to PseudotimeOrdering}
 \usage{
 as.PseudotimeOrdering(x, ...)
 
 \S4method{as.PseudotimeOrdering}{SlingshotDataSet}(x)
+
+\S4method{as.PseudotimeOrdering}{SingleCellExperiment}(x)
+
+\S4method{as.PseudotimeOrdering}{PseudotimeOrdering}(x)
 }
 \arguments{
 \item{x}{an object containing \code{slingshot} output.}

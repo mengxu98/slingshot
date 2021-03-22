@@ -2,9 +2,12 @@
 % Please edit documentation in R/predict.R
 \name{predict,PseudotimeOrdering-method}
 \alias{predict,PseudotimeOrdering-method}
+\alias{predict,SlingshotDataSet-method}
 \title{Predict from a Slingshot model}
 \usage{
 \S4method{predict}{PseudotimeOrdering}(object, newdata = NULL)
+
+\S4method{predict}{SlingshotDataSet}(object, newdata = NULL)
 }
 \arguments{
 \item{object}{a \code{\link[TrajectoryUtils]{PseudotimeOrdering}} or

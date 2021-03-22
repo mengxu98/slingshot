@@ -46,164 +46,160 @@
 #' plot(rd, col = 'grey50', asp = 1)
 #' lines(sds, lwd = 3)
 #'
-#' @import graphics
+#' @importFrom graphics plot
 #' @export
-setMethod(
-    f = "plot",
-    signature = signature(x = "SlingshotDataSet"),
-    definition = function(x, type = NULL,
-                          linInd = NULL,
-                          show.constraints = FALSE,
-                          add = FALSE,
-                          dims = seq_len(2),
-                          asp = 1,
-                          cex = 2,
-                          lwd = 2,
-                          col = 1,
-                          ...) {
-        col <- rep(col, length(slingLineages(x)))
-        curves <- FALSE
-        lineages <- FALSE
-        if(is.null(type)){
-            if(length(slingCurves(x)) > 0){
-                type <- 'curves'
-            }else if(length(slingLineages(x)) > 0){
-                type <- 'lineages'
+plot.SlingshotDataSet <- function(x, type = NULL,
+                                  linInd = NULL,
+                                  show.constraints = FALSE,
+                                  add = FALSE,
+                                  dims = seq_len(2),
+                                  asp = 1,
+                                  cex = 2,
+                                  lwd = 2,
+                                  col = 1,
+                                  ...) {
+    col <- rep(col, length(slingLineages(x)))
+    curves <- FALSE
+    lineages <- FALSE
+    if(is.null(type)){
+        if(length(slingCurves(x)) > 0){
+            type <- 'curves'
+        }else if(length(slingLineages(x)) > 0){
+            type <- 'lineages'
+        }else{
+            stop('No lineages or curves detected.')
+        }
+    }else{
+        type <- c('curves','lineages','both')[pmatch(type,
+                                                c('curves','lineages','both'))]
+        if(is.na(type)){
+            stop('Unrecognized type argument.')
+        }
+    }
+    
+    if(type %in% c('lineages','both')){
+        lineages <- TRUE
+    }
+    if(type %in% c('curves','both')){
+        curves <- TRUE
+    }
+    
+    if(lineages & (length(slingLineages(x))==0)){
+        stop('No lineages detected.')
+    }
+    if(curves & (length(slingCurves(x))==0)){
+        stop('No curves detected.')
+    }
+    
+    if(is.null(linInd)){
+        linInd <- seq_along(slingLineages(x))
+    }else{
+        linInd <- as.integer(linInd)
+        if(!all(linInd %in% seq_along(slingLineages(x)))){
+            if(any(linInd %in% seq_along(slingLineages(x)))){
+                linInd.removed <-
+                    linInd[! linInd %in% seq_along(slingLineages(x))]
+                linInd <-
+                    linInd[linInd %in% seq_along(slingLineages(x))]
+                message('Unrecognized lineage indices (linInd): ',
+                        paste(linInd.removed, collapse = ", "))
             }else{
-                stop('No lineages or curves detected.')
-            }
-        }else{
-            type <- c('curves','lineages','both')[pmatch(type,
-                c('curves','lineages','both'))]
-            if(is.na(type)){
-                stop('Unrecognized type argument.')
+                stop('None of the provided lineage indices',
+                     ' (linInd) were found.')
             }
         }
-
-        if(type %in% c('lineages','both')){
-            lineages <- TRUE
-        }
-        if(type %in% c('curves','both')){
-            curves <- TRUE
-        }
-
-        if(lineages & (length(slingLineages(x))==0)){
-            stop('No lineages detected.')
-        }
-        if(curves & (length(slingCurves(x))==0)){
-            stop('No curves detected.')
-        }
-
-        if(is.null(linInd)){
-            linInd <- seq_along(slingLineages(x))
-        }else{
-            linInd <- as.integer(linInd)
-            if(!all(linInd %in% seq_along(slingLineages(x)))){
-                if(any(linInd %in% seq_along(slingLineages(x)))){
-                    linInd.removed <-
-                        linInd[! linInd %in% seq_along(slingLineages(x))]
-                    linInd <-
-                        linInd[linInd %in% seq_along(slingLineages(x))]
-                    message('Unrecognized lineage indices (linInd): ',
-                            paste(linInd.removed, collapse = ", "))
-                }else{
-                    stop('None of the provided lineage indices',
-                         ' (linInd) were found.')
-                }
-            }
-        }
-
+    }
+    
+    if(lineages){
+        X <- reducedDim(x)
+        clusterLabels <- slingClusterLabels(x)
+        connectivity <- slingMST(x)
+        clusters <- rownames(connectivity)
+        nclus <- nrow(connectivity)
+        centers <- t(vapply(clusters,function(clID){
+            w <- clusterLabels[,clID]
+            return(apply(X, 2, weighted.mean, w = w))
+        }, rep(0,ncol(X))))
+        rownames(centers) <- clusters
+        X <- X[rowSums(clusterLabels) > 0, , drop = FALSE]
+        clusterLabels <- clusterLabels[rowSums(clusterLabels) > 0, ,
+                                       drop = FALSE]
+        linC <- slingParams(x)
+        clus2include <- unique(unlist(slingLineages(x)[linInd]))
+    }
+    
+    if(!add){
+        xs <- NULL
+        ys <- NULL
         if(lineages){
-            X <- reducedDim(x)
-            clusterLabels <- slingClusterLabels(x)
-            connectivity <- slingMST(x)
-            clusters <- rownames(connectivity)
-            nclus <- nrow(connectivity)
-            centers <- t(vapply(clusters,function(clID){
-                w <- clusterLabels[,clID]
-                return(apply(X, 2, weighted.mean, w = w))
-            }, rep(0,ncol(X))))
-            rownames(centers) <- clusters
-            X <- X[rowSums(clusterLabels) > 0, , drop = FALSE]
-            clusterLabels <- clusterLabels[rowSums(clusterLabels) > 0, ,
-                                           drop = FALSE]
-            linC <- slingParams(x)
-            clus2include <- unique(unlist(slingLineages(x)[linInd]))
-        }
-
-        if(!add){
-            xs <- NULL
-            ys <- NULL
-            if(lineages){
-                xs <- c(xs, centers[,dims[1]])
-                ys <- c(ys, centers[,dims[2]])
-            }
-            if(curves){
-                npoints <- nrow(slingCurves(x)[[1]]$s)
-                xs <- c(xs, as.numeric(vapply(slingCurves(x),
-                    function(c){ c$s[,dims[1]] }, rep(0,npoints))))
-                ys <- c(ys, as.numeric(vapply(slingCurves(x),
-                    function(c){ c$s[,dims[2]] }, rep(0,npoints))))
-            }
-            plot(x = NULL, y = NULL, asp = asp,
-                 xlim = range(xs), ylim = range(ys),
-                 xlab = colnames(reducedDim(x))[dims[1]],
-                 ylab = colnames(reducedDim(x))[dims[2]])
-        }
-
-        if(lineages){
-            for(i in seq_len(nclus-1)){
-                for(j in seq(i+1,nclus)){
-                    if(connectivity[i,j]==1 &
-                       all(clusters[c(i,j)] %in% clus2include)){
-                        lines(centers[c(i,j), dims],
-                              lwd = lwd, col = col[1], ...)
-                    }
-                }
-            }
-            points(centers[clusters %in% clus2include, dims],
-                   cex = cex, pch = 16, col = col[1])
-            if(show.constraints){
-                if(any(linC$start.given)){
-                    points(centers[clusters %in%
-                                       linC$start.clus[linC$start.given], dims,
-                                   drop=FALSE], cex = cex / 2,
-                           col = 'green3', pch = 16)
-                }
-                if(any(linC$end.given)){
-                    points(centers[clusters %in%
-                                       linC$end.clus[linC$end.given] &
-                                       clusters %in% clus2include,
-                                   dims,drop=FALSE], cex = cex / 2,
-                           col = 'red2', pch = 16)
-                }
-            }
-
+            xs <- c(xs, centers[,dims[1]])
+            ys <- c(ys, centers[,dims[2]])
         }
         if(curves){
-            for(ii in seq_along(slingCurves(x))[linInd]){
-                c <- slingCurves(x)[[ii]]
-                lines(c$s[c$ord, dims], lwd = lwd, col = col[ii], ...)
+            npoints <- nrow(slingCurves(x)[[1]]$s)
+            xs <- c(xs, as.numeric(vapply(slingCurves(x),
+                                          function(c){ c$s[,dims[1]] }, 
+                                          rep(0,npoints))))
+            ys <- c(ys, as.numeric(vapply(slingCurves(x),
+                                          function(c){ c$s[,dims[2]] }, 
+                                          rep(0,npoints))))
+        }
+        plot(x = NULL, y = NULL, asp = asp,
+             xlim = range(xs), ylim = range(ys),
+             xlab = colnames(reducedDim(x))[dims[1]],
+             ylab = colnames(reducedDim(x))[dims[2]])
+    }
+    
+    if(lineages){
+        for(i in seq_len(nclus-1)){
+            for(j in seq(i+1,nclus)){
+                if(connectivity[i,j]==1 &
+                   all(clusters[c(i,j)] %in% clus2include)){
+                    lines(centers[c(i,j), dims],
+                          lwd = lwd, col = col[1], ...)
+                }
             }
         }
-        invisible(NULL)
+        points(centers[clusters %in% clus2include, dims],
+               cex = cex, pch = 16, col = col[1])
+        if(show.constraints){
+            if(any(linC$start.given)){
+                points(centers[clusters %in%
+                                   linC$start.clus[linC$start.given], dims,
+                               drop=FALSE], cex = cex / 2,
+                       col = 'green3', pch = 16)
+            }
+            if(any(linC$end.given)){
+                points(centers[clusters %in%
+                                   linC$end.clus[linC$end.given] &
+                                   clusters %in% clus2include,
+                               dims,drop=FALSE], cex = cex / 2,
+                       col = 'red2', pch = 16)
+            }
+        }
+        
     }
-)
+    if(curves){
+        for(ii in seq_along(slingCurves(x))[linInd]){
+            c <- slingCurves(x)[[ii]]
+            lines(c$s[c$ord, dims], lwd = lwd, col = col[ii], ...)
+        }
+    }
+    invisible(NULL)
+}
+
 
 #' @rdname plot-SlingshotDataSet
-#' @import graphics
+#' @importFrom graphics lines
 #' @export
-setMethod(
-    f = "lines",
-    signature = "SlingshotDataSet",
-    definition = function(x,
-                          type = NULL,
-                          dims = seq_len(2),
-                          ...) {
-        plot(x, type = type, add = TRUE, dims = dims, ...)
-        invisible(NULL)
-    }
-)
+lines.SlingshotDataSet <- function(x,
+                                   type = NULL,
+                                   dims = seq_len(2),
+                                   ...) {
+    plot(x, type = type, add = TRUE, dims = dims, ...)
+    invisible(NULL)
+}
+
 
 
 #' @name plot3d-SlingshotDataSet
@@ -247,7 +243,7 @@ setMethod(
 #' rd <- cbind(rd, rnorm(nrow(rd)))
 #' pto <- slingshot(rd, cl, start.clus = "1")
 #' sds <- SlingshotDataSet(pto)
-#' plot3d(sds, type = 'b')
+#' plot3d.SlingshotDataSet(sds, type = 'b')
 #'
 #' # add to existing plot
 #' plot3d(rd, col = 'grey50', aspect = 'iso')
@@ -440,6 +436,7 @@ plot3d.SlingshotDataSet <- function(x,
 #' pto <- slingshot(rd, cl, start.clus = "1")
 #' pairs(SlingshotDataSet(pto))
 #'
+#' @importFrom grDevices dev.flush dev.hold
 #' @export
 pairs.SlingshotDataSet <-
     function (x, type = NULL, show.constraints = FALSE, col = NULL,
