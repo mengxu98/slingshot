@@ -73,16 +73,22 @@ produced by \code{\link{getCurves}}.}
 \item{\code{slingParams}}{list. Additional parameters used by Slingshot. These may 
 specify how the minimum spanning tree on clusters was constructed: 
 \itemize{ 
-\item{\code{start.clus}}{ character. The label of the root cluster.} 
-\item{\code{end.clus}}{ character. Vector of cluster labels indicating the 
+\item{\code{start.clus}}{ character. The label of the root cluster, or a
+vector of cluster labels giving the root clusters of each disjoint
+component of the graph.}
+\item{\code{end.clus}}{ character. Vector of cluster labels indicating 
 terminal clusters.}
 \item{\code{start.given}}{ logical. A logical value 
 indicating whether the initial state was pre-specified.} 
 \item{\code{end.given}}{ logical. A vector of logical values indicating 
-whether each terminal state was pre-specified}
-\item{\code{dist}}{ matrix. A
-numeric matrix of pairwise cluster distances.} }
-They may also specify how simultaneous principal curves were constructed:
+whether each terminal state was pre-specified} 
+\item{\code{omega}}{ numeric or logical. Granularity parameter determining
+the maximum edge length for building the MST. See
+\code{\link{getLineages}}.}
+\item{\code{omega_scale}}{ numeric. Scaling factor used for setting maximum
+edge length when \code{omega = TRUE}. See \code{\link{getLineages}}.} }
+They may also specify how simultaneous principal curves were constructed
+(for a complete listing, see \code{\link{getCurves}}:
 \itemize{ 
 \item{\code{shrink}}{ logical or numeric between 0 and 1. Determines
 whether and how much to shrink branching lineages toward their shared
@@ -109,6 +115,10 @@ Denotes how to determine the amount of shrinkage for a branching lineage.
 Accepted values are the same as for \code{kernel} in  the \code{density} 
 function (default is \code{"cosine"}), as well as \code{"tricube"} and 
 \code{"density"}. See \code{\link{getCurves}} for details.}
+\item{approx_points}{ numeric. Number of points to use in estimating
+curves. See \code{\link{getCurves}} for details.} \item{allow.breaks}{
+logical. Whether to allow curves that diverge very early on in a trajectory
+to have different starting points.}
 \item{Other parameters specified by 
 \code{\link[princurve]{principal_curve}}}. }}
 }}
