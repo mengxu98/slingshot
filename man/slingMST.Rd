@@ -7,16 +7,21 @@
 \alias{slingMST,SlingshotDataSet-method}
 \title{Extract Slingshot minimum spanning tree}
 \usage{
-slingMST(x)
+slingMST(x, ...)
 
-\S4method{slingMST}{PseudotimeOrdering}(x)
+\S4method{slingMST}{PseudotimeOrdering}(x, as.df = FALSE)
 
-\S4method{slingMST}{SingleCellExperiment}(x)
+\S4method{slingMST}{SingleCellExperiment}(x, ...)
 
-\S4method{slingMST}{SlingshotDataSet}(x)
+\S4method{slingMST}{SlingshotDataSet}(x, as.df = FALSE)
 }
 \arguments{
 \item{x}{an object containing \code{\link{slingshot}} output.}
+
+\item{...}{additional parameters to be passed to object-specific methods.}
+
+\item{as.df}{logical, whether to format the output as a \code{data.frame},
+suitable for plotting with \code{ggplot}.}
 }
 \value{
 In most cases, output is an \code{\link[igraph]{igraph}} object

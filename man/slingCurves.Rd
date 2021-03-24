@@ -7,16 +7,21 @@
 \alias{slingCurves,SlingshotDataSet-method}
 \title{Extract simultaneous principal curves}
 \usage{
-slingCurves(x)
+slingCurves(x, ...)
 
-\S4method{slingCurves}{PseudotimeOrdering}(x)
+\S4method{slingCurves}{PseudotimeOrdering}(x, as.df = FALSE)
 
-\S4method{slingCurves}{SingleCellExperiment}(x)
+\S4method{slingCurves}{SingleCellExperiment}(x, ...)
 
-\S4method{slingCurves}{SlingshotDataSet}(x)
+\S4method{slingCurves}{SlingshotDataSet}(x, as.df = FALSE)
 }
 \arguments{
 \item{x}{an object containing \code{\link{slingshot}} output.}
+
+\item{...}{additional parameters to be passed to object-specific methods.}
+
+\item{as.df}{logical, whether to format the output as a \code{data.frame},
+suitable for plotting with \code{ggplot}.}
 }
 \value{
 A list of smooth lineage curves, each of which is a

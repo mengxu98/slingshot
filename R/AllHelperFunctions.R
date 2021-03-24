@@ -214,25 +214,49 @@ setMethod(
 
 #' @rdname slingMST
 #' @importFrom S4Vectors metadata
+#' @importFrom igraph V
+#' @param as.df logical, whether to format the output as a \code{data.frame},
+#'   suitable for plotting with \code{ggplot}.
 #' @export
 setMethod(
     f = "slingMST",
     signature = "PseudotimeOrdering",
-    definition = function(x) metadata(x)$mst
+    definition = function(x, as.df = FALSE){
+        if(!as.df){
+            return(metadata(x)$mst)
+        }else{
+            dfs <- lapply(seq_along(metadata(x)$lineages), function(l){
+                lin <- metadata(x)$lineages[[l]]
+                mst <- metadata(x)$mst
+                centers <- do.call(rbind, igraph::V(mst)$coordinates)
+                rownames(centers) <- igraph::V(mst)$name
+                return(data.frame(centers[lin,], Order = seq_along(lin), 
+                                  Lineage = l, Cluster = lin))
+            })
+            return(do.call(rbind, dfs))
+        }
+    }
 )
 #' @rdname slingMST
 #' @export
 setMethod(
     f = "slingMST",
     signature = "SingleCellExperiment",
-    definition = function(x) slingMST(colData(x)$slingshot)
+    definition = function(x, ...) slingMST(colData(x)$slingshot, ...)
 )
 #' @rdname slingMST
 #' @export
 setMethod(
     f = "slingMST",
     signature = "SlingshotDataSet",
-    definition = function(x) x@adjacency
+    definition = function(x, as.df = FALSE){
+        if(!as.df){
+            return(x@adjacency)
+        }else{
+            pto <- as.PseudotimeOrdering(x)
+            return(slingMST(pto, as.df = TRUE))
+        }
+    }
 )
 
 #' @rdname slingLineages
@@ -258,25 +282,47 @@ setMethod(
 )
 
 #' @rdname slingCurves
+#' @param as.df logical, whether to format the output as a \code{data.frame},
+#'   suitable for plotting with \code{ggplot}.
 #' @export
 setMethod(
     f = "slingCurves",
     signature = "PseudotimeOrdering",
-    definition = function(x) metadata(x)$curves
+    definition = function(x, as.df = FALSE){
+        if(!as.df){
+            return(metadata(x)$curves)
+        }else{
+            dfs <- lapply(seq_along(metadata(x)$curves), function(l){
+                pc <- metadata(x)$curves[[l]]
+                data.frame(pc$s, Order = pc$ord, Lineage = l)
+            })
+            return(do.call(rbind, dfs))
+        }
+    }
 )
 #' @rdname slingCurves
 #' @export
 setMethod(
     f = "slingCurves",
     signature = "SingleCellExperiment",
-    definition = function(x) slingCurves(colData(x)$slingshot)
+    definition = function(x, ...) slingCurves(colData(x)$slingshot, ...)
 )
 #' @rdname slingCurves
 #' @export
 setMethod(
     f = "slingCurves",
     signature = "SlingshotDataSet",
-    definition = function(x) x@curves
+    definition = function(x, as.df = FALSE){
+        if(!as.df){
+            return(x@curves)
+        }else{
+            dfs <- lapply(seq_along(x@curves), function(l){
+                pc <- x@curves[[l]]
+                data.frame(pc$s, Order = pc$ord, Lineage = l)
+            })
+            return(do.call(rbind, dfs))
+        }
+    }
 )
 
 #' @rdname slingParams

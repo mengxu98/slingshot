@@ -219,6 +219,7 @@ setGeneric(name = "slingClusterLabels",
 #'   \code{\link{slingshot}} output.
 #'
 #' @param x an object containing \code{\link{slingshot}} output.
+#' @param ... additional parameters to be passed to object-specific methods.
 #' @return In most cases, output is an \code{\link[igraph]{igraph}} object
 #'   representing the MST. If \code{x} is a \code{SlingshotDataSet}, then output
 #'   is an adjacency matrix representing the MST.
@@ -231,7 +232,7 @@ setGeneric(name = "slingClusterLabels",
 #' @export
 setGeneric(name = "slingMST",
            signature = "x",
-           def = function(x) standardGeneric("slingMST"))
+           def = function(x, ...) standardGeneric("slingMST"))
 
 #' @title Methods for parameters used by Slingshot
 #' @name slingParams
@@ -257,6 +258,7 @@ setGeneric(name = "slingParams",
 #'   containing \code{\link{slingshot}} output.
 #'
 #' @param x an object containing \code{\link{slingshot}} output.
+#' @param ... additional parameters to be passed to object-specific methods.
 #' @return A list of smooth lineage curves, each of which is a
 #'   \code{\link[princurve]{principal_curve}} object.
 #' @examples
@@ -268,7 +270,7 @@ setGeneric(name = "slingParams",
 #' @export
 setGeneric(name = "slingCurves",
            signature = "x",
-           def = function(x) standardGeneric("slingCurves"))
+           def = function(x, ...) standardGeneric("slingCurves"))
 
 
 #' @title Get Slingshot pseudotime values

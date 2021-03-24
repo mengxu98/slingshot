@@ -438,15 +438,29 @@ test_that("Helper functions work as expected", {
     data("slingshotExample")
     rd <- slingshotExample$rd
     cl <- slingshotExample$cl
-    sds <- slingshot(rd,cl, start.clus = '1', end.clus = c('4','5'))
-    sds <- SlingshotDataSet(sds)
+    pto <- slingshot(rd,cl, start.clus = '1', end.clus = c('4','5'))
+    sds <- SlingshotDataSet(pto)
     show(sds)
 
     expect_equal(dim(reducedDim(sds)), c(140,2))
     expect_equal(dim(slingReducedDim(sds)), c(140,2))
     expect_equal(dim(slingClusterLabels(sds)), c(140,5))
     expect_equal(length(slingLineages(sds)),2)
+    
+    expect_equal(dim(slingMST(sds)), c(5,5))
+    expect_s3_class(slingMST(pto), 'igraph')
+    expect_s3_class(slingMST(sds, as.df = TRUE), 'data.frame')
+    expect_s3_class(slingMST(pto, as.df = TRUE), 'data.frame')    
+    expect_equal(ncol(slingMST(pto, as.df = TRUE)), 
+                 ncol(slingReducedDim(pto)) + 3)
+    expect_equal(sort(unique(slingMST(pto, as.df = TRUE)$Cluster)),
+                 as.character(1:5))
     expect_equal(length(slingCurves(sds)),2)
+    expect_s3_class(slingCurves(sds, as.df = TRUE), 'data.frame')
+    expect_s3_class(slingCurves(pto, as.df = TRUE), 'data.frame')    
+    expect_equal(ncol(slingCurves(pto, as.df = TRUE)), 
+                 ncol(slingReducedDim(pto)) + 2)
+    expect_equal(unique(slingCurves(pto, as.df = TRUE)$Lineage), 1:2)
     expect_true(all(c('start.clus','end.clus','start.given','end.given',
                       'shrink','extend','reweight','reassign',
                       'shrink.method') %in% names(slingParams(sds)) ))
