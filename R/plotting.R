@@ -46,7 +46,7 @@
 #' plot(rd, col = 'grey50', asp = 1)
 #' lines(sds, lwd = 3)
 #'
-#' @importFrom graphics plot
+#' @import graphics
 #' @export
 plot.SlingshotDataSet <- function(x, type = NULL,
                                   linInd = NULL,
@@ -437,6 +437,7 @@ plot3d.SlingshotDataSet <- function(x,
 #' pairs(SlingshotDataSet(pto))
 #'
 #' @importFrom grDevices dev.flush dev.hold
+#' @import graphics
 #' @export
 pairs.SlingshotDataSet <-
     function (x, type = NULL, show.constraints = FALSE, col = NULL,

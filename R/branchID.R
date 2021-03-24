@@ -59,7 +59,6 @@ setMethod(f = "slingBranchID",
 #' pto <- slingshot(rd, cl)
 #' slingBranchGraph(pto)
 #'   
-#' @import igraph
 #' @export
 setMethod(f = "slingBranchGraph",
           signature = signature(x = "ANY"),
@@ -71,8 +70,8 @@ setMethod(f = "slingBranchGraph",
               maxL <- max(nlins)
               if(maxL == 1){ # only one lineage
                   g <- igraph::graph_from_literal(1)
-                  vertex_attr(g, 'cells') <- length(brID)
-                  vertex_attr(g, 'size') <- max_node_size
+                  igraph::vertex_attr(g, 'cells') <- length(brID)
+                  igraph::vertex_attr(g, 'size') <- max_node_size
                   return(g)
               }
               if(length(nodes)==1){ # only one node, possibly multiple lineages

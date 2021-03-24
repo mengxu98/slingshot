@@ -15,7 +15,6 @@
 #' pto <- slingshot(rd, cl, start.clus = '1')
 #' as.SlingshotDataSet(pto)
 #' 
-#' @importFrom igraph as_adjacency_matrix
 #' @export
 setMethod(
     f = "as.SlingshotDataSet",
@@ -86,7 +85,6 @@ setMethod(
 #' as.PseudotimeOrdering(sce)
 #' 
 #' @import TrajectoryUtils
-#' @import igraph
 #' @export
 setMethod(
     f = "as.PseudotimeOrdering",
@@ -97,8 +95,8 @@ setMethod(
             ps <- list(pseudotime = slingPseudotime(sds),
                        weights = slingCurveWeights(sds))
             meta <- list(lineages = slingLineages(sds),
-                         mst = graph_from_adjacency_matrix(slingMST(sds), 
-                                                           mode = "undirected"),
+                         mst = igraph::graph_from_adjacency_matrix(
+                             slingMST(sds), mode = "undirected"),
                          curves = slingCurves(sds),
                          slingParams = slingParams(sds))
         }else if(length(slingLineages(sds)) > 0){
@@ -127,7 +125,8 @@ setMethod(
         for (r in rownames(centers)) {
             coord.list[[r]] <- centers[r,]
         }
-        V(meta$mst)$coordinates <- coord.list[names(V(meta$mst))]
+        igraph::V(meta$mst)$coordinates <- 
+            coord.list[names(igraph::V(meta$mst))]
         
         pto <- PseudotimeOrdering(pathStats = ps, metadata = meta)
         cellData(pto)$reducedDim <- reducedDim(sds)

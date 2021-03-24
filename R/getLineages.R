@@ -87,7 +87,6 @@
 #'
 #' @export
 #'
-#' @import igraph
 #' @import TrajectoryUtils
 #'
 setMethod(f = "getLineages",
@@ -189,7 +188,7 @@ setMethod(f = "getLineages",
             g <- igraph::graph_from_adjacency_matrix(dmat, 
                                                      mode = "undirected", 
                                                      weighted = TRUE)
-            V(g)$coordinates <- list(clusters = colMeans(X))
+            igraph::V(g)$coordinates <- list(clusters = colMeans(X))
             
             lineages <- list('Lineage1' = clusters)
         }else{

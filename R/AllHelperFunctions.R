@@ -213,10 +213,10 @@ setMethod(
 )
 
 #' @rdname slingMST
-#' @importFrom S4Vectors metadata
-#' @importFrom igraph V
+#' @importFrom S4Vectors metadata metadata<-
 #' @param as.df logical, whether to format the output as a \code{data.frame},
 #'   suitable for plotting with \code{ggplot}.
+#' @importFrom igraph V
 #' @export
 setMethod(
     f = "slingMST",
@@ -228,8 +228,8 @@ setMethod(
             dfs <- lapply(seq_along(metadata(x)$lineages), function(l){
                 lin <- metadata(x)$lineages[[l]]
                 mst <- metadata(x)$mst
-                centers <- do.call(rbind, igraph::V(mst)$coordinates)
-                rownames(centers) <- igraph::V(mst)$name
+                centers <- do.call(rbind, V(mst)$coordinates)
+                rownames(centers) <- V(mst)$name
                 return(data.frame(centers[lin,], Order = seq_along(lin), 
                                   Lineage = l, Cluster = lin))
             })
@@ -351,6 +351,7 @@ setMethod(
 #' @param na logical. If \code{TRUE} (default), cells that are not assigned to a
 #'   lineage will have a pseudotime value of \code{NA}. Otherwise, their
 #'   arclength along each curve will be returned.
+#' @importFrom SummarizedExperiment assay assay<-
 #' @export
 setMethod(
     f = "slingPseudotime",
@@ -489,8 +490,8 @@ setMethod(
 ### Internal functions ###
 ##########################
 #' @import stats
-#' @import graphics
-#' @import SummarizedExperiment
+#' @import matrixStats
+#' @importFrom S4Vectors metadata metadata<-
 `.slingParams<-` <- function(x, value) {
     metadata(x)$slingParams <- value
     x
@@ -565,7 +566,7 @@ setMethod(
     if(method %in% eval(formals(density.default)$kernel)){
         dens <- density(0, bw=1, kernel = method)
         surv <- list(x = dens$x, y = (sum(dens$y) - cumsum(dens$y))/sum(dens$y))
-        box.vals <- boxplot(pst[share.idx], plot = FALSE)$stats
+        box.vals <- graphics::boxplot(pst[share.idx], plot = FALSE)$stats
         surv$x <- .scaleAB(surv$x, a = box.vals[1], b = box.vals[5])
         if(box.vals[1]==box.vals[5]){
             pct.l <- rep(0, length(pst))
@@ -579,7 +580,7 @@ setMethod(
         dens <- list(x = seq(-3,3,length.out = 512))
         dens$y <- tc(dens$x)
         surv <- list(x = dens$x, y = (sum(dens$y) - cumsum(dens$y))/sum(dens$y))
-        box.vals <- boxplot(pst[share.idx], plot = FALSE)$stats
+        box.vals <- graphics::boxplot(pst[share.idx], plot = FALSE)$stats
         surv$x <- .scaleAB(surv$x, a = box.vals[1], b = box.vals[5])
         if(box.vals[1]==box.vals[5]){
             pct.l <- rep(0, length(pst))
