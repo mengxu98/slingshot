@@ -294,7 +294,7 @@ setMethod(
         }else{
             dfs <- lapply(seq_along(metadata(x)$curves), function(l){
                 pc <- metadata(x)$curves[[l]]
-                data.frame(pc$s, Order = pc$ord, Lineage = l)
+                data.frame(pc$s, Order = order(pc$ord), Lineage = l)
             })
             return(do.call(rbind, dfs))
         }
@@ -318,7 +318,7 @@ setMethod(
         }else{
             dfs <- lapply(seq_along(x@curves), function(l){
                 pc <- x@curves[[l]]
-                data.frame(pc$s, Order = pc$ord, Lineage = l)
+                data.frame(pc$s, Order = order(pc$ord), Lineage = l)
             })
             return(do.call(rbind, dfs))
         }
