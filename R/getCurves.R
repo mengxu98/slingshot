@@ -643,6 +643,12 @@ setMethod(f = "getCurves",
         rownames(pst) <- rownames(pto)
         colnames(pst) <- colnames(pto)
         assay(pto, 'pseudotime') <- pst
+        
+        scw <- vapply(pcurves, function(pc) { pc$w },
+                          rep(0, nrow(X)))
+        rownames(scw) <- rownames(pto)
+        colnames(scw) <- colnames(pto)
+        assay(pto, 'weights') <- scw
 
         validObject(pto)
         return(pto)

@@ -589,3 +589,58 @@ test_that("branchID functions work as expected", {
     expect_true(all(c("1,2","1","2","1,2,3","3") %in% names(g[[1:5]])))
     expect_true(all(names(g[[1:5]]) %in% c("1,2","1","2","1,2,3","3")))
 })
+
+test_that("conversion functions work as expected", {
+    require(SingleCellExperiment)
+    u <- matrix(rpois(140*50, 5), nrow=50)
+    sce <- SingleCellExperiment(assays=list(counts=u))
+    reducedDims(sce) <- SimpleList(PCA = rd,
+                                   tSNE = matrix(rnorm(140*2),ncol=2))
+    sce <- slingshot(sce, reducedDim = 'PCA', clusterLabels = cl)
+    pto <- as.PseudotimeOrdering(sce)
+    sds <- as.SlingshotDataSet(pto)
+    
+    expect_identical(slingPseudotime(sce), slingPseudotime(pto))
+    expect_identical(slingPseudotime(sce), slingPseudotime(sds))
+    expect_identical(slingCurveWeights(sce), slingCurveWeights(pto))
+    expect_identical(slingCurveWeights(sce), slingCurveWeights(sds))
+    
+    expect_identical(sds, as.SlingshotDataSet(sce))
+    
+    pto2 <- as.PseudotimeOrdering(sds)
+    expect_identical(slingPseudotime(pto), slingPseudotime(pto2))
+    expect_identical(slingCurveWeights(pto), slingCurveWeights(pto2))    
+    
+    expect_identical(sds, as.SlingshotDataSet(sds))
+    expect_identical(pto, as.PseudotimeOrdering(pto))
+    
+    expect_false(all(assay(pto, 'weights') %in% c(0,1)))
+    pto2 <- slingshot(rd, cl)
+    expect_false(all(assay(pto2, 'weights') %in% c(0,1)))
+    
+    # old SCE integration
+    colData(sce)$slingshot <- NULL
+    int_metadata(sce)$slingshot <- sds
+    expect_identical(sds, as.SlingshotDataSet(sce))
+    pto2 <- as.PseudotimeOrdering(sce)
+    expect_identical(slingPseudotime(pto), slingPseudotime(pto2))
+    expect_identical(slingCurveWeights(pto), slingCurveWeights(pto2))    
+    
+    # no Slingshot results
+    int_metadata(sce)$slingshot <- NULL
+    expect_error(as.SlingshotDataSet(sce), 'No slingshot results found')
+    
+    # partial results
+    sds <- getLineages(rd, cl)
+    pto <- as.PseudotimeOrdering(sds)
+    expect_identical(slingLineages(sds), slingLineages(pto))
+    expect_true(all(is.na(assay(pto, 'pseudotime'))))
+    expect_true(all(assay(pto, 'weights') %in% c(0,1)))
+    
+    # no results
+    sds <- newSlingshotDataSet(rd, cl)
+    expect_error(as.PseudotimeOrdering(sds), 
+                 'number of lineages could not be determined')
+    
+    })
+
