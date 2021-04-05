@@ -187,6 +187,13 @@ jobs:
           ## Install BiocGenerics
           BiocManager::install("BiocGenerics")
         shell: Rscript {0}
+        
+      - name: Install DelayedMatrixStats
+        if:  env.has_RUnit == 'true'
+        run: |
+          ## Install DelayedMatrixStats
+          BiocManager::install("DelayedMatrixStats")
+        shell: Rscript {0}
 
       - name: Install covr
         if: github.ref == 'refs/heads/master' && env.run_covr == 'true' && runner.os == 'Linux'
