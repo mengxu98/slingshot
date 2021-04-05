@@ -179,6 +179,7 @@ jobs:
           message(paste('****', Sys.time(), 'installing rcmdcheck and BiocCheck ****'))
           remotes::install_cran("rcmdcheck")
           BiocManager::install("BiocCheck")
+          BiocManager::install("DelayedMatrixStats")
         shell: Rscript {0}
 
       - name: Install BiocGenerics
@@ -186,13 +187,6 @@ jobs:
         run: |
           ## Install BiocGenerics
           BiocManager::install("BiocGenerics")
-        shell: Rscript {0}
-        
-      - name: Install DelayedMatrixStats
-        if:  env.has_RUnit == 'true'
-        run: |
-          ## Install DelayedMatrixStats
-          BiocManager::install("DelayedMatrixStats")
         shell: Rscript {0}
 
       - name: Install covr
