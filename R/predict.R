@@ -59,9 +59,6 @@ setMethod(f = "predict",
         if(nrow(x)==0){
             stop('newdata has zero rows.')
         }
-        if(ncol(x)==0){
-            stop('newdata has zero columns.')
-        }
         if(any(is.na(x))){
             stop('newdata cannot contain missing values.')
         }

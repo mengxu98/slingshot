@@ -217,6 +217,9 @@ test_that("getCurves works as expected", {
     mi <- getLineages(rd, cl)
     mi <- getCurves(mi)
     expect_equal(length(slingCurves(mi)),2)
+    mi <- getLineages(rd, cl)
+    mi <- getCurves(SlingshotDataSet(mi))
+    expect_equal(length(slingCurves(mi)),2)
 
     # 3 lineages
     mi3 <- getLineages(rd, cl, end.clus = '3')
@@ -263,6 +266,24 @@ test_that("getCurves works as expected", {
     expect_equal(length(slingCurves(c1)), 1)
     c1 <- getCurves(c1, extend = 'pc1')
     expect_equal(length(slingCurves(c1)), 1)
+    
+    # default approx_points
+    rd2 <- rbind(rd, rd + rnorm(nrow(rd)*ncol(rd), sd = .2))
+    cl2 <- c(cl, cl)
+    pto <- slingshot(rd2, cl2)
+    expect_equal(length(slingCurves(pto)[[1]]$ord), 150)
+    
+    # different smoother
+    pto <- slingshot(rd, cl, smoother = "loess")
+    expect_equal(length(slingCurves(pto)),2)
+    
+    # invalid inputs
+    pto <- getLineages(rd, cl)
+    expect_error(getCurves(pto, shrink = 3),
+                 'parameter must be logical or numeric between')
+    
+    
+    
 })
 
 test_that("slingshot works for different input types", {
@@ -501,7 +522,10 @@ test_that("predict works as expected", {
     expect_true(all(slingClusterLabels(pred)==0))
     expect_equal(length(slingLineages(pred)), 2)
     expect_equal(length(slingCurves(pred)), 2)
-
+    rownames(x.mat) <- rep('', nrow(x.mat))
+    pred <- predict(SlingshotDataSet(sds), x.mat)
+    expect_equal(length(slingLineages(pred)), 2)
+    
     x.df <- as.data.frame(x.mat)
     pred <- predict(sds, x.df)
     expect_equal(length(slingCurves(pred)), 2)
@@ -518,6 +542,9 @@ test_that("predict works as expected", {
     x.big <- cbind(x.mat, rnorm(100))
     expect_error(predict(sds, x.big),
                  'does not match original number of dimensions')
+    x.0 <- matrix(0, nrow=0, ncol = 2)
+    expect_error(predict(sds, x.0), 'newdata has zero rows')
+    
 })
 
 test_that("Helper functions work as expected", {
