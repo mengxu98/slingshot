@@ -32,7 +32,16 @@ test_that("getLineages works for different input types", {
     mm <- getLineages(reducedDim, cl.imb)
     expect_is(mm, "PseudotimeOrdering")
     expect_equal(length(unique(unlist(slingLineages(mm)))), 2)
-
+    rownames(cl.imb) <- paste('cell',1:nrow(cl.imb), sep='.')
+    mm <- getLineages(reducedDim, cl.imb)
+    expect_is(mm, "PseudotimeOrdering")
+    expect_equal(length(unique(unlist(slingLineages(mm)))), 2)
+    colnames(cl.imb) <- NULL
+    cl.mat <- outer(clusterLabels, unique(clusterLabels), '==') + 0.0
+    cl.mat <- cbind(cl.mat, 0)
+    mm <- getLineages(reducedDim, cl.mat)
+    expect_is(mm, "PseudotimeOrdering")
+    expect_equal(length(unique(unlist(slingLineages(mm)))), 5)
 
 
     df <- data.frame(reducedDim)
@@ -53,9 +62,16 @@ test_that("getLineages works for different input types", {
     sds <- newSlingshotDataSet(reducedDim, clusterLabels)
     s <- getLineages(sds)
     expect_is(s, "PseudotimeOrdering")
-    expect_equal(length(unique(unlist(slingLineages(dff)))), 5)
+    expect_equal(length(unique(unlist(slingLineages(s)))), 5)
     expect_equal(dim(slingMST(as.SlingshotDataSet(s))), c(5,5))
 
+    # PseudotimeOrdering
+    pto <- getLineages(reducedDim, clusterLabels)
+    p <- getLineages(pto)
+    expect_is(p, "PseudotimeOrdering")
+    expect_equal(length(unique(unlist(slingLineages(p)))), 5)
+    expect_equal(dim(slingMST(as.SlingshotDataSet(p))), c(5,5))
+    
     # one cluster
     clus1 <- rep(1,50)
     c1 <- getLineages(reducedDim, clus1)
@@ -105,7 +121,23 @@ test_that("getLineages works for different input types", {
     expect_equal(length(slingCurves(c0)),0)
     expect_true(all(c('start.clus','end.clus','start.given','end.given',
                       'omega','omega_scale') %in% names(slingParams(c0)) ))
-
+    # cluster labels in SCE
+    sce$kmeans <- cl
+    c1 <- getLineages(sce, clusterLabels = 'kmeans')
+    expect_equal(length(unique(unlist(slingLineages(c1)))), 5)
+    expect_true('slingshot' %in% names(colData(c1)))
+    # cluster labels provided as matrix
+    clmat <- sapply(unique(cl), function(cln){ as.numeric(cl == cln) })
+    c2 <- getLineages(sce, clusterLabels = clmat)
+    expect_equal(length(unique(unlist(slingLineages(c2)))), 5)
+    expect_true('slingshot' %in% names(colData(c2)))
+    # invalid inputs
+    expect_error(getLineages(sce, reducedDim = 'UMAP'),
+                 'not found in reducedDims')
+    expect_error(getLineages(sce, clusterLabels = 'pam'),
+                 'not found in colData')
+    
+    
     # invalid inputs
     expect_error(getLineages(reducedDim[,-(seq_len(ncol(reducedDim)))],
                              clusterLabels), 'has zero columns')
@@ -119,6 +151,17 @@ test_that("getLineages works for different input types", {
     rdc <- reducedDim; rdc[1,1] <- 'a'
     expect_error(getLineages(rdc, clusterLabels),
                  'must only contain numeric values')
+    expect_error(getLineages(reducedDim, cl.imb[-1, ]), 'must equal nrow')
+    expect_error(getLineages(reducedDim, clusterLabels, omega = 1:5), 
+                 'omega must have length 1')
+    expect_error(getLineages(reducedDim, clusterLabels, omega = NA), 
+                 'omega must be logical or numeric')
+    expect_error(getLineages(reducedDim, clusterLabels, omega = -1), 
+                 'omega must be non-negative')
+    
+    expect_error(getLineages(reducedDim, NULL),
+                 'clusterLabels must have length or number of rows equal')
+    
 })
 
 test_that("getLineages works as expected", {
@@ -307,6 +350,9 @@ test_that("slingshot works for different input types", {
     rdc <- reducedDim; rdc[1,1] <- 'a'
     expect_error(slingshot(rdc, clusterLabels),
                  'must only contain numeric values')
+    expect_error(slingshot(rd, NULL),
+                 'clusterLabels must have length or number of rows equal')
+    
 
     # with SingleCellExperiment objects
     require(SingleCellExperiment)
@@ -338,6 +384,23 @@ test_that("slingshot works for different input types", {
                       'shrink.method') %in% names(slingParams(c0)) ))
     expect_equal(dim(slingPseudotime(c0)), c(140,2))
     expect_equal(dim(slingCurveWeights(c0)), c(140,2))
+    # cluster labels in SCE
+    sce$kmeans <- cl
+    c1 <- slingshot(sce, clusterLabels = 'kmeans')
+    expect_equal(length(unique(unlist(slingLineages(c1)))), 5)
+    expect_true('slingshot' %in% names(colData(c1)))
+    # cluster labels provided as matrix
+    clmat <- sapply(unique(cl), function(cln){ as.numeric(cl == cln) })
+    c2 <- slingshot(sce, clusterLabels = clmat)
+    expect_equal(length(unique(unlist(slingLineages(c2)))), 5)
+    expect_true('slingshot' %in% names(colData(c2)))
+    
+    # invalid inputs
+    expect_error(slingshot(sce, reducedDim = 'UMAP'),
+                 'not found in reducedDims')
+    expect_error(slingshot(sce, clusterLabels = 'pam'),
+                 'not found in colData')
+    
 })
 
 test_that("slingshot works with ClusterExperiment objects", {
@@ -354,17 +417,36 @@ test_that("slingshot works with ClusterExperiment objects", {
                                                transformation = function(x){x})
     ce.sling <- slingshot(ce)
     expect_is(ce.sling, "ClusterExperiment")
+    expect_equal(length(unique(unlist(slingLineages(ce.sling)))), 5)
+    expect_equal(length(slingCurves(ce.sling)), 2)
+    expect_true('slingshot' %in% names(colData(ce.sling)))
+    # alternate reducedDims
     ce.sling <- slingshot(ce, reducedDim = 'tSNE')
     expect_is(ce.sling, "ClusterExperiment")
     ce.sling <- slingshot(ce, reducedDim = matrix(rnorm(140*2),ncol=2))
     expect_is(ce.sling, "ClusterExperiment")
-
+    # clusters referenced by name from cluster matrix
+    ce.sling <- slingshot(ce, 'cluster1')
+    expect_is(ce.sling, "ClusterExperiment")
+    # clusters referenced by name from colData    
     colData(ce) <- cbind(colData(ce), cl2 = sample(2,140, replace=TRUE))
     ce.sling <- slingshot(ce, 'cl2')
     expect_is(ce.sling, "ClusterExperiment")
     ce.sling <- slingshot(ce, sample(2,140, replace=TRUE))
     expect_is(ce.sling, "ClusterExperiment")
     expect_true('slingshot' %in% names(colData(ce.sling)))
+    # cluster labels provided as matrix
+    clmat <- sapply(unique(cl), function(cln){ as.numeric(cl == cln) })
+    c2 <- slingshot(ce, clusterLabels = clmat)
+    expect_equal(length(unique(unlist(slingLineages(c2)))), 5)
+    expect_true('slingshot' %in% names(colData(c2)))
+    
+    # invalid inputs
+    expect_error(slingshot(ce, reducedDim = 'UMAP'),
+                 'not found in reducedDims')
+    expect_error(slingshot(ce, clusterLabels = 'pam'),
+                 'not found in colData')
+    
 })
 
 test_that("2D Plotting functions don't give errors", {

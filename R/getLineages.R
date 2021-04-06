@@ -398,9 +398,6 @@ setMethod(f = "getLineages",
                 reducedDims(data)$slingReducedDim <- reducedDim
               }
             }
-            if(!is.matrix(rd)) {
-              stop("Slingshot currently works only with base matrices.")
-            }
 
             if(missing(clusterLabels)){
               message('No cluster labels provided. Continuing with one ',

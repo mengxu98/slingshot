@@ -372,17 +372,9 @@ setMethod(f = "slingshot",
                       reducedDims(data)$slingReducedDim <- reducedDim
                   }
               }
-              if(!is.matrix(rd)) {
-                  stop("Slingshot currently works only with base matrices.")
-              }
 
               if(missing(clusterLabels)){
                   cl <- clusterExperiment::primaryClusterNamed(data)
-                  if(is.null(cl)){
-                      message('No primary clustering found. Continuing ',
-                                     'with one cluster.')
-                      cl <- rep('1', nrow(rd))
-                  }
               }else{
                   if(length(clusterLabels)==1){
                       if(clusterLabels %in% colnames(colData(data))){
@@ -481,9 +473,6 @@ setMethod(f = "slingshot",
                       rd <- reducedDim
                       reducedDims(data)$slingReducedDim <- reducedDim
                   }
-              }
-              if(!is.matrix(rd)) {
-                  stop("Slingshot currently works only with base matrices.")
               }
 
               if(missing(clusterLabels)){
