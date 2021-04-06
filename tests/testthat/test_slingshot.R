@@ -713,7 +713,7 @@ test_that("conversion functions work as expected", {
     expect_error(as.SlingshotDataSet(sce), 'No slingshot results found')
     
     # partial results
-    sds <- getLineages(rd, cl)
+    sds <- as.SlingshotDataSet(getLineages(rd, cl))
     pto <- as.PseudotimeOrdering(sds)
     expect_identical(slingLineages(sds), slingLineages(pto))
     expect_true(all(is.na(assay(pto, 'pseudotime'))))
