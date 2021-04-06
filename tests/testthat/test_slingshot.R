@@ -365,6 +365,7 @@ test_that("slingshot works for different input types", {
     # implicit reducedDim
     c0 <- slingshot(sce)
     expect_equal(length(unique(unlist(slingLineages(c0)))), 1)
+    expect_true(all(slingReducedDim(c0) == rd))
     # reducedDim provided by name
     c0 <- slingshot(sce, reducedDim='tSNE')
     expect_equal(length(unique(unlist(slingLineages(c0)))), 1)
@@ -382,8 +383,11 @@ test_that("slingshot works for different input types", {
     expect_true(all(c('start.clus','end.clus','start.given','end.given',
                       'shrink','extend','reweight','reassign',
                       'shrink.method') %in% names(slingParams(c0)) ))
+    expect_equal(dim(slingClusterLabels(c0)), c(140,5))
     expect_equal(dim(slingPseudotime(c0)), c(140,2))
     expect_equal(dim(slingCurveWeights(c0)), c(140,2))
+    expect_s3_class(slingMST(c0), 'igraph')
+    
     # cluster labels in SCE
     sce$kmeans <- cl
     c1 <- slingshot(sce, clusterLabels = 'kmeans')
@@ -548,10 +552,14 @@ test_that("Helper functions work as expected", {
                       'shrink.method') %in% names(slingParams(sds)) ))
     expect_equal(dim(slingPseudotime(sds)), c(140,2))
     expect_equal(sum(is.na(slingPseudotime(sds, na = FALSE))), 0)
+    expect_equal(sum(is.na(slingPseudotime(pto, na = FALSE))), 0)
     expect_equal(dim(slingCurveWeights(sds)), c(140,2))
+    expect_equal(dim(slingCurveWeights(pto)), c(140,2))
     expect_true(all(
         abs(rowSums(slingCurveWeights(sds, as.probs = TRUE))-1) < .001))
-
+    expect_true(all(
+        abs(rowSums(slingCurveWeights(pto, as.probs = TRUE))-1) < .001))
+    
     # newSlingshotDataSet
     # matrix / factor
     mf <- newSlingshotDataSet(rd, factor(cl))
@@ -574,6 +582,24 @@ test_that("Helper functions work as expected", {
     rownames(cl.mat) <- NULL
     colnames(rd) <- NULL
     expect_error(newSlingshotDataSet(rd, cl.mat[-1,]), 'must equal')
+    # special cases
+    expect_error(newSlingshotDataSet(rd, cl[-1]),
+                 'must equal length')
+    cl.mat <- outer(cl, unique(cl), '==') + 0.0
+    rownames(cl.mat) <- NULL
+    colnames(cl.mat) <- NULL
+    rownames(rd) <- NULL
+    colnames(rd) <- NULL
+    sds0 <- newSlingshotDataSet(rd, cl)
+    expect_true(all(reducedDims(sds0) == rd))
+    
+    # incomplete
+    pto0 <- getLineages(rd, cl)
+    sds0 <- as.SlingshotDataSet(pto0)
+    expect_error(slingPseudotime(pto0), 'No curves detected')
+    expect_error(slingPseudotime(sds0), 'No curves detected')
+    expect_error(slingCurveWeights(pto0), 'No curves detected')
+    expect_error(slingCurveWeights(sds0), 'No curves detected')
 })
 
 test_that("embedCurves works as expected", {
@@ -603,6 +629,8 @@ test_that("embedCurves works as expected", {
     rownames(tsne) <- NULL
     colnames(tsne) <- NULL
     emb <- embedCurves(sds, tsne)
+    # show embedding
+    emb
     # approx_points
     emb <- embedCurves(sds, tsne, approx_points = 50)
     # loess
@@ -694,6 +722,7 @@ test_that("conversion functions work as expected", {
     expect_identical(slingCurveWeights(pto), slingCurveWeights(pto2))    
     
     expect_identical(sds, as.SlingshotDataSet(sds))
+    expect_identical(sds, SlingshotDataSet(sds))
     expect_identical(pto, as.PseudotimeOrdering(pto))
     
     expect_false(all(assay(pto, 'weights') %in% c(0,1)))
@@ -704,6 +733,7 @@ test_that("conversion functions work as expected", {
     colData(sce)$slingshot <- NULL
     int_metadata(sce)$slingshot <- sds
     expect_identical(sds, as.SlingshotDataSet(sce))
+    expect_identical(sds, SlingshotDataSet(sce))
     pto2 <- as.PseudotimeOrdering(sce)
     expect_identical(slingPseudotime(pto), slingPseudotime(pto2))
     expect_identical(slingCurveWeights(pto), slingCurveWeights(pto2))    
@@ -711,6 +741,7 @@ test_that("conversion functions work as expected", {
     # no Slingshot results
     int_metadata(sce)$slingshot <- NULL
     expect_error(as.SlingshotDataSet(sce), 'No slingshot results found')
+    expect_error(SlingshotDataSet(sce), 'No slingshot results found')
     
     # partial results
     sds <- as.SlingshotDataSet(getLineages(rd, cl))
