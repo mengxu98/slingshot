@@ -474,8 +474,10 @@ test_that("slingshot works with ClusterExperiment objects", {
     
 })
 
-test_that("2D Plotting functions don't give errors", {
-    pto <- slingshot(rd,cl, start.clus = '1', end.clus = c('4','5'))
+test_that("2D plotting functions don't give errors", {
+    pto1 <- getLineages(rd,cl, start.clus = '1', end.clus = c('4','5'))
+    sds1 <- as.SlingshotDataSet(pto1)
+    pto <- getCurves(pto1)
     sds <- as.SlingshotDataSet(pto)
     
     u <- matrix(rpois(140*50, 5), nrow=50)
@@ -483,6 +485,7 @@ test_that("2D Plotting functions don't give errors", {
     reducedDims(sce) <- SimpleList(PCA = rd)
     sce <- slingshot(sce, clusterLabels = cl)
 
+    plot(sds1)
     plot(sds)
     expect_error(plot(sds, linInd = 3:5),
                  'None of the provided lineage indices')
@@ -491,24 +494,67 @@ test_that("2D Plotting functions don't give errors", {
     lines(sds, linInd = 2)
     lines(sds, type = "lineages", show.constraints = TRUE)
     lines(sds, type = "lineages", show.constraints = TRUE, linInd = c(1,3))
-    pairs(sds, lower.panel = TRUE)
+    pairs(sds, lower.panel = TRUE, main = 'Slingshot')
     pairs(sds, lower.panel = TRUE, type = "lineages", show.constraints = TRUE)
 })
 
-test_that("3D Plotting functions don't give errors", {
+test_that("2D plotting functions give expected errors", {
+    sds0 <- newSlingshotDataSet(rd, cl)
+    pto1 <- getLineages(rd,cl, start.clus = '1', end.clus = c('4','5'))
+    sds1 <- as.SlingshotDataSet(pto1)
+    pto <- getCurves(pto1)
+    sds <- as.SlingshotDataSet(pto)
+    
+    u <- matrix(rpois(140*50, 5), nrow=50)
+    sce <- SingleCellExperiment(assays=list(counts=u))
+    reducedDims(sce) <- SimpleList(PCA = rd)
+    sce <- slingshot(sce, clusterLabels = cl)
+    
+    expect_error(plot(sds0), 'No lineages or curves detected')
+    expect_error(plot(sds, type = 'foo'), 'Unrecognized type argument')
+    expect_error(plot(sds0, type='lineages'), 'No lineages detected')
+    expect_error(plot(sds1, type='curves'), 'No curves detected')
+
+    expect_error(pairs(sds0), 'No lineages or curves detected')
+    expect_error(pairs(sds, type = 'foo'), 'Unrecognized type argument')
+    expect_error(pairs(sds0, type='lineages'), 'No lineages detected')
+    expect_error(pairs(sds1, type='curves'), 'No curves detected')
+    expect_error(pairs(sds, horInd = 4:6), 'invalid argument')
+    expect_error(pairs(sds, verInd = 4:6), 'invalid argument')
+})
+
+test_that("3D plotting functions work as expected", {
     if(! requireNamespace('rgl', quietly = TRUE)){
         skip('rgl package not available.')
     }
     rd3 <- cbind(rd, rnorm(140))
-    sds3 <- as.SlingshotDataSet(slingshot(rd3, cl))
-    plot3d.SlingshotDataSet(sds3)
-    plot3d.SlingshotDataSet(sds3, type = 'lineages')
-    plot3d.SlingshotDataSet(sds3, linInd = 1)
-    plot3d.SlingshotDataSet(sds3, type = 'lineages', linInd = 2:3)
-    expect_error(plot3d.SlingshotDataSet(sds3, linInd = 3:5),
+    sds0 <- newSlingshotDataSet(rd3, cl)
+    pto1 <- getLineages(rd3, cl, start.clus = '1', end.clus = c('4','5'))
+    sds1 <- as.SlingshotDataSet(pto1)
+    pto <- getCurves(pto1)
+    sds <- as.SlingshotDataSet(pto)
+    
+    
+    plot3d.SlingshotDataSet(sds)
+    plot3d.SlingshotDataSet(sds1)
+    plot3d.SlingshotDataSet(sds, type = 'lineages')
+    plot3d.SlingshotDataSet(sds, linInd = 1)
+    plot3d.SlingshotDataSet(sds, type = 'lineages', linInd = 2:3)
+    expect_error(plot3d.SlingshotDataSet(sds, linInd = 3:5),
                  'None of the provided lineage indices')
-    rgl::plot3d(slingReducedDim(sds3))
-    plot3d.SlingshotDataSet(sds3, add = TRUE)
+    rgl::plot3d(slingReducedDim(sds))
+    plot3d.SlingshotDataSet(sds, add = TRUE)
+    
+    # errors
+    expect_error(plot3d.SlingshotDataSet(sds0),
+                 'No lineages or curves detected')
+    expect_error(plot3d.SlingshotDataSet(sds, type = 'foo'),
+                 'Unrecognized type argument')
+    expect_error(plot3d.SlingshotDataSet(sds0, type='lineages'),
+                 'No lineages detected')
+    expect_error(plot3d.SlingshotDataSet(sds1, type='curves'),
+                 'No curves detected')
+    
 })
 
 test_that("predict works as expected", {
