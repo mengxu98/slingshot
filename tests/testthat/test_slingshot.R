@@ -281,8 +281,10 @@ test_that("getCurves works as expected", {
     pto <- getLineages(rd, cl)
     expect_error(getCurves(pto, shrink = 3),
                  'parameter must be logical or numeric between')
-    
-    
+    metadata(pto)$lineages <- NULL
+    metadata(pto)$mst <- NULL
+    metadata(pto)$slingParams <- NULL
+    expect_error(getCurves(pto), 'Lineage information is missing or incomplete')
     
 })
 

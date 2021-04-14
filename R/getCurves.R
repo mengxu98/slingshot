@@ -153,6 +153,11 @@ setMethod(f = "getCurves",
         allow.breaks = TRUE, ...){
 
         pto <- data
+        # check that getLineages was run
+        if(!all(c('lineages','mst','slingParams') %in% names(metadata(pto)))){
+            stop("Lineage information is missing or incomplete. Either run ",
+                 "getLineages() first or use the slingshot() function.")
+        }
         X <- slingReducedDim(pto)
         clusterLabels <- slingClusterLabels(pto)
         lineages <- slingLineages(pto)
@@ -178,61 +183,6 @@ setMethod(f = "getCurves",
         if(shrink < 0 | shrink > 1){
             stop("'shrink' parameter must be logical or numeric between",
                 " 0 and 1")
-        }
-        if(nrow(X)==0){
-            stop('reducedDim has zero rows.')
-        }
-        if(ncol(X)==0){
-            stop('reducedDim has zero columns.')
-        }
-        if(nrow(X) != nrow(clusterLabels)){
-            stop('nrow(reducedDim) must equal nrow(clusterLabels).')
-        }
-        if(any(is.na(X))){
-            stop('reducedDim cannot contain missing values.')
-        }
-        if(!all(apply(X,2,is.numeric))){
-            stop('reducedDim must only contain numeric values.')
-        }
-        if (is.null(rownames(X)) &
-                is.null(rownames(clusterLabels))) {
-            rownames(X) <- paste('Cell', seq_len(nrow(X)), sep = '-')
-            rownames(clusterLabels) <-
-                paste('Cell', seq_len(nrow(X)), sep = '-')
-        }
-        if(is.null(colnames(X))){
-            colnames(X) <- paste('Dim',seq_len(ncol(X)),sep='-')
-        }
-        if(is.null(colnames(clusterLabels))) {
-            colnames(clusterLabels) <- seq_len(ncol(clusterLabels))
-        }
-        if(any(colnames(clusterLabels) == "")){
-            colnames(clusterLabels)[colnames(clusterLabels)==""] <-
-                which(colnames(clusterLabels)=="")
-        }
-        if(any(rownames(X)=='')){
-            miss.ind <- which(rownames(X) == '')
-            rownames(X)[miss.ind] <- paste('Cell',miss.ind,sep='-')
-        }
-        if(any(colnames(X)=='')){
-            miss.ind <- which(colnames(X) == '')
-            colnames(X)[miss.ind] <- paste('Dim',miss.ind,sep='-')
-        }
-        if(is.null(rownames(clusterLabels)) &
-                !is.null(rownames(X))){
-            rownames(clusterLabels) <- rownames(X)
-        }
-        if(is.null(rownames(X)) &
-                !is.null(rownames(clusterLabels))){
-            rownames(X) <- rownames(clusterLabels)
-        }
-        if(any(rowSums(clusterLabels)>1)){
-            rs <- rowSums(clusterLabels)
-            clusterLabels <- clusterLabels / rs
-        }
-        if(any(colSums(clusterLabels)==0)){
-            clusterLabels <- clusterLabels[, colSums(clusterLabels)!=0,
-                drop = FALSE]
         }
         if(is.null(approx_points)){
             if(nrow(X) > 150){
@@ -662,7 +612,7 @@ setMethod(f = "getCurves",
             sce <- data
             if(is.null(colData(sce)$slingshot)){
               stop("No lineage information found. Either run getLineages() ",
-                   "first or use slingshot() function.")
+                   "first or use the slingshot() function.")
             }
             pto <- getCurves(colData(sce)$slingshot, ...)
             # combine slingshot output with SCE
