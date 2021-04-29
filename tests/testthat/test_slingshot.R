@@ -529,6 +529,9 @@ test_that("3D plotting functions work as expected", {
     if(! requireNamespace('rgl', quietly = TRUE)){
         skip('rgl package not available.')
     }
+    if (Sys.info()[["sysname"]] == "Darwin"){
+        skip('latest rgl is causing problem on Mac')
+    }
     rd3 <- cbind(rd, rnorm(140))
     sds0 <- newSlingshotDataSet(rd3, cl)
     pto1 <- getLineages(rd3, cl, start.clus = '1', end.clus = c('4','5'))
