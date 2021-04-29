@@ -526,7 +526,7 @@ test_that("2D plotting functions give expected errors", {
 })
 
 test_that("3D plotting functions work as expected", {
-    if(! requireNamespace('rgl', quietly = TRUE)){
+    if(! requireNamespace('rgl')){ # , quietly = TRUE
         skip('rgl package not available.')
     }
     if (Sys.info()[["sysname"]] == "Darwin"){
