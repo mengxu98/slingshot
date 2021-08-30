@@ -367,6 +367,9 @@ setMethod(
                 t <- pc$lambda
                 return(t)
             }, rep(0,nrow(x)))
+            rownames(pst) <- rownames(x)
+            colnames(pst) <- names(slingCurves(x))
+            return(pst)
         }
     }
 )
