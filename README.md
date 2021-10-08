@@ -14,6 +14,9 @@ if (!requireNamespace("BiocManager", quietly=TRUE))
 BiocManager::install("kstreet13/slingshot")
 ```
 
+## Python Version
+An implementation of the Slingshot algorithm in `python` can be found here: https://github.com/mossjacob/pyslingshot
+
 ## Issues and bug reports
 
 Please use https://github.com/kstreet13/slingshot/issues to submit issues, bug reports, and comments.
