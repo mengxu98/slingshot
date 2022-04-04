@@ -169,7 +169,6 @@ setMethod(f = "getLineages",
         }
         
         # set up, remove unclustered cells (-1's)
-        X.original <- X
         clusterLabels <- clusterLabels[, colnames(clusterLabels) != -1,
             drop = FALSE]
         clusters <- colnames(clusterLabels)
@@ -192,7 +191,9 @@ setMethod(f = "getLineages",
             
             lineages <- list('Lineage1' = clusters)
         }else{
-            g <- createClusterMST(x = X, clusters = clusterLabels,
+            use <- which(rowSums(clusterLabels) > 0)
+            g <- createClusterMST(x = X[use, ,drop=FALSE], 
+                                  clusters = clusterLabels[use, ,drop=FALSE],
                                   outgroup = omega, outscale = omega_scale,
                                   endpoints = end.clus, 
                                   dist.method = dist.method, 

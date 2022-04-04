@@ -98,6 +98,7 @@ test_that("getLineages works for different input types", {
     require(SingleCellExperiment)
     u <- matrix(rpois(140*50, 5), nrow=50)
     sce <- SingleCellExperiment(assays=list(counts=u))
+    colnames(sce) <- rownames(rd)
     expect_error(getLineages(sce), 'No dimensionality reduction found')
 
     reducedDims(sce) <- SimpleList(PCA = rd,
@@ -230,6 +231,7 @@ test_that("getCurves works as expected", {
     require(SingleCellExperiment)
     u <- matrix(rpois(140*50, 5), nrow=50)
     sce <- SingleCellExperiment(assays=list(counts=u))
+    colnames(sce) <- rownames(rd)
     reducedDims(sce) <- SimpleList(PCA = rd,
                                    tSNE = matrix(rnorm(140*2),ncol=2))
     expect_error(getCurves(sce), 'No lineage information found')
@@ -381,6 +383,7 @@ test_that("slingshot works for different input types", {
     require(SingleCellExperiment)
     u <- matrix(rpois(140*50, 5), nrow=50)
     sce <- SingleCellExperiment(assays=list(counts=u))
+    colnames(sce) <- rownames(rd)
     expect_error(slingshot(sce), 'No dimensionality reduction found')
 
     reducedDims(sce) <- SimpleList(PCA = rd,
@@ -438,6 +441,7 @@ test_that("slingshot works with ClusterExperiment objects", {
     require(clusterExperiment)
     u <- matrix(rpois(140*50, 5), nrow=50)
     sce <- SingleCellExperiment(assays=list(counts=u))
+    colnames(sce) <- rownames(rd)
     reducedDims(sce) <- SimpleList(PCA = rd,
                                    tSNE = matrix(rnorm(140*2),ncol=2))
     ce <- clusterExperiment::ClusterExperiment(sce, factor(cl),
@@ -484,6 +488,7 @@ test_that("2D plotting functions don't give errors", {
     
     u <- matrix(rpois(140*50, 5), nrow=50)
     sce <- SingleCellExperiment(assays=list(counts=u))
+    colnames(sce) <- rownames(rd)
     reducedDims(sce) <- SimpleList(PCA = rd)
     sce <- slingshot(sce, clusterLabels = cl)
 
@@ -509,6 +514,7 @@ test_that("2D plotting functions give expected errors", {
     
     u <- matrix(rpois(140*50, 5), nrow=50)
     sce <- SingleCellExperiment(assays=list(counts=u))
+    colnames(sce) <- rownames(rd)
     reducedDims(sce) <- SimpleList(PCA = rd)
     sce <- slingshot(sce, clusterLabels = cl)
     
@@ -715,6 +721,7 @@ test_that("embedCurves works as expected", {
     require(SingleCellExperiment)
     u <- matrix(rpois(140*50, 5), nrow=50)
     sce <- SingleCellExperiment(assays=list(counts=u))
+    colnames(sce) <- rownames(rd)
     reducedDims(sce) <- SimpleList(PCA = rd,
                                    tSNE = tsne)
     # before running slingshot
@@ -750,6 +757,7 @@ test_that("branchID functions work as expected", {
     require(SingleCellExperiment)
     u <- matrix(rpois(140*50, 5), nrow=50)
     sce <- SingleCellExperiment(assays=list(counts=u))
+    colnames(sce) <- rownames(rd)
     reducedDims(sce) <- SimpleList(PCA = rd)
     sce <- slingshot(sce, cl, 'PCA')
     
@@ -779,6 +787,7 @@ test_that("conversion functions work as expected", {
     require(SingleCellExperiment)
     u <- matrix(rpois(140*50, 5), nrow=50)
     sce <- SingleCellExperiment(assays=list(counts=u))
+    colnames(sce) <- rownames(rd)
     reducedDims(sce) <- SimpleList(PCA = rd,
                                    tSNE = matrix(rnorm(140*2),ncol=2))
     sce <- slingshot(sce, reducedDim = 'PCA', clusterLabels = cl)
