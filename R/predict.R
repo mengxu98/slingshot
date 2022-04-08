@@ -86,6 +86,7 @@ setMethod(f = "predict",
         W.prob.orig <- W.orig/rowSums(W.orig)
         W.prob.orig[is.nan(W.prob.orig)] <- 0
         WrnkD.orig <- cumsum(W.prob.orig[ordD.orig]) / sum(W.prob.orig)
+        WrnkD.orig[WrnkD.orig > 1] <- 1
         Z.orig <- D.orig
         Z.orig[ordD.orig] <- WrnkD.orig
 
