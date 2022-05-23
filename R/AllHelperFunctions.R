@@ -431,8 +431,8 @@ setMethod(
 setMethod(
     f = "slingCurveWeights",
     signature = "SingleCellExperiment",
-    definition = function(x){
-        return(slingCurveWeights(colData(x)$slingshot))
+    definition = function(x, as.probs = FALSE){
+        return(slingCurveWeights(colData(x)$slingshot, as.probs = as.probs))
     }
 )
 #' @rdname slingPseudotime

@@ -23,7 +23,7 @@ slingCurveWeights(x, ...)
 
 \S4method{slingCurveWeights}{PseudotimeOrdering}(x, as.probs = FALSE)
 
-\S4method{slingCurveWeights}{SingleCellExperiment}(x)
+\S4method{slingCurveWeights}{SingleCellExperiment}(x, as.probs = FALSE)
 
 \S4method{slingCurveWeights}{SlingshotDataSet}(x, as.probs = FALSE)
 }
