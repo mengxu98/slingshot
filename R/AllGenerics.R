@@ -355,6 +355,17 @@ setGeneric(name = "slingCurveWeights",
            signature = "x",
            def = function(x, ...) standardGeneric("slingCurveWeights"))
 
+#' @rdname slingPseudotime
+#' @return \code{slingAvgPseudotime}: a length \code{n} vector of average cell
+#'   pseudotimes, where the average is a weighted average across lineages,
+#'   weighted by the assignment weights.
+#' @examples
+#' slingAvgPseudotime(pto)
+#' @export
+setGeneric(name = "slingAvgPseudotime",
+           signature = "x",
+           def = function(x, ...) standardGeneric("slingAvgPseudotime"))
+
 #' @title Embed trajectory in new space
 #' @rdname embedCurves
 #' @export

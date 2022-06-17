@@ -640,6 +640,8 @@ test_that("Helper functions work as expected", {
         abs(rowSums(slingCurveWeights(sds, as.probs = TRUE))-1) < .001))
     expect_true(all(
         abs(rowSums(slingCurveWeights(pto, as.probs = TRUE))-1) < .001))
+    expect_equal(length(slingAvgPseudotime(sds)), 140)
+    expect_equal(length(slingAvgPseudotime(pto)), 140)
     
     # newSlingshotDataSet
     # matrix / factor

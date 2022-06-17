@@ -454,6 +454,15 @@ setMethod(
         return(weights)
     }
 )
+#' @rdname slingPseudotime
+#' @export
+setMethod(
+    f = "slingAvgPseudotime",
+    signature = "ANY",
+    definition = function(x){
+        return(rowSums(slingPseudotime(x, na = FALSE) * 
+                           slingCurveWeights(x, as.probs = TRUE)))
+    })
 
 #' @rdname SlingshotDataSet
 #' @export

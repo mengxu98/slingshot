@@ -3,17 +3,21 @@
 \name{slingPseudotime}
 \alias{slingPseudotime}
 \alias{slingCurveWeights}
+\alias{slingAvgPseudotime}
 \alias{slingPseudotime,PseudotimeOrdering-method}
 \alias{slingPseudotime,SingleCellExperiment-method}
 \alias{slingPseudotime,SlingshotDataSet-method}
 \alias{slingCurveWeights,PseudotimeOrdering-method}
 \alias{slingCurveWeights,SingleCellExperiment-method}
 \alias{slingCurveWeights,SlingshotDataSet-method}
+\alias{slingAvgPseudotime,ANY-method}
 \title{Get Slingshot pseudotime values}
 \usage{
 slingPseudotime(x, ...)
 
 slingCurveWeights(x, ...)
+
+slingAvgPseudotime(x, ...)
 
 \S4method{slingPseudotime}{PseudotimeOrdering}(x, na = TRUE)
 
@@ -26,6 +30,8 @@ slingCurveWeights(x, ...)
 \S4method{slingCurveWeights}{SingleCellExperiment}(x, as.probs = FALSE)
 
 \S4method{slingCurveWeights}{SlingshotDataSet}(x, as.probs = FALSE)
+
+\S4method{slingAvgPseudotime}{ANY}(x)
 }
 \arguments{
 \item{x}{an object containing \code{\link{slingshot}} output.}
@@ -49,6 +55,10 @@ two lineages will have two weights of \code{0.5}).}
 
 \code{slingCurveWeights}: an \code{n} by \code{L} matrix of cell
   weights along each lineage.
+
+\code{slingAvgPseudotime}: a length \code{n} vector of average cell
+  pseudotimes, where the average is a weighted average across lineages,
+  weighted by the assignment weights.
 }
 \description{
 Extract the matrix of pseudotime values or cells' weights along
@@ -61,4 +71,5 @@ cl <- slingshotExample$cl
 pto <- slingshot(rd, cl, start.clus = '1')
 slingPseudotime(pto)
 slingCurveWeights(pto)
+slingAvgPseudotime(pto)
 }
