@@ -535,21 +535,47 @@ lines(SlingshotDataSet(sce5), lwd=2, col='black')
 In some cases, we are interested in identifying multiple, disjoint trajectories. Slingshot handles this problem in the initial MST construction by introducing an artificial cluster, called `omega`. This artificial cluster is separated from every real cluster by a fixed length, meaning that the maximum distance between any two real clusters is twice this length. Practically, this sets a limit on the maximum edge length allowable in the MST. Setting `omega = TRUE` will implement a rule of thumb whereby the maximum allowable edge length is equal to $3$ times the median edge length of the MST constructed without the artificial cluster (note: this is equivalent to saying that the default value for `omega_scale` is $1.5$).
 
 ```{r sling_omega}
-    rd2 <- rbind(rd, cbind(rd[,2]-12, rd[,1]-6))
-    cl2 <- c(cl, cl + 10)
-    pto2 <- slingshot(rd2, cl2, omega = TRUE, start.clus = c(1,11))
-    
-    plot(rd2, pch=16, asp = 1,
-         col = c(brewer.pal(9,"Set1"), brewer.pal(8,"Set2"))[cl2])
-    lines(SlingshotDataSet(pto2), type = 'l', lwd=2, col='black')
+rd2 <- rbind(rd, cbind(rd[,2]-12, rd[,1]-6))
+cl2 <- c(cl, cl + 10)
+pto2 <- slingshot(rd2, cl2, omega = TRUE, start.clus = c(1,11))
+
+plot(rd2, pch=16, asp = 1,
+     col = c(brewer.pal(9,"Set1"), brewer.pal(8,"Set2"))[cl2])
+lines(SlingshotDataSet(pto2), type = 'l', lwd=2, col='black')
 ```
 
 After fitting the MST, `slingshot` proceeds to fit simultaneous principal curves as usual, with each trajectory being handled separately.
 
 ```{r sling_multtraj}
-    plot(rd2, pch=16, asp = 1,
-         col = c(brewer.pal(9,"Set1"), brewer.pal(8,"Set2"))[cl2])
-    lines(SlingshotDataSet(pto2), lwd=2, col='black')
+plot(rd2, pch=16, asp = 1,
+     col = c(brewer.pal(9,"Set1"), brewer.pal(8,"Set2"))[cl2])
+lines(SlingshotDataSet(pto2), lwd=2, col='black')
+```
+
+
+## Projecting Cells onto Existing Trajectories
+
+Sometimes, we may want to use only a subset of the cells to determine a trajectory, or we may get new data that we want to project onto an existing trajectory. In either case, we will need a way to determine the positions of new cells along a previously constructed trajectory. For this, we can use the `predict` function (since this function is not native to `slingshot`, see ``?`predict,PseudotimeOrdering-method` `` for documentation).
+
+```{r sling_predict}
+# our original PseudotimeOrdering
+pto <- sce$slingshot
+
+# simulate new cells in PCA space
+newPCA <- reducedDim(sce, 'PCA') + rnorm(2*ncol(sce), sd = 2)
+
+# project onto trajectory
+newPTO <- slingshot::predict(pto, newPCA)
+```
+
+This will yield a new, hybrid object with the trajectories (curves) from the original data, but the pseudotime values and weights for the new cells. For reference, the original cells are shown in grey below, but they are not included in the output from `predict`.
+
+```{r plot_sling_predict}
+newplotcol <- colors[cut(slingPseudotime(newPTO)[,1], breaks=100)]
+plot(reducedDims(sce)$PCA, col = 'grey', bg = 'grey', pch=21, asp = 1,
+     xlim = range(newPCA[,1]), ylim = range(newPCA[,2]))
+lines(SlingshotDataSet(sce), lwd=2, col = 'black')
+points(slingReducedDim(newPTO), col = newplotcol, pch = 16)
 ```
 
 
