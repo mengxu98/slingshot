@@ -22,13 +22,13 @@ slingReducedDim(x)
 A matrix of coordinates.
 }
 \description{
-Extract the dimensionality reduction used by 
+Extract the dimensionality reduction used by
 \code{\link{slingshot}}.
 }
 \examples{
 data("slingshotExample")
 rd <- slingshotExample$rd
 cl <- slingshotExample$cl
-pto <- slingshot(rd, cl, start.clus = '1')
+pto <- slingshot(rd, cl, start.clus = "1")
 slingReducedDim(pto)
 }

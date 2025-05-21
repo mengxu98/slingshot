@@ -36,6 +36,6 @@ Extract the minimum spanning tree from an object containing
 data("slingshotExample")
 rd <- slingshotExample$rd
 cl <- slingshotExample$cl
-pto <- slingshot(rd, cl, start.clus = '1')
+pto <- slingshot(rd, cl, start.clus = "1")
 slingMST(pto)
 }

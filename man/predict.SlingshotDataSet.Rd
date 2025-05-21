@@ -41,7 +41,7 @@ This function is a method for the generic function \code{predict}
 data("slingshotExample")
 rd <- slingshotExample$rd
 cl <- slingshotExample$cl
-pto <- slingshot(rd, cl, start.clus = '1')
+pto <- slingshot(rd, cl, start.clus = "1")
 
 x <- cbind(runif(100, min = -5, max = 10), runif(100, min = -4, max = 4))
 predict(pto, x)

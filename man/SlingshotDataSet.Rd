@@ -36,11 +36,13 @@ data("slingshotExample")
 rd <- slingshotExample$rd
 cl <- slingshotExample$cl
 library(SingleCellExperiment)
-u <- matrix(rpois(140*50, 5), nrow = 50)
-sce <- SingleCellExperiment(assays = list(counts = u), 
-                            reducedDims = SimpleList(PCA = rd),
-                            colData = data.frame(clus = cl))
-sce <- slingshot(sce, clusterLabels = 'clus', reducedDim = 'PCA')
+u <- matrix(rpois(140 * 50, 5), nrow = 50)
+sce <- SingleCellExperiment(
+    assays = list(counts = u),
+    reducedDims = SimpleList(PCA = rd),
+    colData = data.frame(clus = cl)
+)
+sce <- slingshot(sce, clusterLabels = "clus", reducedDim = "PCA")
 SlingshotDataSet(sce)
 
 }

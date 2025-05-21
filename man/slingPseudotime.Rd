@@ -68,7 +68,7 @@ Extract the matrix of pseudotime values or cells' weights along
 data("slingshotExample")
 rd <- slingshotExample$rd
 cl <- slingshotExample$cl
-pto <- slingshot(rd, cl, start.clus = '1')
+pto <- slingshot(rd, cl, start.clus = "1")
 slingPseudotime(pto)
 slingCurveWeights(pto)
 slingAvgPseudotime(pto)

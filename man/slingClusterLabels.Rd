@@ -29,6 +29,6 @@ Extract the cluster labels used by \code{\link{slingshot}}.
 data("slingshotExample")
 rd <- slingshotExample$rd
 cl <- slingshotExample$cl
-pto <- slingshot(rd, cl, start.clus = '1')
+pto <- slingshot(rd, cl, start.clus = "1")
 slingClusterLabels(pto)
 }

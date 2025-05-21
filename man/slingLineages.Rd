@@ -29,6 +29,6 @@ Extract lineages (represented by ordered sets of clusters)
 data("slingshotExample")
 rd <- slingshotExample$rd
 cl <- slingshotExample$cl
-pto <- slingshot(rd, cl, start.clus = '1')
+pto <- slingshot(rd, cl, start.clus = "1")
 slingLineages(pto)
 }

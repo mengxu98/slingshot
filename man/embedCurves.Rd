@@ -100,8 +100,8 @@ Note that non-linear dimensionality reduction techniques (such as
 data("slingshotExample")
 rd <- slingshotExample$rd
 cl <- slingshotExample$cl
-pto <- slingshot(rd, cl, start.clus = '1')
-rd2 <- cbind(rd[,2] + rnorm(nrow(rd)), -rd[,1] + rnorm(nrow(rd)))
+pto <- slingshot(rd, cl, start.clus = "1")
+rd2 <- cbind(rd[, 2] + rnorm(nrow(rd)), -rd[, 1] + rnorm(nrow(rd)))
 pto.new <- embedCurves(pto, rd2)
 pto.new
 

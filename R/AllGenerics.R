@@ -67,7 +67,7 @@
 #' @seealso \code{\link[TrajectoryUtils]{PseudotimeOrdering}}
 #'
 #' @examples
-#' rd <- matrix(data=rnorm(100), ncol=2)
+#' rd <- matrix(data = rnorm(100), ncol = 2)
 #' cl <- sample(letters[seq_len(5)], 50, replace = TRUE)
 #' sds <- newSlingshotDataSet(rd, cl)
 #'
@@ -76,8 +76,8 @@
 #' @export
 setGeneric(
     name = "newSlingshotDataSet",
-    signature = c('reducedDim','clusterLabels'),
-    def = function(reducedDim,  clusterLabels, ...) {
+    signature = c("reducedDim", "clusterLabels"),
+    def = function(reducedDim, clusterLabels, ...) {
         standardGeneric("newSlingshotDataSet")
     }
 )
@@ -93,26 +93,28 @@ setGeneric(
 #' @param ... additional arguments to pass to object-specific methods.
 #' @return A \code{SlingshotDataSet} object containing the output of
 #' \code{slingshot}.
-#' 
+#'
 #' @seealso \code{\link[TrajectoryUtils]{PseudotimeOrdering}},
 #'   \code{\link{as.SlingshotDataSet}}
 #'
-#' @examples 
+#' @examples
 #' data("slingshotExample")
 #' rd <- slingshotExample$rd
 #' cl <- slingshotExample$cl
 #' library(SingleCellExperiment)
-#' u <- matrix(rpois(140*50, 5), nrow = 50)
-#' sce <- SingleCellExperiment(assays = list(counts = u), 
-#'                             reducedDims = SimpleList(PCA = rd),
-#'                             colData = data.frame(clus = cl))
-#' sce <- slingshot(sce, clusterLabels = 'clus', reducedDim = 'PCA')
+#' u <- matrix(rpois(140 * 50, 5), nrow = 50)
+#' sce <- SingleCellExperiment(
+#'     assays = list(counts = u),
+#'     reducedDims = SimpleList(PCA = rd),
+#'     colData = data.frame(clus = cl)
+#' )
+#' sce <- slingshot(sce, clusterLabels = "clus", reducedDim = "PCA")
 #' SlingshotDataSet(sce)
-#' 
+#'
 #' @export
 setGeneric(
     name = "SlingshotDataSet",
-    signature = c('data'),
+    signature = c("data"),
     def = function(data, ...) {
         standardGeneric("SlingshotDataSet")
     }
@@ -125,7 +127,7 @@ setGeneric(
 #' @export
 setGeneric(
     name = "getLineages",
-    signature = c('data','clusterLabels'),
+    signature = c("data", "clusterLabels"),
     def = function(data,
                    clusterLabels, ...) {
         standardGeneric("getLineages")
@@ -137,7 +139,7 @@ setGeneric(
 #' @export
 setGeneric(
     name = "getCurves",
-    signature = 'data',
+    signature = "data",
     def = function(data, ...) {
         standardGeneric("getCurves")
     }
@@ -149,7 +151,7 @@ setGeneric(
 #' @export
 setGeneric(
     name = "slingshot",
-    signature = c('data', 'clusterLabels'),
+    signature = c("data", "clusterLabels"),
     def = function(data,
                    clusterLabels, ...) {
         standardGeneric("slingshot")
@@ -168,17 +170,19 @@ setGeneric(
 #' data("slingshotExample")
 #' rd <- slingshotExample$rd
 #' cl <- slingshotExample$cl
-#' pto <- slingshot(rd, cl, start.clus = '1')
+#' pto <- slingshot(rd, cl, start.clus = "1")
 #' slingLineages(pto)
 #' @export
-setGeneric(name = "slingLineages",
-           signature = "x",
-           def = function(x) standardGeneric("slingLineages"))
+setGeneric(
+    name = "slingLineages",
+    signature = "x",
+    def = function(x) standardGeneric("slingLineages")
+)
 
 #' @title Extract dimensionality reduction used by Slingshot
 #' @name slingReducedDim
 #'
-#' @description Extract the dimensionality reduction used by 
+#' @description Extract the dimensionality reduction used by
 #' \code{\link{slingshot}}.
 #'
 #' @param x an object containing \code{\link{slingshot}} output.
@@ -187,12 +191,14 @@ setGeneric(name = "slingLineages",
 #' data("slingshotExample")
 #' rd <- slingshotExample$rd
 #' cl <- slingshotExample$cl
-#' pto <- slingshot(rd, cl, start.clus = '1')
+#' pto <- slingshot(rd, cl, start.clus = "1")
 #' slingReducedDim(pto)
 #' @export
-setGeneric(name = "slingReducedDim",
-           signature = "x",
-           def = function(x) standardGeneric("slingReducedDim"))
+setGeneric(
+    name = "slingReducedDim",
+    signature = "x",
+    def = function(x) standardGeneric("slingReducedDim")
+)
 
 #' @title Extract cluster labels used by Slingshot
 #' @name slingClusterLabels
@@ -206,12 +212,14 @@ setGeneric(name = "slingReducedDim",
 #' data("slingshotExample")
 #' rd <- slingshotExample$rd
 #' cl <- slingshotExample$cl
-#' pto <- slingshot(rd, cl, start.clus = '1')
+#' pto <- slingshot(rd, cl, start.clus = "1")
 #' slingClusterLabels(pto)
 #' @export
-setGeneric(name = "slingClusterLabels",
-           signature = "x",
-           def = function(x) standardGeneric("slingClusterLabels"))
+setGeneric(
+    name = "slingClusterLabels",
+    signature = "x",
+    def = function(x) standardGeneric("slingClusterLabels")
+)
 
 #' @title Extract Slingshot minimum spanning tree
 #' @name slingMST
@@ -227,12 +235,14 @@ setGeneric(name = "slingClusterLabels",
 #' data("slingshotExample")
 #' rd <- slingshotExample$rd
 #' cl <- slingshotExample$cl
-#' pto <- slingshot(rd, cl, start.clus = '1')
+#' pto <- slingshot(rd, cl, start.clus = "1")
 #' slingMST(pto)
 #' @export
-setGeneric(name = "slingMST",
-           signature = "x",
-           def = function(x, ...) standardGeneric("slingMST"))
+setGeneric(
+    name = "slingMST",
+    signature = "x",
+    def = function(x, ...) standardGeneric("slingMST")
+)
 
 #' @title Methods for parameters used by Slingshot
 #' @name slingParams
@@ -242,15 +252,15 @@ setGeneric(name = "slingMST",
 #' @param x an object containing \code{\link{slingshot}} output.
 #' @return The list of additional parameters used by Slingshot. These include
 #'   parameters related to the cluster-based minimum spanning tree:
-#'   \itemize{ 
+#'   \itemize{
 #'   \item{\code{start.clus}}{ character. The label of the root cluster, or a
 #'   vector of cluster labels giving the root clusters of each disjoint
 #'   component of the graph.}
-#'   \item{\code{end.clus}}{ character. Vector of cluster labels indicating 
+#'   \item{\code{end.clus}}{ character. Vector of cluster labels indicating
 #'   terminal clusters.}
-#'   \item{\code{start.given}}{ logical. A logical value 
-#'   indicating whether the initial state was pre-specified.} 
-#'   \item{\code{end.given}}{ logical. A vector of logical values indicating 
+#'   \item{\code{start.given}}{ logical. A logical value
+#'   indicating whether the initial state was pre-specified.}
+#'   \item{\code{end.given}}{ logical. A vector of logical values indicating
 #'   whether each terminal state was pre-specified}
 #'   \item{\code{omega}}{ numeric or logical. Granularity parameter determining
 #'   the maximum edge length for building the MST. See
@@ -259,49 +269,51 @@ setGeneric(name = "slingMST",
 #'   edge length when \code{omega = TRUE}. See \code{\link{getLineages}}.} }
 #'   They may also specify how simultaneous principal curves were constructed
 #'   (for a complete listing, see \code{\link{getCurves}}:
-#'   \itemize{ 
+#'   \itemize{
 #'   \item{\code{shrink}}{ logical or numeric between 0 and 1. Determines
 #'   whether and how much to shrink branching lineages toward their shared
 #'   average curve.}
-#'   \item{\code{extend}}{ character. Specifies the method for handling 
-#'   root and leaf clusters of lineages when constructing the initial, 
+#'   \item{\code{extend}}{ character. Specifies the method for handling
+#'   root and leaf clusters of lineages when constructing the initial,
 #'   piece-wise linear curve. Accepted values are 'y' (default), 'n', and 'pc1'.
-#'   See \code{\link{getCurves}} for details.} 
-#'   \item{\code{reweight}}{ logical. 
+#'   See \code{\link{getCurves}} for details.}
+#'   \item{\code{reweight}}{ logical.
 #'   Indicates whether to allow cells shared
 #'   between lineages to be reweighted during curve-fitting. If \code{TRUE},
 #'   cells shared between lineages will be iteratively reweighted based on the
-#'   quantiles of their projection distances to each curve.} 
-#'   \item{\code{reassign}}{ logical. 
+#'   quantiles of their projection distances to each curve.}
+#'   \item{\code{reassign}}{ logical.
 #'   Indicates whether to reassign cells to lineages at each
 #'   iteration. If \code{TRUE}, cells will be added to a lineage when their
 #'   projection distance to the curve is less than the median distance for all
 #'   cells currently assigned to the lineage. Additionally, shared cells will be
 #'   removed from a lineage if their projection distance to the curve is above
 #'   the 90th percentile and their weight along the curve is less than
-#'   \code{0.1}.} 
-#'   \item{\code{shrink.method}}{ character. 
-#'   Denotes how to determine the amount of shrinkage for a branching lineage. 
-#'   Accepted values are the same as for \code{kernel} in  the \code{density} 
-#'   function (default is \code{"cosine"}), as well as \code{"tricube"} and 
+#'   \code{0.1}.}
+#'   \item{\code{shrink.method}}{ character.
+#'   Denotes how to determine the amount of shrinkage for a branching lineage.
+#'   Accepted values are the same as for \code{kernel} in  the \code{density}
+#'   function (default is \code{"cosine"}), as well as \code{"tricube"} and
 #'   \code{"density"}. See \code{\link{getCurves}} for details.}
 #'   \item{approx_points}{ numeric. Number of points to use in estimating
 #'   curves. See \code{\link{getCurves}} for details.} \item{allow.breaks}{
 #'   logical. Whether to allow curves that diverge very early on in a trajectory
 #'   to have different starting points.}
-#'   \item{Other parameters specified by 
+#'   \item{Other parameters specified by
 #'   \code{\link[princurve]{principal_curve}}}. }
-#' 
+#'
 #' @examples
 #' data("slingshotExample")
 #' rd <- slingshotExample$rd
 #' cl <- slingshotExample$cl
-#' pto <- slingshot(rd, cl, start.clus = '1')
+#' pto <- slingshot(rd, cl, start.clus = "1")
 #' slingParams(pto)
 #' @export
-setGeneric(name = "slingParams",
-           signature = "x",
-           def = function(x) standardGeneric("slingParams"))
+setGeneric(
+    name = "slingParams",
+    signature = "x",
+    def = function(x) standardGeneric("slingParams")
+)
 
 #' @title Extract simultaneous principal curves
 #' @name slingCurves
@@ -316,12 +328,14 @@ setGeneric(name = "slingParams",
 #' data("slingshotExample")
 #' rd <- slingshotExample$rd
 #' cl <- slingshotExample$cl
-#' pto <- slingshot(rd, cl, start.clus = '1')
+#' pto <- slingshot(rd, cl, start.clus = "1")
 #' slingCurves(pto)
 #' @export
-setGeneric(name = "slingCurves",
-           signature = "x",
-           def = function(x, ...) standardGeneric("slingCurves"))
+setGeneric(
+    name = "slingCurves",
+    signature = "x",
+    def = function(x, ...) standardGeneric("slingCurves")
+)
 
 
 #' @title Get Slingshot pseudotime values
@@ -338,12 +352,14 @@ setGeneric(name = "slingCurves",
 #' data("slingshotExample")
 #' rd <- slingshotExample$rd
 #' cl <- slingshotExample$cl
-#' pto <- slingshot(rd, cl, start.clus = '1')
+#' pto <- slingshot(rd, cl, start.clus = "1")
 #' slingPseudotime(pto)
 #' @export
-setGeneric(name = "slingPseudotime",
-           signature = "x",
-           def = function(x, ...) standardGeneric("slingPseudotime"))
+setGeneric(
+    name = "slingPseudotime",
+    signature = "x",
+    def = function(x, ...) standardGeneric("slingPseudotime")
+)
 
 #' @rdname slingPseudotime
 #' @return \code{slingCurveWeights}: an \code{n} by \code{L} matrix of cell
@@ -351,9 +367,11 @@ setGeneric(name = "slingPseudotime",
 #' @examples
 #' slingCurveWeights(pto)
 #' @export
-setGeneric(name = "slingCurveWeights",
-           signature = "x",
-           def = function(x, ...) standardGeneric("slingCurveWeights"))
+setGeneric(
+    name = "slingCurveWeights",
+    signature = "x",
+    def = function(x, ...) standardGeneric("slingCurveWeights")
+)
 
 #' @rdname slingPseudotime
 #' @return \code{slingAvgPseudotime}: a length \code{n} vector of average cell
@@ -362,49 +380,57 @@ setGeneric(name = "slingCurveWeights",
 #' @examples
 #' slingAvgPseudotime(pto)
 #' @export
-setGeneric(name = "slingAvgPseudotime",
-           signature = "x",
-           def = function(x, ...) standardGeneric("slingAvgPseudotime"))
+setGeneric(
+    name = "slingAvgPseudotime",
+    signature = "x",
+    def = function(x, ...) standardGeneric("slingAvgPseudotime")
+)
 
 #' @title Embed trajectory in new space
 #' @rdname embedCurves
 #' @export
-setGeneric(name = "embedCurves",
-           signature = c("x", "newDimRed"),
-           def = function(x, newDimRed, ...) standardGeneric("embedCurves"))
+setGeneric(
+    name = "embedCurves",
+    signature = c("x", "newDimRed"),
+    def = function(x, newDimRed, ...) standardGeneric("embedCurves")
+)
 
 #' @title Get slingshot branch labels
 #' @rdname slingBranchID
 #' @param ... additional arguments passed to object-specific methods.
 #' @export
-setGeneric(name = "slingBranchID",
-           signature = c("x"),
-           def = function(x, ...) standardGeneric("slingBranchID"))
+setGeneric(
+    name = "slingBranchID",
+    signature = c("x"),
+    def = function(x, ...) standardGeneric("slingBranchID")
+)
 
 #' @title Construct graph of slingshot branch labels
 #' @rdname slingBranchGraph
 #' @param ... additional arguments passed to object-specific methods.
 #' @export
-setGeneric(name = "slingBranchGraph",
-           signature = c("x"),
-           def = function(x, ...) standardGeneric("slingBranchGraph"))
+setGeneric(
+    name = "slingBranchGraph",
+    signature = c("x"),
+    def = function(x, ...) standardGeneric("slingBranchGraph")
+)
 
 #' @title Conversion to SlingshotDataSet
 #' @rdname as.SlingshotDataSet
 #' @param ... additional arguments passed to object-specific methods.
 #' @export
-setGeneric(name = "as.SlingshotDataSet",
-           signature = c("x"),
-           def = function(x, ...) standardGeneric("as.SlingshotDataSet"))
+setGeneric(
+    name = "as.SlingshotDataSet",
+    signature = c("x"),
+    def = function(x, ...) standardGeneric("as.SlingshotDataSet")
+)
 
 #' @title Conversion to PseudotimeOrdering
 #' @rdname as.PseudotimeOrdering
 #' @param ... additional arguments passed to object-specific methods.
 #' @export
-setGeneric(name = "as.PseudotimeOrdering",
-           signature = c("x"),
-           def = function(x, ...) standardGeneric("as.PseudotimeOrdering"))
-
-
-
-
+setGeneric(
+    name = "as.PseudotimeOrdering",
+    signature = c("x"),
+    def = function(x, ...) standardGeneric("as.PseudotimeOrdering")
+)

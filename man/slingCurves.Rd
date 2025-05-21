@@ -35,6 +35,6 @@ Extract the simultaneous principal curves from an object
 data("slingshotExample")
 rd <- slingshotExample$rd
 cl <- slingshotExample$cl
-pto <- slingshot(rd, cl, start.clus = '1')
+pto <- slingshot(rd, cl, start.clus = "1")
 slingCurves(pto)
 }

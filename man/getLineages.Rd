@@ -139,11 +139,11 @@ Once the graph is known, lineages are identified in
 data("slingshotExample")
 rd <- slingshotExample$rd
 cl <- slingshotExample$cl
-pto <- getLineages(rd, cl, start.clus = '1')
+pto <- getLineages(rd, cl, start.clus = "1")
 
 # plotting
 sds <- as.SlingshotDataSet(pto)
 plot(rd, col = cl, asp = 1)
-lines(sds, type = 'l', lwd = 3)
+lines(sds, type = "l", lwd = 3)
 
 }

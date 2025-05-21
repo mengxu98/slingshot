@@ -104,7 +104,7 @@ Constructs a \code{SlingshotDataSet} object. Additional helper
   \code{\link[TrajectoryUtils]{PseudotimeOrdering}} objects, instead.
 }
 \examples{
-rd <- matrix(data=rnorm(100), ncol=2)
+rd <- matrix(data = rnorm(100), ncol = 2)
 cl <- sample(letters[seq_len(5)], 50, replace = TRUE)
 sds <- newSlingshotDataSet(rd, cl)
 

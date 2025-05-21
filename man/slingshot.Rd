@@ -323,12 +323,12 @@ When \code{reweight = TRUE}, weights for shared cells are based on
 data("slingshotExample")
 rd <- slingshotExample$rd
 cl <- slingshotExample$cl
-pto <- slingshot(rd, cl, start.clus = '1')
+pto <- slingshot(rd, cl, start.clus = "1")
 
 # plotting
 sds <- as.SlingshotDataSet(pto)
 plot(rd, col = cl, asp = 1)
-lines(sds, type = 'c', lwd = 3)
+lines(sds, type = "c", lwd = 3)
 
 }
 \references{

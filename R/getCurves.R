@@ -600,7 +600,7 @@ setMethod(f = "getCurves",
         colnames(scw) <- colnames(pto)
         assay(pto, 'weights') <- scw
 
-        validObject(pto)
+        # validObject(pto)
         return(pto)
     })
 

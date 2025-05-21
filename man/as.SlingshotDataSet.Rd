@@ -32,7 +32,7 @@ This function converts objects that contain \code{slingshot}
 data("slingshotExample")
 rd <- slingshotExample$rd
 cl <- slingshotExample$cl
-pto <- slingshot(rd, cl, start.clus = '1')
+pto <- slingshot(rd, cl, start.clus = "1")
 as.SlingshotDataSet(pto)
 
 }
